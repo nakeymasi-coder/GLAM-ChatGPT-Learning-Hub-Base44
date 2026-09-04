@@ -2519,6 +2519,9 @@
           <div class="brand-title">GLAM <span>ChatGPT Learning Hub</span></div>
         </div>
         <div class="nav-actions">
+          <button class="btn secondary" type="button" onclick="openHubTutorial()">
+            How to Use This Hub
+          </button>
           <button
             class="icon-btn"
             id="resetBtn"
@@ -3643,6 +3646,27 @@
       <div class="modal">
         <button class="modal-close" id="closeModal">×</button>
         <div id="modalContent"></div>
+      </div>
+    </div>
+    <div class="tutorial-modal" id="hubTutorial" aria-hidden="true">
+      <div class="tutorial-backdrop" onclick="closeHubTutorial()"></div>
+      <div class="tutorial-dialog" role="dialog" aria-modal="true" aria-labelledby="tutorialTitle">
+        <button class="tutorial-close" type="button" onclick="closeHubTutorial()" aria-label="Close tutorial">×</button>
+        <div class="kicker">Quick Start Tutorial</div>
+        <h2 id="tutorialTitle">How to use the GLAM ChatGPT Learning Hub</h2>
+        <p class="tutorial-intro">You do not need to explore everything at once. Use the Hub in this order and it will always tell you what to do next.</p>
+        <div class="tutorial-steps">
+          <div class="tutorial-step"><span>1</span><div><strong>Choose where you are</strong><p>Pick <b>I'm brand new</b>, <b>I know a little</b>, or <b>I need help right now</b>.</p></div></div>
+          <div class="tutorial-step"><span>2</span><div><strong>Follow the 10-step roadmap</strong><p>Work left to right. You do not need to hunt through the Tool Library.</p></div></div>
+          <div class="tutorial-step"><span>3</span><div><strong>Open one lesson</strong><p>Use Learn It → Show Me → Try It → Quiz Me. Then mark the lesson complete.</p></div></div>
+          <div class="tutorial-step"><span>4</span><div><strong>Use Continue Learning</strong><p>The Hub will point you to the next lesson in the beginner order.</p></div></div>
+          <div class="tutorial-step"><span>5</span><div><strong>Use Ask ChatGPT when you're stuck</strong><p>Tell the AI guide what you're trying to do. It will recommend the right feature, prompt, and lesson.</p></div></div>
+          <div class="tutorial-step"><span>6</span><div><strong>Open the Tool Library only when needed</strong><p>Prompt Coach, Business Lab, builders, research tools, glossary, and other labs are support tools—not the main learning path.</p></div></div>
+        </div>
+        <div class="tutorial-actions">
+          <button class="btn primary" type="button" onclick="closeHubTutorial(); startBrandNew();">Start From the Beginning</button>
+          <button class="btn secondary" type="button" onclick="closeHubTutorial(); scrollToAskHub();">Ask for Help Instead</button>
+        </div>
       </div>
     </div>
     <div class="toast" id="toast"></div>
