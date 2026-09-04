@@ -2663,6 +2663,42 @@
         </details>
 
         <div class="panel active" id="panel-academy">
+          <div class="beginner-start">
+            <div class="kicker">Choose your starting point</div>
+            <h2>Where are you right now?</h2>
+            <p>You are not supposed to know where every feature lives yet. Pick the option that sounds most like you and the Hub will move you to the right next step.</p>
+            <div class="start-choice-grid">
+              <button class="start-choice" type="button" onclick="startBrandNew()">
+                <small>Start from zero</small>
+                <strong>I'm brand new</strong>
+                <span>Start with how ChatGPT conversations work, then learn prompting after you understand the basics.</span>
+              </button>
+              <button class="start-choice" type="button" onclick="goTab('quiz')">
+                <small>Find my level</small>
+                <strong>I know a little</strong>
+                <span>Take the quick skill check so you can see what you already understand and what to learn next.</span>
+              </button>
+              <button class="start-choice" type="button" onclick="scrollToAskHub()">
+                <small>Solve something now</small>
+                <strong>I need help right now</strong>
+                <span>Tell the AI guide what you are trying to do and let it route you to the right feature, prompt, and lesson.</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="learning-roadmap">
+            <div class="roadmap-head">
+              <div>
+                <div class="kicker">Beginner Roadmap</div>
+                <h3>Learn ChatGPT in this order</h3>
+              </div>
+              <p>For live teaching, this is the class order too. Teach one stage, let everyone try it, then move forward. The tool library is support — not the curriculum.</p>
+            </div>
+            <div class="roadmap-grid" id="beginnerRoadmap"></div>
+          </div>
+
+          <div class="path-teacher-note"><strong>Teaching flow:</strong> Explain it → show it → let them try it → practice it → mark it complete → move to the next stage. No hunting through random features during class.</div>
+
           <div class="curriculum-banner">
             <div>
               <div class="kicker">Your curriculum</div>
