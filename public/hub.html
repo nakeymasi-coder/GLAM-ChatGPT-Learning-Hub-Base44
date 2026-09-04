@@ -2658,6 +2658,7 @@
           <summary>Tool Library — open this only when you need a specific tool</summary>
           <nav class="main-tabs">
             <button class="tab active" data-tab="academy">Learning Path</button>
+            <button class="tab" data-tab="asklibrary">Prompt Library</button>
             <button class="tab" data-tab="finder">Which Tool Do I Use?</button>
             <button class="tab" data-tab="coach">Prompt Coach</button>
             <button class="tab" data-tab="characterlab">Character Builder</button>
@@ -2782,6 +2783,84 @@
             ChatGPT plan, workspace settings, device, and staged rollout.
           </div>
           </details>
+        </div>
+
+        <div class="panel" id="panel-asklibrary">
+          <div class="prompt-library-shell">
+            <div class="kicker">No blank-box panic</div>
+            <h2>Tell ChatGPT what you want — even if you don't know what it's called.</h2>
+            <p class="help">Choose a ready-made prompt when you already know the task, or use the guided builder when you only know the result you want. The goal is simple: you should never have to remember the “right” way to ask.</p>
+
+            <div class="prompt-library-grid">
+              <section class="box">
+                <div class="kicker">Guided Prompt Builder</div>
+                <h3>I know what I want to make. I don't know how to ask.</h3>
+                <div class="stack">
+                  <label class="label" for="askLibGoal">What are you trying to make?</label>
+                  <select id="askLibGoal">
+                    <option value="generator">A generator or interactive tool</option>
+                    <option value="app">An app</option>
+                    <option value="website">A website or landing page</option>
+                    <option value="graphic">A graphic, image, flyer, cover, or mockup</option>
+                    <option value="product">A digital product or resource</option>
+                    <option value="listing">A product title, sales description, or listing</option>
+                    <option value="curriculum">A lesson, curriculum, workshop, or teaching guide</option>
+                    <option value="research">Research or finding pain points/questions</option>
+                    <option value="content">Content, captions, emails, posts, or scripts</option>
+                    <option value="fix">Fix, debug, clean up, or improve something</option>
+                    <option value="organize">Organize files, ideas, projects, or workflows</option>
+                    <option value="unsure">I'm not sure what this is called</option>
+                  </select>
+
+                  <label class="label" for="askLibPlatform">Where do you want it made?</label>
+                  <select id="askLibPlatform">
+                    <option value="chatgpt">ChatGPT — choose the best method for me</option>
+                    <option value="html">Self-contained HTML/CSS/JS</option>
+                    <option value="base44">Base44</option>
+                    <option value="sites">ChatGPT Sites / Work</option>
+                    <option value="image">ChatGPT image generation</option>
+                    <option value="unsure">I don't know — recommend the easiest option</option>
+                  </select>
+
+                  <label class="label" for="askLibDescribe">In plain language, what should it do?</label>
+                  <textarea id="askLibDescribe" placeholder="Example: I want people to pick hair, clothes, colors, and style, then it should write one finished image prompt they can copy."></textarea>
+
+                  <label class="label" for="askLibAudience">Who is it for? <span class="help">Optional</span></label>
+                  <input id="askLibAudience" placeholder="Example: women 40+ who are beginners" />
+
+                  <label class="label" for="askLibMust">What must it include or keep? <span class="help">Optional</span></label>
+                  <textarea id="askLibMust" placeholder="Example: mobile-friendly, multi-select, copy button, keep my existing features"></textarea>
+
+                  <label class="label" for="askLibAvoid">What should it NOT do? <span class="help">Optional</span></label>
+                  <textarea id="askLibAvoid" placeholder="Example: don't remove existing features, don't give me a ZIP, don't overcomplicate it"></textarea>
+
+                  <button class="btn primary" type="button" onclick="buildAskLibraryPrompt()">Build My Prompt</button>
+                </div>
+                <div id="askLibBuiltResult"></div>
+              </section>
+
+              <section class="box">
+                <div class="kicker">I really don't know what to call it</div>
+                <h3>Describe the idea like you would say it out loud.</h3>
+                <p class="help">You do not need the words HTML, PWA, automation, app, generator, API, or workflow. Tell the Hub the outcome. Ask ChatGPT will help name it, ask the missing questions, and give you a copy-ready prompt.</p>
+                <textarea id="askLibUnknown" placeholder="Example: I want something where customers can click choices and it creates the words they need at the end, but I don't know what kind of thing that is."></textarea>
+                <div class="card-actions" style="margin-top:12px">
+                  <button class="btn primary" type="button" onclick="sendUnknownToAskHub()">Help Me Figure It Out</button>
+                </div>
+              </section>
+            </div>
+
+            <div class="section-head" style="margin-top:30px">
+              <div class="kicker">Ready-to-copy library</div>
+              <h2>Common things people ask ChatGPT to do</h2>
+              <p>Search by what you want to accomplish. Each card gives you a reusable starter prompt you can customize.</p>
+            </div>
+            <div class="filters">
+              <input id="askLibSearch" class="search" placeholder="Search: generator, Base44, website, research, sales description, curriculum, fix..." />
+              <button class="btn secondary" type="button" onclick="document.getElementById('askLibSearch').value=''; renderAskLibrary();">Clear</button>
+            </div>
+            <div class="prompt-template-grid" id="askLibCards"></div>
+          </div>
         </div>
 
         <div class="panel" id="panel-finder">
