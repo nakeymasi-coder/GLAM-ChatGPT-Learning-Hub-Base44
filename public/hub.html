@@ -2577,6 +2577,7 @@
           <div class="brand-title">GLAM <span>ChatGPT Learning Hub</span></div>
         </div>
         <div class="nav-actions">
+          <button class="btn secondary mobile-menu-btn" type="button" onclick="toggleHubSidebar()">Menu</button>
           <button class="btn secondary" type="button" onclick="openHubTutorial()">
             How to Use This Hub
           </button>
@@ -2594,7 +2595,55 @@
       </div>
     </header>
 
-    <main>
+    <div class="hub-app-shell">
+      <aside class="hub-sidebar" id="hubSidebar" aria-label="Learning Hub navigation">
+        <div class="sidebar-title"><strong>Explore the Hub</strong><span>Everything is here. Start with Learn, or jump directly to what you need.</span></div>
+
+        <div class="side-group">
+          <div class="side-label">Start Here</div>
+          <button class="side-link" type="button" onclick="scrollHubHome()"><span class="side-icon">⌂</span>Home</button>
+          <button class="side-link" type="button" onclick="openHubTutorial()"><span class="side-icon">?</span>How to Use This Hub</button>
+          <button class="side-link" type="button" onclick="scrollToAskHub()"><span class="side-icon">✦</span>Ask ChatGPT</button>
+        </div>
+
+        <div class="side-group">
+          <div class="side-label">Learn</div>
+          <button class="side-link active" data-side-tab="academy" type="button" onclick="goTab('academy')"><span class="side-icon">01</span>Learning Path</button>
+          <button class="side-link" data-side-tab="asklibrary" type="button" onclick="goTab('asklibrary')"><span class="side-icon">P</span>Prompt Library</button>
+          <button class="side-link" data-side-tab="finder" type="button" onclick="goTab('finder')"><span class="side-icon">↗</span>Which Tool Do I Use?</button>
+          <button class="side-link" data-side-tab="coach" type="button" onclick="goTab('coach')"><span class="side-icon">✓</span>Prompt Coach</button>
+          <button class="side-link" data-side-tab="glossary" type="button" onclick="goTab('glossary')"><span class="side-icon">A</span>Glossary</button>
+        </div>
+
+        <div class="side-group">
+          <div class="side-label">Create</div>
+          <button class="side-link" data-side-tab="characterlab" type="button" onclick="goTab('characterlab')"><span class="side-icon">C</span>Character Builder</button>
+          <button class="side-link" data-side-tab="environmentlab" type="button" onclick="goTab('environmentlab')"><span class="side-icon">B</span>Background Builder</button>
+          <button class="side-link" data-side-tab="typographylab" type="button" onclick="goTab('typographylab')"><span class="side-icon">T</span>Typography Builder</button>
+          <button class="side-link" data-side-tab="powerwords" type="button" onclick="goTab('powerwords')"><span class="side-icon">✧</span>Power Words Lab</button>
+        </div>
+
+        <div class="side-group">
+          <div class="side-label">Business</div>
+          <button class="side-link" data-side-tab="business" type="button" onclick="goTab('business')"><span class="side-icon">$</span>Business Lab</button>
+          <button class="side-link" data-side-tab="researchlab" type="button" onclick="goTab('researchlab')"><span class="side-icon">R</span>Business Research Lab</button>
+        </div>
+
+        <div class="side-group">
+          <div class="side-label">Practice + Save</div>
+          <button class="side-link" data-side-tab="clinic" type="button" onclick="goTab('clinic')"><span class="side-icon">+</span>Prompt Clinic</button>
+          <button class="side-link" data-side-tab="practice" type="button" onclick="goTab('practice')"><span class="side-icon">▶</span>Practice Lab</button>
+          <button class="side-link" data-side-tab="scenarios" type="button" onclick="goTab('scenarios')"><span class="side-icon">S</span>Scenario Coach</button>
+          <button class="side-link" data-side-tab="simulator" type="button" onclick="goTab('simulator')"><span class="side-icon">≈</span>Prompt Simulator</button>
+          <button class="side-link" data-side-tab="playbook" type="button" onclick="goTab('playbook')"><span class="side-icon">★</span>My Playbook</button>
+          <button class="side-link" data-side-tab="quiz" type="button" onclick="goTab('quiz')"><span class="side-icon">Q</span>Skill Check</button>
+          <button class="side-link" data-side-tab="assessment" type="button" onclick="goTab('assessment')"><span class="side-icon">✓</span>Final Assessment</button>
+          <button class="side-link" data-side-tab="certificate" type="button" onclick="goTab('certificate')"><span class="side-icon">★</span>Certificate</button>
+        </div>
+      </aside>
+      <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeHubSidebar()"></div>
+
+    <main class="hub-main">
 
       <section class="ask-hub" id="askChatgptHub" aria-labelledby="askChatgptTitle">
         <div class="ask-hub-inner">
@@ -3778,6 +3827,7 @@
         >
       </footer>
     </main>
+    </div>
 
     <div class="modal-bg" id="lessonModal">
       <div class="modal">
