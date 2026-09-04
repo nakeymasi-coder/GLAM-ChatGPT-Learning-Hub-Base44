@@ -1,12 +1,16 @@
+import { useEffect } from 'react';
+
 export default function Home() {
+  useEffect(() => {
+    window.location.replace('/hub.html');
+  }, []);
+
   return (
-    <div className="h-screen w-screen overflow-hidden bg-white">
-      <iframe
-        src="/hub.html"
-        title="GLAM ChatGPT Learning Hub"
-        className="h-full w-full border-0"
-        allow="clipboard-read; clipboard-write"
-      />
+    <div className="flex min-h-screen items-center justify-center bg-white px-6 text-center text-slate-900">
+      <div>
+        <p className="text-lg font-semibold">Opening the GLAM ChatGPT Learning Hub…</p>
+        <a className="mt-3 inline-block text-blue-600 underline" href="/hub.html">Open the Hub</a>
+      </div>
     </div>
   );
 }
