@@ -6801,6 +6801,66 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         },
       ];
 
+      const askLibraryTemplates = [
+        { category:"Build", title:"Create an HTML Generator", desc:"Build a self-contained interactive generator you can open in a browser or host online.", tags:"html generator interactive tool css javascript single file", prompt:"Create a self-contained HTML/CSS/JS generator for [WHAT IT GENERATES]. It is for [AUDIENCE]. Include [CHOICES/INPUTS]. The user should select options and get [FINAL OUTPUT] with a Copy button. Make it mobile-friendly and beginner-friendly. Keep everything in one index.html file. Do not remove or change any feature I explicitly approve." },
+        { category:"Build", title:"Create a Base44 App", desc:"Turn an idea into a working Base44 app without needing to know coding terminology.", tags:"base44 app no code application build", prompt:"Help me build a Base44 app for [GOAL]. The app is for [AUDIENCE]. It needs to let users [CORE ACTIONS]. Before building, ask me only the questions you truly need about screens, inputs, outputs, saved data, and user flow. Keep the experience simple and mobile-friendly. Do not add unnecessary features." },
+        { category:"Build", title:"I Want a Generator but Don't Know the Type", desc:"Use this when you know what the tool should do but do not know whether it should be HTML, Base44, a Site, or something else.", tags:"generator unsure recommend platform app tool", prompt:"I want to create something that does this: [DESCRIBE IT IN PLAIN LANGUAGE]. I do not know what type of generator, app, website, or tool I need. Ask me up to 5 simple questions, one at a time, to understand the user, choices/inputs, final output, whether anything needs to be saved, and how I plan to share or sell it. Then recommend the simplest build method and give me the exact prompt to create it." },
+        { category:"Build", title:"Create a Website or Landing Page", desc:"Plan and build a simple website around a clear goal instead of starting with design jargon.", tags:"website landing page site sales page", prompt:"Help me create a [WEBSITE/LANDING PAGE] for [BUSINESS/OFFER]. The goal is [GOAL]. The audience is [AUDIENCE]. Required sections: [SECTIONS]. Include [BUTTONS/LINKS/FEATURES]. Style direction: [STYLE]. Make it mobile-friendly. Preserve anything I mark as approved and make targeted changes instead of redesigning unrelated sections." },
+        { category:"Create", title:"Create a Graphic or Image", desc:"Turn a visual idea into a clear image-generation request.", tags:"image graphic flyer cover mockup visual", prompt:"Create a [FORMAT] image for [PURPOSE]. Main subject: [SUBJECT]. Visual direction: [STYLE]. Composition: [LAYOUT]. Colors: [COLORS]. Exact visible wording: “[TEXT].” Keep the wording readable and correctly spelled. Include [MUST HAVE]. Do not add [AVOID]." },
+        { category:"Products", title:"Create a Digital Product", desc:"Go from audience problem to a useful product and a clear finished deliverable.", tags:"digital product resource template guide workbook prompt bundle", prompt:"Help me create a useful product for [AUDIENCE] who struggle with [PROBLEM]. Start by defining the smallest useful result. Recommend the simplest product format. Then create the product structure, what goes inside, how the user uses it, and the finished deliverables. Keep it practical and ready to use, not padded with filler." },
+        { category:"Sell", title:"Write a Product Listing", desc:"Create the title, short sales description, benefits, FAQ, and CTA for something already finished.", tags:"sales description listing payhip title seo product", prompt:"Create a sales listing for [PRODUCT]. Audience: [AUDIENCE]. Main result: [PROMISE]. Include a clear title, short sales description, key benefits, what is included, simple FAQ, and CTA. Keep it direct and easy to scan. Do not make claims I did not provide." },
+        { category:"Teach", title:"Create a Live Class Curriculum", desc:"Turn one topic into a teacher flow, student steps, practice, and a finished class outcome.", tags:"curriculum workshop live class teacher student lesson", prompt:"Create a live beginner-friendly class for [TOPIC]. The students should create or accomplish [OUTCOME] during the class, not just watch me. Give me a teacher cheat sheet with talking points, a student workflow, what I demonstrate, what they do beside me, a practice activity, and the finished result. Keep the flow easy to teach live." },
+        { category:"Research", title:"Find Real Pain Points and Questions", desc:"Research what people are repeatedly asking before deciding what to create or teach.", tags:"research pain points questions reddit audience product ideas", prompt:"Search current online discussions from [AUDIENCE] about [TOPIC]. Find repeated questions, frustrations, workarounds, and desired outcomes. Group duplicates instead of padding the list. Separate verified findings from your inference. For each theme, explain the underlying problem and what useful product, resource, tool, checklist, generator, or lesson could solve it. Cite current sources." },
+        { category:"Fix", title:"Fix Something Without Breaking the Rest", desc:"Use this when one part is wrong and you need everything approved to stay intact.", tags:"fix troubleshoot code website app preserve existing don't change", prompt:"Fix only this problem: [PROBLEM]. First identify the likely cause. Preserve all existing approved features, content, links, layout, and behavior unless changing one is required to fix the problem. Do not redesign or remove unrelated parts. Make the smallest reliable change, test it, and tell me exactly what changed." },
+        { category:"Organize", title:"Organize a Messy Project or File System", desc:"Turn a pile of files, generators, or ideas into a simple system without deleting what matters.", tags:"organize files downloads drive generators projects folders", prompt:"Help me organize [WHAT IS MESSY]. First inventory what is there and group similar items. Recommend a simple folder/category structure that I can understand at a glance. Identify duplicates or unclear names, but do not delete anything without my approval. Work one category at a time so I am not overwhelmed." },
+        { category:"Content", title:"Turn My Rough Idea Into Finished Content", desc:"Start from a messy thought or voice-style explanation and shape it into something usable.", tags:"content post email caption script rewrite rough idea", prompt:"I am going to give you my rough idea in my own words. Preserve what I mean, organize it, and turn it into [POST/EMAIL/SCRIPT/CAPTION]. Audience: [AUDIENCE]. Goal: [GOAL]. Tone: [TONE]. Keep it natural and direct. Do not add facts, offers, prices, or promises I did not give you." },
+        { category:"Prompting", title:"Ask Me Questions Before You Build", desc:"Use this whenever the request is too fuzzy and you want ChatGPT to help shape it before creating anything.", tags:"clarify questions interview prompt help me figure it out", prompt:"I know the result I want, but I may not know the right terminology or what details matter. My idea is: [IDEA]. Before creating anything, ask me only the most important questions, one at a time. Help me make decisions in plain language. Once you have enough information, summarize what we are building and give me the exact copy-ready prompt to create it." }
+      ];
+
+      function renderAskLibrary() {
+        const grid = document.getElementById("askLibCards");
+        if (!grid) return;
+        const q = (document.getElementById("askLibSearch")?.value || "").trim().toLowerCase();
+        const list = askLibraryTemplates.filter(item => !q || `${item.category} ${item.title} ${item.desc} ${item.tags}`.toLowerCase().includes(q));
+        grid.innerHTML = list.map((item,index) => `<article class="prompt-template-card">
+          <span class="chip">${item.category}</span>
+          <h3>${item.title}</h3>
+          <p>${item.desc}</p>
+          <div class="prompt-preview">${escapeAttr(item.prompt)}</div>
+          <div class="card-actions"><button class="tiny-btn" type="button" onclick="copyText(askLibraryTemplates[${askLibraryTemplates.indexOf(item)}].prompt)">Copy Prompt</button></div>
+        </article>`).join("") || `<div class="box"><h3>No prompts found</h3><p class="help">Try another word such as app, generator, website, research, listing, class, fix, or organize.</p></div>`;
+      }
+
+      function buildAskLibraryPrompt() {
+        const goal = document.getElementById("askLibGoal")?.value || "unsure";
+        const platform = document.getElementById("askLibPlatform")?.value || "unsure";
+        const describe = document.getElementById("askLibDescribe")?.value.trim() || "[DESCRIBE WHAT YOU WANT IT TO DO]";
+        const audience = document.getElementById("askLibAudience")?.value.trim();
+        const must = document.getElementById("askLibMust")?.value.trim();
+        const avoid = document.getElementById("askLibAvoid")?.value.trim();
+        const goalLabels = {generator:"generator or interactive tool",app:"app",website:"website or landing page",graphic:"graphic or image",product:"digital product or resource",listing:"product listing",curriculum:"lesson, curriculum, or workshop",research:"research project",content:"content piece",fix:"fix or improvement",organize:"organization system",unsure:"thing I do not know the name for"};
+        const platformLines = {
+          chatgpt:"Choose the simplest ChatGPT method or feature that fits this goal.",
+          html:"Build it as one self-contained HTML/CSS/JS file that is mobile-friendly and ready to open in a browser.",
+          base44:"Build it in Base44 with a simple app flow and only the features needed for the goal.",
+          sites:"Use ChatGPT Sites/Work when appropriate and keep the site flow simple and mobile-friendly.",
+          image:"Use ChatGPT image generation and give precise visual direction.",
+          unsure:"I do not know the best platform. Recommend the easiest suitable option before building."
+        };
+        const needsQuestions = goal === "unsure" || platform === "unsure";
+        const prompt = `I want to create a ${goalLabels[goal]}. Here is what I mean in plain language:\n\n${describe}\n\n${audience ? `It is for: ${audience}.\n` : ""}${must ? `It must include or preserve: ${must}.\n` : ""}${avoid ? `Do not: ${avoid}.\n` : ""}${platformLines[platform]}\n\n${needsQuestions ? "Before creating anything, ask me up to 5 simple clarifying questions, one at a time, because I may not know the right terminology. Then tell me what this kind of thing is called, recommend the simplest approach, and give me the final copy-ready build prompt." : "If an important decision is missing, ask only the questions you truly need. Then restate the plan briefly and create it without adding unnecessary complexity."}`;
+        const result = document.getElementById("askLibBuiltResult");
+        result.innerHTML = `<div class="formula-output"><button class="copy" type="button" onclick="copyText(document.getElementById('askLibBuiltPrompt').innerText)">Copy</button><pre id="askLibBuiltPrompt">${escapeAttr(prompt)}</pre></div><div class="card-actions" style="margin-top:10px"><button class="tiny-btn" type="button" onclick="document.getElementById('askChatgptInput').value=document.getElementById('askLibBuiltPrompt').innerText; scrollToAskHub();">Take This to Ask ChatGPT</button></div>`;
+      }
+
+      function sendUnknownToAskHub() {
+        const idea = document.getElementById("askLibUnknown")?.value.trim();
+        if (!idea) { toast("Describe your idea first."); return; }
+        const input = document.getElementById("askChatgptInput");
+        if (input) input.value = `I want to create something, but I do not know what it is called or how to ask for it. Here is my idea in plain language: ${idea}\n\nAsk me the important questions one at a time. Help me identify the simplest kind of tool, app, generator, site, workflow, or other format that fits. When you understand it, give me the exact copy-ready prompt I should use to create it.`;
+        scrollToAskHub();
+      }
+
       const beginnerStages = [
         { n:"01", title:"Understand ChatGPT", desc:"Learn what a chat is, what ChatGPT remembers in a conversation, and when to use Temporary Chat.", lesson:"basics", lessonIds:["basics","models","temporarychat2026"] },
         { n:"02", title:"Talk to ChatGPT", desc:"Ask normally, add context, follow up, correct the answer, and use voice when it helps.", lesson:"basics", lessonIds:["basics","voice"] },
@@ -8661,6 +8721,8 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
 
       renderPaths();
       renderLessons();
+      renderAskLibrary();
+      document.getElementById("askLibSearch")?.addEventListener("input", renderAskLibrary);
       renderPractice();
       renderBiz();
       renderActiveWorkflow();
