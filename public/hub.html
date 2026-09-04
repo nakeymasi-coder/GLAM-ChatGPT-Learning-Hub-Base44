@@ -8368,7 +8368,32 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
 
       // Ask ChatGPT — real-time Learning Hub guide
       const askHubHistory = [];
-      const ASK_HUB_ENDPOINT = "https://chatgpt-learning-hub.netlify.app/.netlify/functions/ask";
+      const askHubPending = new Map();
+      let askHubRequestSeq = 0;
+
+      window.addEventListener("message", (event) => {
+        if (event.source !== window.parent) return;
+        const message = event.data;
+        if (!message || message.type !== "glamAskResponse") return;
+        const pending = askHubPending.get(message.requestId);
+        if (!pending) return;
+        clearTimeout(pending.timer);
+        askHubPending.delete(message.requestId);
+        if (message.ok) pending.resolve(message.data);
+        else pending.reject(new Error(message.error || "The Learning Hub AI could not answer right now."));
+      });
+
+      function askHubViaBase44(payload) {
+        return new Promise((resolve, reject) => {
+          const requestId = `glam-${Date.now()}-${++askHubRequestSeq}`;
+          const timer = setTimeout(() => {
+            askHubPending.delete(requestId);
+            reject(new Error("The Learning Hub AI took too long to respond. Please try again."));
+          }, 60000);
+          askHubPending.set(requestId, { resolve, reject, timer });
+          window.parent.postMessage({ type: "glamAskRequest", requestId, payload }, "*");
+        });
+      }
 
       function askHubEscape(value) {
         return String(value ?? "")
@@ -8391,9 +8416,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         answerBox.classList.add("show");
         answerBox.innerHTML=`<div class="ask-loading"><span class="ask-spinner"></span>Figuring out the best way to help you…</div>`;
         try {
-          const res=await fetch(ASK_HUB_ENDPOINT,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question,history:askHubHistory,catalog:askHubCatalog()})});
-          let data; try{ data=await res.json(); }catch{ throw new Error("The AI guide returned an unreadable response."); }
-          if(!res.ok) throw new Error(data.error||"The AI guide could not answer right now.");
+          const data = await askHubViaBase44({ question, history: askHubHistory, catalog: askHubCatalog() });
 
           askHubHistory.push({role:"user",content:question},{role:"assistant",content:data.answer||""});
           if(askHubHistory.length>8) askHubHistory.splice(0,askHubHistory.length-8);
@@ -8425,7 +8448,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           status.textContent="Ask a follow-up anytime — this remembers the last few messages in this session.";
           input.value="";
         } catch(error) {
-          answerBox.innerHTML=`<div class="ask-answer-card"><small>Couldn't connect</small><p>${askHubEscape(error.message||"Ask ChatGPT is temporarily unavailable.")}</p><p style="margin-top:8px;color:var(--muted);font-size:12px;">The interface can be previewed on GitHub Pages. Real-time answers require the new Netlify function to be deployed.</p></div>`;
+          answerBox.innerHTML=`<div class="ask-answer-card"><small>Couldn't connect</small><p>${askHubEscape(error.message||"Ask ChatGPT is temporarily unavailable.")}</p><p style="margin-top:8px;color:var(--muted);font-size:12px;">This Base44 app uses Base44's built-in AI connection. Try again in a moment if the service is busy.</p></div>`;
           status.textContent="Your question is still in the box so you can try again.";
         } finally { button.disabled=false; button.textContent="Ask AI"; }
       }
