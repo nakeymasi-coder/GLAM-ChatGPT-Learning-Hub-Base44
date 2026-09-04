@@ -6714,9 +6714,49 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           .forEach((x) =>
             x.classList.toggle("active", x.id === "panel-" + name),
           );
+        const tools = document.getElementById("toolboxDetails");
+        if (tools && name !== "academy") tools.open = true;
         document
           .getElementById("hub")
           .scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function scrollToAskHub() {
+        document.getElementById("askChatgptHub")?.scrollIntoView({ behavior:"smooth", block:"start" });
+        setTimeout(() => document.getElementById("askChatgptInput")?.focus(), 450);
+      }
+
+      function startBrandNew() {
+        goTab("academy");
+        setTimeout(() => openLesson("basics"), 420);
+      }
+
+      function startBeginnerStage(index) {
+        const stage = beginnerStages[index];
+        if (!stage) return;
+        if (stage.lesson) {
+          goTab("academy");
+          setTimeout(() => openLesson(stage.lesson), 280);
+        } else if (stage.tab) {
+          goTab(stage.tab);
+        }
+      }
+
+      function renderBeginnerRoadmap() {
+        const el = document.getElementById("beginnerRoadmap");
+        if (!el) return;
+        el.innerHTML = beginnerStages.map((stage,index) => {
+          const trackable = stage.lessonIds.length > 0;
+          const done = trackable && stage.lessonIds.every(id => completed.includes(id));
+          const progress = trackable ? `${stage.lessonIds.filter(id => completed.includes(id)).length}/${stage.lessonIds.length} lessons` : "Open stage";
+          return `<article class="roadmap-card ${done ? "done" : ""}" onclick="startBeginnerStage(${index})" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();startBeginnerStage(${index})}">
+            <div class="roadmap-num">${stage.n}</div>
+            ${done ? '<span class="roadmap-status">✓ DONE</span>' : ''}
+            <h4>${stage.title}</h4>
+            <p>${stage.desc}</p>
+            <span class="roadmap-action">${done ? "Review stage" : progress + " →"}</span>
+          </article>`;
+        }).join("");
       }
       document
         .querySelectorAll(".tab")
