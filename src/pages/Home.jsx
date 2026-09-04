@@ -65,11 +65,12 @@ ${JSON.stringify(catalog)}
 
 Return structured JSON matching the requested schema.`;
 
-        const result = await base44.integrations.Core.InvokeLLM({
-          prompt,
-          model: 'gpt_5_6_sol',
-          response_json_schema: RESPONSE_SCHEMA,
+        const response = await base44.functions.invoke('askHub', {
+          question,
+          history,
+          catalog,
         });
+        const result = response?.data ?? response;
 
         iframeRef.current?.contentWindow?.postMessage({
           type: 'glamAskResponse',
