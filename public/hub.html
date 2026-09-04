@@ -8584,6 +8584,9 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       renderSimulator();
       renderAssessment();
       updateProgress();
+      if (!localStorage.getItem("glamHubTutorialSeen")) {
+        setTimeout(openHubTutorial, 650);
+      }
     
 
       // Ask ChatGPT — real-time Learning Hub guide
