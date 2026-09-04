@@ -6667,6 +6667,19 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         },
       ];
 
+      const beginnerStages = [
+        { n:"01", title:"Understand ChatGPT", desc:"Learn what a chat is, what ChatGPT remembers in a conversation, and when to use Temporary Chat.", lesson:"basics", lessonIds:["basics","models","temporarychat2026"] },
+        { n:"02", title:"Talk to ChatGPT", desc:"Ask normally, add context, follow up, correct the answer, and use voice when it helps.", lesson:"basics", lessonIds:["basics","voice"] },
+        { n:"03", title:"Learn to Prompt", desc:"Give a clear goal, useful context, limits, audience, and output format without writing a novel.", lesson:"prompting", lessonIds:["prompting"] },
+        { n:"04", title:"Bring Your Materials", desc:"Upload files and PDFs, reuse Library items, and bring in Google Drive when available.", lesson:"files", lessonIds:["files","librarydrive2026"] },
+        { n:"05", title:"Choose the Right Tool", desc:"Learn when you need normal chat, search, study, research, files, images, apps, or tasks.", tab:"finder", lessonIds:["search","studymode","apps","tasks"] },
+        { n:"06", title:"Create With ChatGPT", desc:"Create images, edit visuals, build sites, and learn how to give strong creative direction.", lesson:"images", lessonIds:["images","imageedit","sites","powerwords"] },
+        { n:"07", title:"Organize Your Work", desc:"Use Projects, Memory, Custom Instructions, Library, and connected accounts without creating a mess.", lesson:"projects", lessonIds:["projects","memory","custominstructions","library","multigoogle2026"] },
+        { n:"08", title:"Use It for Business", desc:"Turn what you learned into research, offers, products, content, launches, and repeatable workflows.", tab:"business", lessonIds:[] },
+        { n:"09", title:"Practice the Skill", desc:"Practice choosing tools, fixing prompts, solving scenarios, and explaining why your choice works.", tab:"practice", lessonIds:["interactivequizzes2026"] },
+        { n:"10", title:"Graduate", desc:"Take the final assessment, check your progress, and unlock your certificate when you are ready.", tab:"assessment", lessonIds:[] },
+      ];
+
       let completed = JSON.parse(
         localStorage.getItem("glamHubCompleted") || "[]",
       );
