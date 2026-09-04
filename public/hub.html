@@ -6758,6 +6758,15 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           </article>`;
         }).join("");
       }
+
+      function getNextBeginnerLesson() {
+        const orderedIds = [];
+        beginnerStages.forEach(stage => stage.lessonIds.forEach(id => {
+          if (!orderedIds.includes(id)) orderedIds.push(id);
+        }));
+        const nextId = orderedIds.find(id => !completed.includes(id));
+        return lessons.find(l => l.id === nextId) || lessons.find(l => !completed.includes(l.id)) || lessons[0];
+      }
       document
         .querySelectorAll(".tab")
         .forEach((t) =>
@@ -6834,8 +6843,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           const el = document.getElementById(level.toLowerCase() + "Progress");
           if (el) el.textContent = `${done}/${all.length}`;
         });
-        const next =
-          lessons.find((l) => !completed.includes(l.id)) || lessons[0];
+        const next = getNextBeginnerLesson();
         const title = document.getElementById("continueLessonTitle");
         const desc = document.getElementById("continueLessonDesc");
         const btn = document.getElementById("continueLearningBtn");
@@ -6889,8 +6897,9 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
                 ? "Learning the Tools"
                 : "Getting Started";
         updateTrackProgress();
+        renderBeginnerRoadmap();
         renderCertificateGate();
-        const next = lessons.find((l) => !completed.includes(l.id));
+        const next = getNextBeginnerLesson();
         document.getElementById("nextTitle").textContent = next
           ? next.title
           : "You finished the academy!";
