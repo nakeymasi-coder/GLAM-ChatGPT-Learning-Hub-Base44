@@ -6764,6 +6764,27 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           .scrollIntoView({ behavior: "smooth", block: "start" });
       }
 
+      function openHubTutorial() {
+        const modal = document.getElementById("hubTutorial");
+        if (!modal) return;
+        modal.classList.add("open");
+        modal.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+      }
+
+      function closeHubTutorial() {
+        const modal = document.getElementById("hubTutorial");
+        if (!modal) return;
+        modal.classList.remove("open");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+        localStorage.setItem("glamHubTutorialSeen", "1");
+      }
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeHubTutorial();
+      });
+
       function scrollToAskHub() {
         document.getElementById("askChatgptHub")?.scrollIntoView({ behavior:"smooth", block:"start" });
         setTimeout(() => document.getElementById("askChatgptInput")?.focus(), 450);
