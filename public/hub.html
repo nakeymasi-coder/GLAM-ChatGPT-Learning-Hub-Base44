@@ -2568,24 +2568,23 @@
             <span class="spark"></span> ChatGPT without the confusing tech talk
           </div>
           <h1>
-            Stop guessing. <span class="blue">Learn the damn thing.</span>
+            Learn ChatGPT 2026 <span class="blue">in the right order.</span>
           </h1>
           <p class="hero-copy">
-            This is a hands-on ChatGPT training system. Learn the features,
-            master the language behind stronger prompts, practice real
-            scenarios, diagnose weak prompts, build reusable formulas, quiz
-            yourself, troubleshoot problems, and save the workflows you actually
-            use.
+            You do not need to learn every button before you can use ChatGPT well.
+            This hub now teaches you the way a beginner should actually learn it:
+            understand it, talk to it, prompt it, bring it your materials, choose
+            the right tools, create, organize, use it for business, practice, and graduate.
           </p>
           <div class="hero-actions">
-            <button class="btn primary" onclick="goTab('academy')">
-              Start My Learning Path
-            </button>
-            <button class="btn secondary" onclick="goTab('finder')">
-              What the Hell Do I Use? 😂
+            <button class="btn primary" onclick="startBrandNew()">
+              I'm Brand New — Start Here
             </button>
             <button class="btn secondary" onclick="goTab('quiz')">
-              Take the Skill Check
+              I Know a Little — Check My Level
+            </button>
+            <button class="btn secondary" onclick="scrollToAskHub()">
+              I Need Help Right Now
             </button>
           </div>
           <div class="hero-note">
@@ -2630,34 +2629,38 @@
 
       <section id="hub">
         <div class="section-head">
-          <div class="kicker">Interactive Academy</div>
-          <h2>Learn it. Try it. Use it.</h2>
+          <div class="kicker">Your ChatGPT 2026 Learning Path</div>
+          <h2>One clear next step at a time.</h2>
           <p>
-            Choose a guided path or jump directly to the feature you need.
+            Follow the 10-step beginner path in order. The labs and tools are still here,
+            but they support the learning path instead of making you figure out where to go.
             Progress is saved locally in your browser.
           </p>
         </div>
 
-        <nav class="main-tabs">
-          <button class="tab active" data-tab="academy">Feature Academy</button>
-          <button class="tab" data-tab="finder">Feature Finder</button>
-          <button class="tab" data-tab="coach">Prompt Coach</button>
-          <button class="tab" data-tab="characterlab">Character Builder</button>
-          <button class="tab" data-tab="environmentlab">Background Builder</button>
-          <button class="tab" data-tab="typographylab">Typography Builder</button>
-          <button class="tab" data-tab="powerwords">Power Words Lab</button>
-          <button class="tab" data-tab="clinic">Prompt Clinic</button>
-          <button class="tab" data-tab="practice">Practice Lab</button>
-          <button class="tab" data-tab="scenarios">Scenario Coach</button>
-          <button class="tab" data-tab="business">Business Lab</button>
-          <button class="tab" data-tab="researchlab">Business Research Lab</button>
-          <button class="tab" data-tab="glossary">Glossary</button>
-          <button class="tab" data-tab="playbook">My Playbook</button>
-          <button class="tab" data-tab="simulator">Prompt Simulator</button>
-          <button class="tab" data-tab="assessment">Final Assessment</button>
-          <button class="tab" data-tab="certificate">Certificate</button>
-          <button class="tab" data-tab="quiz">Skill Check</button>
-        </nav>
+        <details class="toolbox-details" id="toolboxDetails">
+          <summary>Tool Library — open this only when you need a specific tool</summary>
+          <nav class="main-tabs">
+            <button class="tab active" data-tab="academy">Learning Path</button>
+            <button class="tab" data-tab="finder">Which Tool Do I Use?</button>
+            <button class="tab" data-tab="coach">Prompt Coach</button>
+            <button class="tab" data-tab="characterlab">Character Builder</button>
+            <button class="tab" data-tab="environmentlab">Background Builder</button>
+            <button class="tab" data-tab="typographylab">Typography Builder</button>
+            <button class="tab" data-tab="powerwords">Power Words Lab</button>
+            <button class="tab" data-tab="clinic">Prompt Clinic</button>
+            <button class="tab" data-tab="practice">Practice Lab</button>
+            <button class="tab" data-tab="scenarios">Scenario Coach</button>
+            <button class="tab" data-tab="business">Business Lab</button>
+            <button class="tab" data-tab="researchlab">Business Research Lab</button>
+            <button class="tab" data-tab="glossary">Glossary</button>
+            <button class="tab" data-tab="playbook">My Playbook</button>
+            <button class="tab" data-tab="simulator">Prompt Simulator</button>
+            <button class="tab" data-tab="assessment">Final Assessment</button>
+            <button class="tab" data-tab="certificate">Certificate</button>
+            <button class="tab" data-tab="quiz">Skill Check</button>
+          </nav>
+        </details>
 
         <div class="panel active" id="panel-academy">
           <div class="curriculum-banner">
