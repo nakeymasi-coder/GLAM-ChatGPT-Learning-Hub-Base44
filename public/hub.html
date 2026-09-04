@@ -6988,11 +6988,32 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           .forEach((x) =>
             x.classList.toggle("active", x.id === "panel-" + name),
           );
+        document
+          .querySelectorAll("[data-side-tab]")
+          .forEach((x) => x.classList.toggle("active", x.dataset.sideTab === name));
         const tools = document.getElementById("toolboxDetails");
         if (tools && name !== "academy") tools.open = true;
+        closeHubSidebar();
         document
           .getElementById("hub")
           .scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function toggleHubSidebar() {
+        const sidebar = document.getElementById("hubSidebar");
+        const backdrop = document.getElementById("sidebarBackdrop");
+        sidebar?.classList.toggle("open");
+        backdrop?.classList.toggle("show", sidebar?.classList.contains("open"));
+      }
+
+      function closeHubSidebar() {
+        document.getElementById("hubSidebar")?.classList.remove("open");
+        document.getElementById("sidebarBackdrop")?.classList.remove("show");
+      }
+
+      function scrollHubHome() {
+        closeHubSidebar();
+        window.scrollTo({ top:0, behavior:"smooth" });
       }
 
       function openHubTutorial() {
@@ -7017,6 +7038,8 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
       });
 
       function scrollToAskHub() {
+        closeHubSidebar();
+        document.querySelectorAll("[data-side-tab]").forEach(x => x.classList.remove("active"));
         document.getElementById("askChatgptHub")?.scrollIntoView({ behavior:"smooth", block:"start" });
         setTimeout(() => document.getElementById("askChatgptInput")?.focus(), 450);
       }
