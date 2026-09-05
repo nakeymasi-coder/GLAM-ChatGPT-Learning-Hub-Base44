@@ -30,7 +30,7 @@ function Stat({ label, value, sub }) {
 }
 
 export default function Admin() {
-  const { user, logout } = useAuth();
+  const { user, logout, authChecked, navigateToLogin } = useAuth();
   const [tab, setTab] = useState('dashboard');
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
@@ -62,6 +62,7 @@ export default function Admin() {
     } finally { setLoading(false); }
   }
 
+  useEffect(() => { if (authChecked && !user) navigateToLogin(); }, [authChecked, user, navigateToLogin]);
   useEffect(() => { refresh(); }, [isAdmin]);
 
   const activeLessons = lessons.filter(x => x.active !== false).length;
@@ -69,7 +70,7 @@ export default function Admin() {
   const filteredLessons = useMemo(() => lessons.filter(x => `${x.title} ${x.level} ${x.lesson_id}`.toLowerCase().includes(search.toLowerCase())), [lessons, search]);
   const filteredUsers = useMemo(() => users.filter(x => `${x.full_name || x.name || ''} ${x.email || ''} ${x.role || ''}`.toLowerCase().includes(search.toLowerCase())), [users, search]);
 
-  if (!user) return <div className="min-h-screen grid place-items-center bg-white text-slate-900">Checking access…</div>;
+  if (!user) return <div className="min-h-screen grid place-items-center bg-white text-slate-900">Opening secure admin…</div>;
   if (!isAdmin) return <Navigate to="/" replace />;
 
   const nav = [
