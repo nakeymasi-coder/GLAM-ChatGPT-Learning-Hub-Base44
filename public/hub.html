@@ -2569,6 +2569,7 @@
       .hub-main { min-width:0; }
       .mobile-menu-btn { display:none; }
       .sidebar-backdrop { display:none; }
+      .mobile-bottom-nav { display:none; }
 
       @media (max-width:1100px){
         .hub-app-shell { display:block; }
@@ -2577,6 +2578,45 @@
         .mobile-menu-btn { display:inline-flex; }
         .sidebar-backdrop { position:fixed; inset:0; background:rgba(8,24,38,.35); z-index:9996; }
         .sidebar-backdrop.show { display:block; }
+        .hub-main { padding-bottom:78px; }
+        .mobile-bottom-nav {
+          position:fixed;
+          left:10px;
+          right:10px;
+          bottom:10px;
+          z-index:9995;
+          display:grid;
+          grid-template-columns:repeat(5,minmax(0,1fr));
+          gap:4px;
+          padding:7px;
+          border:1px solid rgba(16,59,99,.12);
+          border-radius:20px;
+          background:rgba(255,255,255,.96);
+          box-shadow:0 16px 40px rgba(8,24,38,.18);
+          backdrop-filter:blur(14px);
+        }
+        .mobile-bottom-nav button {
+          min-width:0;
+          border:0;
+          background:transparent;
+          border-radius:14px;
+          padding:8px 3px 7px;
+          color:#294158;
+          font:inherit;
+          font-size:10px;
+          font-weight:900;
+          line-height:1.15;
+          cursor:pointer;
+        }
+        .mobile-bottom-nav button span {
+          display:block;
+          margin-bottom:4px;
+          color:var(--blue);
+          font-size:18px;
+          line-height:1;
+        }
+        .mobile-bottom-nav button:active,
+        .mobile-bottom-nav button:focus-visible { background:#eef7ff; color:var(--blue); }
       }
 
       @media (max-width: 1050px) { .roadmap-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
@@ -3892,6 +3932,14 @@
       </footer>
     </main>
     </div>
+
+    <nav class="mobile-bottom-nav" aria-label="Mobile Learning Hub navigation">
+      <button type="button" onclick="scrollHubHome()"><span>⌂</span>Home</button>
+      <button type="button" onclick="goTab('academy')"><span>01</span>Learn</button>
+      <button type="button" onclick="scrollToAskHub()"><span>✦</span>Ask</button>
+      <button type="button" onclick="goTab('asklibrary')"><span>P</span>Library</button>
+      <button type="button" onclick="toggleHubSidebar()"><span>☰</span>Menu</button>
+    </nav>
 
     <div class="modal-bg" id="lessonModal">
       <div class="modal">
