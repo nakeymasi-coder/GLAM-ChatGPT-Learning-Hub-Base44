@@ -8,6 +8,21 @@
       name="description"
       content="An interactive beginner-friendly academy for learning ChatGPT features, prompts, workflows, research, files, images, projects, tasks, apps, memory, and business use."
     />
+    <script>
+      (async function protectHub(){
+        document.documentElement.style.visibility = 'hidden';
+        try {
+          const token = localStorage.getItem('base44_access_token') || localStorage.getItem('token');
+          const headers = token ? { Authorization: `Bearer ${token}` } : {};
+          const response = await fetch('/api/apps/6a9aedd33cd938f0f47b9ff7/entities/User/me', { headers, credentials:'include' });
+          if (!response.ok) throw new Error('auth_required');
+          document.documentElement.style.visibility = 'visible';
+        } catch (error) {
+          const returnTo = encodeURIComponent(window.location.href);
+          window.location.replace(`/login?from_url=${returnTo}`);
+        }
+      })();
+    </script>
     <style>
       :root {
         --sapphire: #168fea;
