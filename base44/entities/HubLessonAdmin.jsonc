@@ -1,0 +1,56 @@
+{
+  "type": "object",
+  "properties": {
+    "lesson_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "level": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "featured": {
+      "type": "boolean"
+    },
+    "sort_order": {
+      "type": "number"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "lesson_id",
+    "title"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  },
+  "name": "HubLessonAdmin"
+}

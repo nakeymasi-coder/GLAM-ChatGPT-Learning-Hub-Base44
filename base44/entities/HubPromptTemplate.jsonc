@@ -1,0 +1,53 @@
+{
+  "type": "object",
+  "properties": {
+    "category": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "prompt": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "featured": {
+      "type": "boolean"
+    },
+    "sort_order": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "title",
+    "prompt"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  },
+  "name": "HubPromptTemplate"
+}
