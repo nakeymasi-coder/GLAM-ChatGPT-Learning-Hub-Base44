@@ -2577,10 +2577,18 @@
         .hub-app-shell { display:block; }
         .hub-sidebar { position:fixed; top:0; left:0; bottom:0; width:min(300px,86vw); height:100vh; transform:translateX(-102%); transition:transform .22s ease; z-index:9997; box-shadow:0 20px 50px rgba(8,24,38,.2); padding-top:24px; }
         .hub-sidebar.open { transform:translateX(0); }
-        .mobile-menu-btn { display:inline-flex; }
+        header { background:rgba(255,255,255,.96); }
+        .nav { min-height:64px; padding:9px 14px; }
+        .logo { width:38px; height:38px; border-radius:12px; font-size:18px; box-shadow:none; }
+        .brand { gap:9px; }
+        .brand-title { font-size:15px; }
+        .nav-actions > :not(.mobile-menu-btn) { display:none !important; }
+        .mobile-menu-btn { display:inline-flex !important; align-items:center; justify-content:center; padding:10px 15px; min-width:auto; box-shadow:none; }
         .sidebar-backdrop { position:fixed; inset:0; background:rgba(8,24,38,.35); z-index:9996; }
         .sidebar-backdrop.show { display:block; }
         .hub-main { padding-bottom:78px; }
+        .hero { padding-top:30px; }
+        .hero .eyebrow { display:none; }
         .mobile-bottom-nav {
           position:fixed;
           left:10px;
@@ -2642,7 +2650,9 @@
         .roadmap-card { min-height:auto; }
         .roadmap-head { align-items:start; flex-direction:column; }
         .tutorial-dialog { padding:22px; border-radius:22px; }
-        .nav-actions .btn.secondary { padding:9px 11px; font-size:11px; }
+        .brand-title { max-width:205px; overflow:hidden; text-overflow:ellipsis; }
+        .mobile-menu-btn { display:inline-flex !important; font-size:12px; padding:9px 13px !important; }
+        .hero { padding-top:22px; }
       }
     </style>
   </head>
