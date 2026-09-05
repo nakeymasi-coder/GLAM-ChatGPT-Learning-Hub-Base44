@@ -2567,8 +2567,16 @@
       .side-link.active { background:#fff; color:var(--blue); box-shadow:0 6px 18px rgba(16,59,99,.08); }
       .side-icon { width:26px; height:26px; flex:0 0 26px; border-radius:9px; display:grid; place-items:center; background:#eef7ff; color:var(--blue); font-size:13px; }
       .hub-main { min-width:0; display:flex; flex-direction:column; }
-      .hub-main > .hero { order:-2; }
+      .hub-main > .hero { order:-3; }
+      .hub-main > #hub { order:-2; }
       .hub-main > .ask-hub { order:-1; }
+      .beginner-start { display:none; }
+      .home-quick-launch { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:4px 0 34px; }
+      .home-quick-launch button { border:1px solid rgba(16,59,99,.10); background:#fff; border-radius:18px; padding:15px 16px; text-align:left; box-shadow:0 8px 24px rgba(16,59,99,.06); cursor:pointer; transition:.18s ease; }
+      .home-quick-launch button:hover { transform:translateY(-2px); box-shadow:0 12px 28px rgba(16,59,99,.10); }
+      .home-quick-launch small { display:block; color:#7b8b98; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px; }
+      .home-quick-launch strong { display:block; color:var(--deep); font-size:14px; }
+      @media (max-width:760px){ .home-quick-launch { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; margin-bottom:24px; } .home-quick-launch button { padding:13px; border-radius:15px; } }
       .mobile-menu-btn { display:none; }
       .sidebar-backdrop { display:none; }
       .mobile-bottom-nav { display:none; }
@@ -2781,16 +2789,10 @@
           </p>
           <div class="hero-actions">
             <button class="btn primary" onclick="startBrandNew()">
-              I'm Brand New — Start Here
-            </button>
-            <button class="btn secondary" onclick="goTab('quiz')">
-              I Know a Little — Check My Level
+              Continue Learning
             </button>
             <button class="btn secondary" onclick="scrollToAskHub()">
-              I Need Help Right Now
-            </button>
-            <button class="btn secondary" onclick="goTab('asklibrary')">
-              I Know What I Want — Give Me the Prompt
+              Ask ChatGPT
             </button>
           </div>
           <div class="hero-note">
@@ -2833,15 +2835,18 @@
         </aside>
       </section>
 
+      <div class="home-quick-launch" aria-label="Quick access">
+        <button type="button" onclick="goTab('academy')"><small>Learn</small><strong>Learning Path</strong></button>
+        <button type="button" onclick="goTab('asklibrary')"><small>Create</small><strong>Prompt Library</strong></button>
+        <button type="button" onclick="goTab('business')"><small>Business</small><strong>Business Lab</strong></button>
+        <button type="button" onclick="goTab('finder')"><small>Help</small><strong>Which Tool Do I Use?</strong></button>
+      </div>
+
       <section id="hub">
         <div class="section-head">
           <div class="kicker">Your ChatGPT 2026 Learning Path</div>
-          <h2>One clear next step at a time.</h2>
-          <p>
-            Follow the 10-step beginner path in order. The labs and tools are still here,
-            but they support the learning path instead of making you figure out where to go.
-            Progress is saved locally in your browser.
-          </p>
+          <h2>Your learning path</h2>
+          <p>Pick up where you left off or choose the next step below. Your progress is saved in this browser.</p>
         </div>
 
         <details class="toolbox-details" id="toolboxDetails">
