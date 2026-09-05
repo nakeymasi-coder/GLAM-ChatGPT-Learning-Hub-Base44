@@ -2572,6 +2572,7 @@
       .mobile-menu-btn { display:none; }
       .sidebar-backdrop { display:none; }
       .mobile-bottom-nav { display:none; }
+      .admin-only-link { display:none; }
 
       @media (max-width:1100px){
         .hub-app-shell { display:block; }
@@ -2729,6 +2730,11 @@
           <button class="side-link" data-side-tab="quiz" type="button" onclick="goTab('quiz')"><span class="side-icon">Q</span>Skill Check</button>
           <button class="side-link" data-side-tab="assessment" type="button" onclick="goTab('assessment')"><span class="side-icon">✓</span>Final Assessment</button>
           <button class="side-link" data-side-tab="certificate" type="button" onclick="goTab('certificate')"><span class="side-icon">★</span>Certificate</button>
+        </div>
+
+        <div class="side-group admin-only-link" id="adminOwnerGroup">
+          <div class="side-label">Owner</div>
+          <button class="side-link" type="button" onclick="window.location.href='/admin'"><span class="side-icon">⚙</span>Admin Dashboard</button>
         </div>
       </aside>
       <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeHubSidebar()"></div>
@@ -9065,6 +9071,23 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         input.value=""; answer.classList.remove("show"); answer.innerHTML=""; askHubHistory.splice(0); status.textContent="Real-time guidance from the Learning Hub AI."; input.focus();
       });
 
+    </script>
+    <script>
+      (async function revealAdminDashboardLink(){
+        try {
+          const token = localStorage.getItem('base44_access_token') || localStorage.getItem('token');
+          const headers = token ? { Authorization: `Bearer ${token}` } : {};
+          const response = await fetch('/api/apps/6a9aedd33cd938f0f47b9ff7/entities/User/me', { headers, credentials:'include' });
+          if (!response.ok) return;
+          const user = await response.json();
+          if (user && user.role === 'admin') {
+            const ownerGroup = document.getElementById('adminOwnerGroup');
+            if (ownerGroup) ownerGroup.style.display = 'block';
+          }
+        } catch (error) {
+          console.debug('Admin navigation stays hidden.', error);
+        }
+      })();
     </script>
   </body>
 </html>
