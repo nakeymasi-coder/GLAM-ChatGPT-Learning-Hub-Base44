@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "note": {
+      "type": "string"
+    }
+  },
+  "required": [],
+  "name": "noop_footer_check3"
+}
