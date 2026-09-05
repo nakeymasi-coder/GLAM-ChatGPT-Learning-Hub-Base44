@@ -1063,22 +1063,32 @@
       footer {
         margin-top: 60px;
         border-radius: 30px;
-        background: var(--black);
+        background:
+          radial-gradient(circle at 12% 18%, rgba(22,143,234,.24), transparent 28%),
+          linear-gradient(145deg, #101418 0%, #171a1e 70%, #103b63 140%);
         color: #fff;
-        padding: 28px;
-        display: flex;
-        justify-content: space-between;
-        gap: 20px;
-        flex-wrap: wrap;
+        padding: 30px;
+        display: grid;
+        grid-template-columns: minmax(220px,.85fr) minmax(300px,1.15fr);
+        gap: 26px;
+        align-items: start;
+        overflow: hidden;
       }
-      footer p {
-        max-width: 690px;
-        color: #b7c1ca;
-        line-height: 1.6;
-        font-size: 13px;
-      }
-      footer small {
-        color: #8c99a5;
+      .glam-footer-brand { display:flex; flex-direction:column; gap:12px; }
+      .glam-footer-logo { width:min(290px,100%); height:auto; display:block; filter:drop-shadow(0 10px 26px rgba(22,143,234,.22)); }
+      .glam-footer-title { font-size:20px; font-weight:900; }
+      .glam-footer-copy { max-width:520px; color:#c4d2df; line-height:1.65; font-size:13px; margin:0; }
+      .glam-footer-email { color:#fff; font-size:12px; font-weight:800; text-decoration:none; }
+      .glam-footer-email:hover { color:#7fc7ff; }
+      .glam-footer-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:2px; }
+      .glam-footer-actions a { text-decoration:none; }
+      .glam-footer-links { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+      .glam-footer-link { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 13px; border:1px solid rgba(255,255,255,.12); border-radius:14px; color:#e9f4ff; text-decoration:none; background:rgba(255,255,255,.035); font-size:12px; font-weight:800; transition:.18s ease; }
+      .glam-footer-link:hover { transform:translateY(-1px); background:rgba(22,143,234,.13); border-color:rgba(127,199,255,.34); }
+      .glam-footer-tagline { grid-column:1/-1; display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; padding-top:18px; margin-top:2px; border-top:1px solid rgba(255,255,255,.10); color:#97a7b5; font-size:11px; line-height:1.5; }
+      @media (max-width:760px){
+        footer { grid-template-columns:1fr; padding:22px; border-radius:22px; }
+        .glam-footer-links { grid-template-columns:1fr; }
       }
 
       .modal-bg {
