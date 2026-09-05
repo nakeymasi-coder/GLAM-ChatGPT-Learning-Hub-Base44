@@ -1063,56 +1063,62 @@
       footer {
         position: relative;
         margin-top: 84px;
-        border-radius: 36px 36px 0 0;
-        background: linear-gradient(180deg,#ffffff 0%,#f7fbff 100%);
+        border-radius: 34px 34px 0 0;
+        background: rgba(255,255,255,.44);
         color: var(--ink);
-        padding: 0;
+        padding: 34px 24px 20px;
         overflow: hidden;
-        border: 1px solid rgba(16,59,99,.10);
-        box-shadow: 0 -18px 55px rgba(16,59,99,.08);
+        border: 1px solid rgba(255,255,255,.72);
+        border-bottom: 0;
+        box-shadow: 0 -18px 55px rgba(16,59,99,.07);
+        backdrop-filter: blur(22px) saturate(135%);
+        -webkit-backdrop-filter: blur(22px) saturate(135%);
       }
       footer::before {
         content:"";
         position:absolute;
-        inset:0 0 auto 0;
-        height:4px;
-        background:linear-gradient(90deg,#103b63 0%,#168fea 22%,#f7fbff 50%,#168fea 78%,#103b63 100%);
+        inset:0 8% auto 8%;
+        height:1px;
+        background:linear-gradient(90deg,transparent,#168fea 24%,rgba(255,255,255,.95) 50%,#168fea 76%,transparent);
       }
-      .glam-footer-cta { display:grid; grid-template-columns:1fr auto; gap:20px; align-items:center; padding:24px 30px; background:linear-gradient(135deg,#103b63 0%,#168fea 100%); color:#fff; }
-      .glam-footer-cta strong { display:block; font-size:22px; letter-spacing:-.03em; }
-      .glam-footer-cta span { display:block; margin-top:4px; color:#e7f4ff; font-size:12px; line-height:1.5; }
-      .glam-footer-cta-actions { display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-end; }
-      .glam-footer-cta .btn.primary { background:#fff; color:#103b63; box-shadow:none; }
-      .glam-footer-cta .btn.secondary { background:rgba(255,255,255,.12); color:#fff; border-color:rgba(255,255,255,.32); }
-      .glam-footer-top { display:grid; grid-template-columns:minmax(240px,.9fr) minmax(340px,1.1fr); gap:34px; padding:32px 30px 28px; align-items:start; }
-      .glam-footer-brand { display:flex; flex-direction:column; gap:12px; }
-      .glam-footer-logo-wrap { display:inline-flex; width:fit-content; max-width:100%; padding:0; border:0; background:transparent; box-shadow:none; }
-      .glam-footer-logo { width:min(260px,100%); height:auto; display:block; filter:drop-shadow(0 10px 22px rgba(22,143,234,.14)); }
-      .glam-footer-title { font-size:20px; font-weight:900; color:var(--deep); letter-spacing:-.02em; }
-      .glam-footer-copy { max-width:460px; color:var(--muted); line-height:1.7; font-size:13px; margin:0; }
-      .glam-footer-contact { display:flex; align-items:center; gap:8px; color:#657789; font-size:12px; }
-      .glam-footer-email { color:var(--deep); font-weight:800; text-decoration:none; }
+      .glam-footer-cta { display:flex; justify-content:center; padding:4px 0 18px; background:transparent; color:var(--ink); }
+      .glam-footer-cta > div:first-child { display:none; }
+      .glam-footer-cta-actions { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+      .glam-footer-cta .btn.primary { background:#fff; color:#103b63; border:1px solid rgba(16,59,99,.11); box-shadow:0 8px 24px rgba(16,59,99,.08); }
+      .glam-footer-cta .btn.secondary { background:rgba(255,255,255,.58); color:#103b63; border:1px solid rgba(16,59,99,.10); }
+      .glam-footer-top { display:flex; flex-direction:column; align-items:center; gap:20px; padding:0; }
+      .glam-footer-brand { display:flex; flex-direction:column; align-items:center; gap:10px; text-align:center; }
+      .glam-footer-logo-wrap { display:inline-flex; justify-content:center; width:100%; max-width:100%; padding:0; border:0; background:transparent; box-shadow:none; }
+      .glam-footer-logo { width:min(285px,82vw); height:auto; display:block; filter:drop-shadow(0 10px 24px rgba(22,143,234,.16)); }
+      .glam-footer-title { display:none; }
+      .glam-footer-copy { display:none; }
+      .glam-footer-contact { display:flex; align-items:center; justify-content:center; gap:7px; color:#6d7f90; font-size:11px; }
+      .glam-footer-email { color:#103b63; font-weight:800; text-decoration:none; }
       .glam-footer-email:hover { color:var(--blue); }
       .glam-footer-actions { display:none; }
-      .glam-footer-nav { padding:0; border:0; background:transparent; box-shadow:none; }
-      .glam-footer-nav-head { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:14px; }
-      .glam-footer-nav-head strong { font-size:15px; color:var(--deep); }
-      .glam-footer-nav-head span { color:#7b8c9d; font-size:10px; }
-      .glam-footer-links { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
-      .glam-footer-link { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 12px; border:1px solid rgba(16,59,99,.10); border-radius:12px; color:#20374c; text-decoration:none; background:#fff; font-size:11.5px; font-weight:800; transition:.18s ease; box-shadow:0 6px 18px rgba(16,59,99,.04); }
-      .glam-footer-link:hover { transform:translateY(-2px); color:var(--blue); border-color:rgba(22,143,234,.30); box-shadow:0 10px 24px rgba(16,59,99,.08); }
-      .glam-footer-bottom { display:flex; justify-content:space-between; gap:18px; flex-wrap:wrap; padding:14px 30px 16px; background:#f2f7fb; border-top:1px solid rgba(16,59,99,.08); color:#7a8a99; font-size:10.5px; line-height:1.5; }
-      .glam-footer-bottom strong { color:var(--deep); }
-      @media (max-width:900px){ .glam-footer-links { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+      .glam-footer-nav { padding:0; border:0; background:transparent; box-shadow:none; width:100%; text-align:center; }
+      .glam-footer-nav::before { content:"Let’s stay connected"; display:block; margin-bottom:12px; color:#728395; font-size:11px; }
+      .glam-footer-nav-head { display:none; }
+      .glam-footer-links { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
+      .glam-footer-link { width:44px; height:44px; padding:0; border:1px solid rgba(16,59,99,.12); border-radius:50%; color:#103b63; text-decoration:none; background:rgba(255,255,255,.46); font-size:0; font-weight:900; display:grid; place-items:center; transition:.18s ease; box-shadow:0 7px 18px rgba(16,59,99,.05); }
+      .glam-footer-link span { display:none; }
+      .glam-footer-link::before { font-size:11px; letter-spacing:-.02em; }
+      .glam-footer-link:nth-child(1)::before { content:"TT"; }
+      .glam-footer-link:nth-child(2)::before { content:"YT"; }
+      .glam-footer-link:nth-child(3)::before { content:"f"; font-size:17px; }
+      .glam-footer-link:nth-child(4)::before { content:"FB"; }
+      .glam-footer-link:nth-child(5)::before { content:"IG"; }
+      .glam-footer-link:nth-child(6)::before { content:"P"; font-size:16px; }
+      .glam-footer-link:hover { transform:translateY(-3px); color:#168fea; border-color:rgba(22,143,234,.32); background:rgba(255,255,255,.72); box-shadow:0 10px 24px rgba(16,59,99,.09); }
+      .glam-footer-bottom { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; margin-top:22px; padding:17px 12px 0; background:transparent; border-top:1px solid rgba(16,59,99,.08); color:#7d8c9a; font-size:10px; line-height:1.5; text-align:center; }
+      .glam-footer-bottom strong { color:#103b63; letter-spacing:.04em; }
       @media (max-width:760px){
-        footer { border-radius:26px 26px 0 0; }
-        .glam-footer-cta { grid-template-columns:1fr; padding:22px 20px; }
-        .glam-footer-cta-actions { justify-content:flex-start; }
-        .glam-footer-top { grid-template-columns:1fr; padding:26px 20px 22px; }
-        .glam-footer-links { grid-template-columns:1fr 1fr; }
-        .glam-footer-bottom { padding:14px 20px 16px; }
+        footer { border-radius:26px 26px 0 0; padding:28px 16px 18px; }
+        .glam-footer-cta { padding-bottom:16px; }
+        .glam-footer-cta-actions { width:100%; }
+        .glam-footer-cta .btn { flex:1 1 180px; }
+        .glam-footer-link { width:42px; height:42px; }
       }
-      @media (max-width:480px){ .glam-footer-links { grid-template-columns:1fr; } }
 
       .modal-bg {
         position: fixed;
