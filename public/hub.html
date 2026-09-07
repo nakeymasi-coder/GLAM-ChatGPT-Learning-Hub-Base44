@@ -7747,30 +7747,33 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         });
         return score;
       }
-      function recommendBusinessWorkflow() {
+      async function recommendBusinessWorkflow() {
         const goal = document.getElementById("businessGoal").value.trim();
+        const result = document.getElementById("businessRecommendation");
+        const button = document.getElementById("recommendWorkflow");
         if (!goal) {
           toast("Tell me what you're trying to accomplish first.");
           return;
         }
-        let ranked = biz
-          .map((w) => ({ w, score: scoreWorkflow(goal, w) }))
-          .sort((a, b) => b.score - a.score);
-        let best = ranked[0];
-        if (!best || best.score === 0) {
-          // Default based on broad intent clues.
-          if (/sell|offer|new|release|promot/i.test(goal))
-            best = { w: biz.find((x) => x.id === "launch"), score: 1 };
-          else if (/make|create|build/i.test(goal))
-            best = { w: biz.find((x) => x.id === "product"), score: 1 };
-          else best = { w: biz.find((x) => x.id === "content"), score: 1 };
-        }
-        const w = best.w;
-        document.getElementById("businessRecommendation").innerHTML = `
+
+        const workflowCatalog = biz.map(w => `${w.title}: ${w.desc}`).join("\n");
+        button.disabled = true;
+        button.textContent = "Choosing with AI…";
+        result.innerHTML = `<div class="ask-loading"><span class="ask-spinner"></span>Matching your goal to the best business workflow…</div>`;
+        try {
+          const data = await runHubBrain("feature_finder", `Choose the ONE best existing GLAM Business Lab workflow for my goal. Put the exact workflow title, exactly as written below, in bestFeature. Do not invent a new workflow. Understand the goal rather than keyword-matching.\n\nMY GOAL:\n${goal}\n\nAVAILABLE WORKFLOWS:\n${workflowCatalog}`);
+          const wanted = String(data.bestFeature || "").trim().toLowerCase();
+          let w = biz.find(x => x.title.toLowerCase() === wanted);
+          if (!w) w = biz.find(x => wanted.includes(x.title.toLowerCase()) || x.title.toLowerCase().includes(wanted));
+          if (!w) {
+            const ranked = biz.map(x => ({ w:x, score:scoreWorkflow(goal,x) })).sort((a,b)=>b.score-a.score);
+            w = ranked[0]?.w || biz[0];
+          }
+          result.innerHTML = `
    <div class="biz-result">
-     <div class="kicker">Recommended Workflow</div>
+     <div class="kicker">AI Recommended Workflow</div>
      <h3>${w.title}</h3>
-     <div class="biz-why"><strong>Why this fits:</strong> Your goal sounds closest to a ${w.title.toLowerCase()} because the work involves ${escapeAttr(w.desc.toLowerCase())}</div>
+     <div class="biz-why"><strong>Why this fits:</strong> ${askHubEscape(data.answer || data.whatYouNeed || w.desc)}</div>
      <div class="workflow-steps">${w.steps.map((s, i) => `<div class="workflow-step"><div class="step-num">${i + 1}</div><div><strong>${s[0]}</strong><span>${s[1]}</span></div></div>`).join("")}</div>
      <div class="card-actions" style="margin-top:13px">
        <button class="btn primary" onclick="startWorkflow('${w.id}')">Start This Workflow</button>
@@ -7778,6 +7781,12 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
        <button class="btn secondary" onclick="coachWorkflow('${w.id}')">Coach Me Through It</button>
      </div>
    </div>`;
+        } catch (error) {
+          result.innerHTML = `<div class="box"><h3>Couldn’t recommend a workflow</h3><p class="help">${askHubEscape(error.message)}</p></div>`;
+        } finally {
+          button.disabled = false;
+          button.textContent = "Recommend My Workflow";
+        }
       }
       document.getElementById("recommendWorkflow").onclick =
         recommendBusinessWorkflow;
