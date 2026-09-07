@@ -7664,44 +7664,41 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         toast("Learning progress reset.");
       };
 
-      document.getElementById("finderBtn").onclick = () => {
+      document.getElementById("finderBtn").onclick = async () => {
         const raw = document.getElementById("finderInput").value.trim();
+        const button = document.getElementById("finderBtn");
+        const result = document.getElementById("finderResult");
         if (!raw) {
           toast("Tell me what you're trying to do first.");
           return;
         }
-        const text = raw.toLowerCase();
-        let best = null,
-          score = 0;
-        finderRules.forEach((r) => {
-          const s = r.keys.reduce((n, k) => n + (text.includes(k) ? 1 : 0), 0);
-          if (s > score) {
-            score = s;
-            best = r;
-          }
-        });
-        if (!best)
-          best = {
-            feature: "Normal Chat + Clear Prompt",
-            why: "Nothing in your request clearly requires a specialized feature yet.",
-            steps:
-              "State the outcome → give useful context → define the format → refine in the same conversation.",
-            lesson: "basics",
-            prompt: `Help me accomplish this goal: ${raw}. First identify the simplest useful approach. Then give me the clearest next step. Do not add tools or complexity unless they materially help.`,
-          };
-        document.getElementById("finderResult").innerHTML = `
+
+        button.disabled = true;
+        button.textContent = "Finding the best fit…";
+        result.innerHTML = `<div class="ask-loading"><span class="ask-spinner"></span>Analyzing your goal with the Learning Hub AI…</div>`;
+        try {
+          const data = await runHubBrain("feature_finder", `Figure out the best ChatGPT feature or workflow for this goal. Do not keyword-match. Understand the actual task and verify current ChatGPT capability/availability when that matters.\n\nMY GOAL:\n${raw}`);
+          const steps = Array.isArray(data.nextSteps) ? data.nextSteps : [];
+          const lessonExists = data.lessonId && Array.isArray(lessons) && lessons.some(l => l.id === data.lessonId);
+          result.innerHTML = `
    <div class="result">
-     <div class="kicker">Best match</div><h3>${best.feature}</h3>
+     <div class="kicker">AI recommendation</div><h3>${askHubEscape(data.bestFeature || "Best fit")}</h3>
      <div class="result-grid">
-       <div class="result-item"><div class="label">Why</div><div class="value">${best.why}</div></div>
-       <div class="result-item"><div class="label">Do this</div><div class="value">${best.steps}</div></div>
+       <div class="result-item"><div class="label">Why</div><div class="value">${askHubEscape(data.answer || data.whatYouNeed || "")}</div></div>
+       <div class="result-item"><div class="label">Do this</div><div class="value"><ol>${steps.map(s => `<li>${askHubEscape(s)}</li>`).join("")}</ol></div></div>
      </div>
-     <div class="prompt"><button class="copy" onclick="copyText(document.getElementById('finderPrompt').innerText)">Copy</button><pre id="finderPrompt">${best.prompt}</pre></div>
-     <div class="card-actions" style="margin-top:12px"><button class="tiny-btn" onclick="openLesson('${best.lesson}')">Teach Me This Feature</button></div>
+     <div class="prompt"><button class="copy" onclick="copyText(document.getElementById('finderPrompt').innerText)">Copy</button><pre id="finderPrompt">${escapeAttr(data.copyPrompt || "")}</pre></div>
+     ${lessonExists ? `<div class="card-actions" style="margin-top:12px"><button class="tiny-btn" onclick="openLesson('${askHubEscape(data.lessonId)}')">Teach Me This Feature</button></div>` : ""}
    </div>`;
+        } catch (error) {
+          result.innerHTML = `<div class="box"><h3>Couldn’t make a recommendation</h3><p class="help">${askHubEscape(error.message)}</p></div>`;
+        } finally {
+          button.disabled = false;
+          button.textContent = "Find My Feature";
+        }
       };
 
-      document.getElementById("buildPrompt").onclick = () => {
+      document.getElementById("buildPrompt").onclick = async () => {
         const need = document.getElementById("promptNeed").value.trim();
         if (!need) {
           toast("Tell me what you need ChatGPT to do.");
@@ -7710,35 +7707,32 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         const type = document.getElementById("promptType").value;
         const audience = document.getElementById("audience").value.trim();
         const tone = document.getElementById("tone").value.trim();
-        const actions = {
-          create: "Create the finished result",
-          learn: "Teach me this clearly",
-          research: "Research this carefully",
-          analyze: "Analyze this and explain what matters",
-          plan: "Build a practical plan",
-          improve: "Improve the material I provide",
-        };
-        const prompt = `${actions[type]}.
+        const output = document.getElementById("coachOutput");
+        const button = document.getElementById("buildPrompt");
+        const typeLabels = {create:"create something",learn:"teach or explain something",research:"research something",analyze:"analyze something",plan:"build a plan",improve:"improve existing material"};
+        const request = `Transform my rough request into a genuinely stronger, complete, copy-ready prompt. Do not simply repeat, summarize, or lightly reword my input. Diagnose what is missing and add useful structure only where it improves the result. Preserve every important fact and constraint I gave you.\n\nTASK TYPE: ${typeLabels[type]}\nROUGH REQUEST:\n${need}${audience ? `\n\nAUDIENCE:\n${audience}` : ""}${tone ? `\n\nTONE / STYLE:\n${tone}` : ""}\n\nIf this depends on current facts, current platform behavior, policies, capabilities, pricing, or other changing information, verify it before writing the final prompt.`;
 
-My goal:
-${need}
-
-${audience ? `Audience:\n${audience}\n\n` : ""}${tone ? `Tone/style:\n${tone}\n\n` : ""}Requirements:
-- Use the facts and constraints I provide; do not invent important details.
-- Keep the result practical and organized.
-- Choose the clearest useful format for the task unless I specify one.
-- If something is uncertain or depends on current information, say so and use the appropriate source/tool when available.
-- Give me the finished result, not just generic advice.`;
-
-        document.getElementById("coachOutput").innerHTML = `
-   <div class="label">Your improved prompt</div>
-   <div class="prompt"><button class="copy" onclick="copyText(document.getElementById('coachPrompt').innerText)">Copy</button><pre id="coachPrompt">${prompt}</pre></div>
+        button.disabled = true;
+        button.textContent = "Improving with AI…";
+        output.innerHTML = `<div class="ask-loading"><span class="ask-spinner"></span>Rebuilding your prompt with the Learning Hub AI…</div>`;
+        try {
+          const data = await runHubBrain("prompt_coach", request);
+          const prompt = data.copyPrompt || "";
+          if (!prompt) throw new Error("The AI did not return an improved prompt.");
+          output.innerHTML = `
+   <div class="label">Your AI-improved prompt</div>
+   <div class="prompt"><button class="copy" onclick="copyText(document.getElementById('coachPrompt').innerText)">Copy</button><pre id="coachPrompt">${escapeAttr(prompt)}</pre></div>
    <div style="margin-top:14px">
-     <strong>Why it works</strong>
-     <p class="help">It gives ChatGPT an outcome, context, audience/style when relevant, guardrails against invented details, and a clear instruction to deliver the finished result.</p>
-     <strong>What you did NOT need</strong>
-     <p class="help">Fake expert titles, giant walls of rules, “magic words,” or 40 unnecessary constraints.</p>
+     <strong>What the AI improved</strong>
+     <p class="help">${askHubEscape(data.answer || "The Learning Hub AI rebuilt your rough request into a more complete prompt.")}</p>
+     ${data.followUp ? `<strong>One thing to consider</strong><p class="help">${askHubEscape(data.followUp)}</p>` : ""}
    </div>`;
+        } catch (error) {
+          output.innerHTML = `<div class="box"><h3>Couldn’t improve the prompt</h3><p class="help">${askHubEscape(error.message)}</p></div>`;
+        } finally {
+          button.disabled = false;
+          button.textContent = "Build My Prompt";
+        }
       };
 
       function scoreWorkflow(goal, w) {
