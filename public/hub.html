@@ -7785,7 +7785,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           result.innerHTML = `<div class="box"><h3>Couldn’t recommend a workflow</h3><p class="help">${askHubEscape(error.message)}</p></div>`;
         } finally {
           button.disabled = false;
-          button.textContent = "Recommend My Workflow";
+          button.textContent = "Find My Workflow";
         }
       }
       document.getElementById("recommendWorkflow").onclick =
