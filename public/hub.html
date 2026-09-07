@@ -2718,7 +2718,7 @@
           <div class="side-label">Start Here</div>
           <button class="side-link" type="button" onclick="scrollHubHome()"><span class="side-icon">⌂</span>Home</button>
           <button class="side-link" type="button" onclick="openHubTutorial()"><span class="side-icon">?</span>How to Use This Hub</button>
-          <button class="side-link" type="button" onclick="scrollToAskHub()"><span class="side-icon">✦</span>GLAM Guide</button>
+          <button class="side-link" type="button" onclick="scrollToAskHub()"><span class="side-icon">✦</span>Prompt Concierge</button>
         </div>
 
         <div class="side-group">
@@ -2769,7 +2769,7 @@
         <div class="ask-hub-inner">
           <div class="ask-hub-copy">
             <div class="ask-badge"><span class="ask-badge-dot"></span> Real-time AI help</div>
-            <h2 id="askChatgptTitle">Ask the GLAM Guide. <span>Start where you are.</span></h2>
+            <h2 id="askChatgptTitle">Prompt Concierge. <span>Start where you are.</span></h2>
             <p>Don't know which feature to use, what to type, or where to begin? Tell the Learning Hub what you're trying to do. It will help you choose the best feature, give you simple next steps, write a starter prompt, and point you to the right lesson.</p>
             <div class="ask-quick" aria-label="Quick question starters">
               <button type="button" data-ask-starter="I don't know where to start. Help me figure out what I need to do first.">I don't know where to start</button>
@@ -2808,7 +2808,7 @@
               Continue Learning
             </button>
             <button class="btn secondary" onclick="scrollToAskHub()">
-              GLAM Guide
+              Prompt Concierge
             </button>
           </div>
           <div class="hero-note">
@@ -3053,7 +3053,7 @@
               <section class="box">
                 <div class="kicker">I really don't know what to call it</div>
                 <h3>Describe the idea like you would say it out loud.</h3>
-                <p class="help">You do not need the words HTML, PWA, automation, app, generator, API, or workflow. Tell the Hub the outcome. The GLAM Guide will help name it, ask the missing questions, and give you a copy-ready prompt.</p>
+                <p class="help">You do not need the words HTML, PWA, automation, app, generator, API, or workflow. Tell the Hub the outcome. The Prompt Concierge will help name it, ask the missing questions, and give you a copy-ready prompt.</p>
                 <textarea id="askLibUnknown" placeholder="Example: I want something where customers can click choices and it creates the words they need at the end, but I don't know what kind of thing that is."></textarea>
                 <div class="card-actions" style="margin-top:12px">
                   <button class="btn primary" type="button" onclick="sendUnknownToAskHub()">Help Me Figure It Out</button>
@@ -3998,7 +3998,7 @@
           <div class="tutorial-step"><span>2</span><div><strong>Follow the 10-step roadmap</strong><p>Work left to right. You do not need to hunt through the Tool Library.</p></div></div>
           <div class="tutorial-step"><span>3</span><div><strong>Open one lesson</strong><p>Use Learn It → Show Me → Try It → Quiz Me. Then mark the lesson complete.</p></div></div>
           <div class="tutorial-step"><span>4</span><div><strong>Use Continue Learning</strong><p>The Hub will point you to the next lesson in the beginner order.</p></div></div>
-          <div class="tutorial-step"><span>5</span><div><strong>Use the GLAM Guide when you're stuck</strong><p>Tell the guide what you're trying to do. It will recommend the right feature, prompt, and lesson.</p></div></div>
+          <div class="tutorial-step"><span>5</span><div><strong>Use the Prompt Concierge when you're stuck</strong><p>Tell it what you're trying to do. It will recommend the right feature, prompt, and lesson.</p></div></div>
           <div class="tutorial-step"><span>6</span><div><strong>Open the Tool Library only when needed</strong><p>Prompt Coach, Business Lab, builders, research tools, glossary, and other labs are support tools—not the main learning path.</p></div></div>
         </div>
         <div class="tutorial-actions">
@@ -7098,7 +7098,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         const needsQuestions = goal === "unsure" || platform === "unsure";
         const prompt = `I want to create a ${goalLabels[goal]}. Here is what I mean in plain language:\n\n${describe}\n\n${audience ? `It is for: ${audience}.\n` : ""}${must ? `It must include or preserve: ${must}.\n` : ""}${avoid ? `Do not: ${avoid}.\n` : ""}${platformLines[platform]}\n\n${needsQuestions ? "Before creating anything, ask me up to 5 simple clarifying questions, one at a time, because I may not know the right terminology. Then tell me what this kind of thing is called, recommend the simplest approach, and give me the final copy-ready build prompt." : "If an important decision is missing, ask only the questions you truly need. Then restate the plan briefly and create it without adding unnecessary complexity."}`;
         const result = document.getElementById("askLibBuiltResult");
-        result.innerHTML = `<div class="formula-output"><button class="copy" type="button" onclick="copyText(document.getElementById('askLibBuiltPrompt').innerText)">Copy</button><pre id="askLibBuiltPrompt">${escapeAttr(prompt)}</pre></div><div class="card-actions" style="margin-top:10px"><button class="tiny-btn" type="button" onclick="document.getElementById('askChatgptInput').value=document.getElementById('askLibBuiltPrompt').innerText; scrollToAskHub();">Take This to GLAM Guide</button></div>`;
+        result.innerHTML = `<div class="formula-output"><button class="copy" type="button" onclick="copyText(document.getElementById('askLibBuiltPrompt').innerText)">Copy</button><pre id="askLibBuiltPrompt">${escapeAttr(prompt)}</pre></div><div class="card-actions" style="margin-top:10px"><button class="tiny-btn" type="button" onclick="document.getElementById('askChatgptInput').value=document.getElementById('askLibBuiltPrompt').innerText; scrollToAskHub();">Take This to Prompt Concierge</button></div>`;
       }
 
       function sendUnknownToAskHub() {
@@ -9078,7 +9078,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           status.textContent="Ask a follow-up anytime — this remembers the last few messages in this session.";
           input.value="";
         } catch(error) {
-          answerBox.innerHTML=`<div class="ask-answer-card"><small>Couldn't connect</small><p>${askHubEscape(error.message||"The GLAM Guide is temporarily unavailable.")}</p><p style="margin-top:8px;color:var(--muted);font-size:12px;">This app uses your existing protected AI backend. Try again in a moment if the service is busy.</p></div>`;
+          answerBox.innerHTML=`<div class="ask-answer-card"><small>Couldn't connect</small><p>${askHubEscape(error.message||"The Prompt Concierge is temporarily unavailable.")}</p><p style="margin-top:8px;color:var(--muted);font-size:12px;">This app uses your existing protected AI backend. Try again in a moment if the service is busy.</p></div>`;
           status.textContent="Your question is still in the box so you can try again.";
         } finally { button.disabled=false; button.textContent="Ask AI"; }
       }
