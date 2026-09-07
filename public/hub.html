@@ -7079,26 +7079,42 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         </article>`).join("") || `<div class="box"><h3>No prompts found</h3><p class="help">Try another word such as app, generator, website, research, listing, class, fix, or organize.</p></div>`;
       }
 
-      function buildAskLibraryPrompt() {
+      async function runHubBrain(mode, question) {
+        const res = await fetch("https://chatgpt-learning-hub.netlify.app/.netlify/functions/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ mode, question, history: [], catalog: askHubCatalog() })
+        });
+        let data;
+        try { data = await res.json(); }
+        catch { throw new Error("The Learning Hub AI returned an unreadable response."); }
+        if (!res.ok) throw new Error(data.error || "The Learning Hub AI could not answer right now.");
+        return data;
+      }
+
+      async function buildAskLibraryPrompt() {
         const goal = document.getElementById("askLibGoal")?.value || "unsure";
         const platform = document.getElementById("askLibPlatform")?.value || "unsure";
-        const describe = document.getElementById("askLibDescribe")?.value.trim() || "[DESCRIBE WHAT YOU WANT IT TO DO]";
+        const describe = document.getElementById("askLibDescribe")?.value.trim();
         const audience = document.getElementById("askLibAudience")?.value.trim();
         const must = document.getElementById("askLibMust")?.value.trim();
         const avoid = document.getElementById("askLibAvoid")?.value.trim();
-        const goalLabels = {generator:"generator or interactive tool",app:"app",website:"website or landing page",graphic:"graphic or image",product:"digital product or resource",listing:"product listing",curriculum:"lesson, curriculum, or workshop",research:"research project",content:"content piece",fix:"fix or improvement",organize:"organization system",unsure:"thing I do not know the name for"};
-        const platformLines = {
-          chatgpt:"Choose the simplest ChatGPT method or feature that fits this goal.",
-          html:"Build it as one self-contained HTML/CSS/JS file that is mobile-friendly and ready to open in a browser.",
-          base44:"Build it in Base44 with a simple app flow and only the features needed for the goal.",
-          sites:"Use ChatGPT Sites/Work when appropriate and keep the site flow simple and mobile-friendly.",
-          image:"Use ChatGPT image generation and give precise visual direction.",
-          unsure:"I do not know the best platform. Recommend the easiest suitable option before building."
-        };
-        const needsQuestions = goal === "unsure" || platform === "unsure";
-        const prompt = `I want to create a ${goalLabels[goal]}. Here is what I mean in plain language:\n\n${describe}\n\n${audience ? `It is for: ${audience}.\n` : ""}${must ? `It must include or preserve: ${must}.\n` : ""}${avoid ? `Do not: ${avoid}.\n` : ""}${platformLines[platform]}\n\n${needsQuestions ? "Before creating anything, ask me up to 5 simple clarifying questions, one at a time, because I may not know the right terminology. Then tell me what this kind of thing is called, recommend the simplest approach, and give me the final copy-ready build prompt." : "If an important decision is missing, ask only the questions you truly need. Then restate the plan briefly and create it without adding unnecessary complexity."}`;
         const result = document.getElementById("askLibBuiltResult");
-        result.innerHTML = `<div class="formula-output"><button class="copy" type="button" onclick="copyText(document.getElementById('askLibBuiltPrompt').innerText)">Copy</button><pre id="askLibBuiltPrompt">${escapeAttr(prompt)}</pre></div><div class="card-actions" style="margin-top:10px"><button class="tiny-btn" type="button" onclick="document.getElementById('askChatgptInput').value=document.getElementById('askLibBuiltPrompt').innerText; scrollToAskHub();">Take This to Prompt Concierge</button></div>`;
+        if (!describe) { toast("Tell me what you want it to do first."); return; }
+
+        const goalLabels = {generator:"generator or interactive tool",app:"app",website:"website or landing page",graphic:"graphic or image",product:"product or resource",listing:"product listing",curriculum:"lesson, curriculum, workshop, or teaching guide",research:"research project",content:"content, captions, emails, posts, or scripts",fix:"fix, debug, cleanup, or improvement",organize:"organization system or workflow",unsure:"something I do not know the correct name for"};
+        const platformLabels = {chatgpt:"ChatGPT — choose the best method",html:"self-contained HTML/CSS/JS",base44:"Base44",sites:"ChatGPT Sites / Work",image:"ChatGPT image generation",unsure:"I do not know — recommend the easiest suitable option"};
+        const request = `Rebuild my rough idea into a strong, complete, copy-ready prompt. Do not just repeat or lightly reword what I wrote. Understand what I am actually trying to accomplish and improve the structure, instructions, quality controls, and deliverables.\n\nTYPE OF THING: ${goalLabels[goal]}\nPREFERRED PLATFORM: ${platformLabels[platform]}\nMY ROUGH WORDING:\n${describe}\n${audience ? `\nAUDIENCE:\n${audience}` : ""}${must ? `\n\nMUST INCLUDE OR PRESERVE:\n${must}` : ""}${avoid ? `\n\nDO NOT:\n${avoid}` : ""}\n\nIf current platform capabilities, policies, features, pricing, or other changing information matters, verify it before building the prompt. Preserve my facts and constraints. Do not invent important details.`;
+
+        result.innerHTML = `<div class="ask-loading"><span class="ask-spinner"></span>Building a stronger prompt with the Learning Hub AI…</div>`;
+        try {
+          const data = await runHubBrain("prompt_builder", request);
+          const prompt = data.copyPrompt || "";
+          if (!prompt) throw new Error("The AI did not return a finished prompt.");
+          result.innerHTML = `<div class="box" style="margin-top:14px"><div class="kicker">AI rebuilt prompt</div><p class="help">${askHubEscape(data.answer || "I rebuilt your rough wording into a stronger prompt.")}</p></div><div class="formula-output"><button class="copy" type="button" onclick="copyText(document.getElementById('askLibBuiltPrompt').innerText)">Copy</button><pre id="askLibBuiltPrompt">${escapeAttr(prompt)}</pre></div><div class="card-actions" style="margin-top:10px"><button class="tiny-btn" type="button" onclick="document.getElementById('askChatgptInput').value=document.getElementById('askLibBuiltPrompt').innerText; scrollToAskHub();">Take This to Prompt Concierge</button></div>`;
+        } catch (error) {
+          result.innerHTML = `<div class="box"><h3>Couldn’t build the prompt</h3><p class="help">${askHubEscape(error.message)}</p></div>`;
+        }
       }
 
       function sendUnknownToAskHub() {
