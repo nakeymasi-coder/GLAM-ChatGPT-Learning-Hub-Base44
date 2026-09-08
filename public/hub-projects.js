@@ -1,0 +1,501 @@
+/* =========================================================================
+   Prompt Concierge — project system
+   Keeps ONE ongoing project with ONE master prompt that grows over the
+   conversation. Saved projects live in the Playbook with search, category
+   filter, and sorting. Loaded after hub.html inline scripts so it can reuse
+   askHubHistory, playbook, renderPlaybook, toast, copyText, openLesson, lessons.
+   ========================================================================= */
+(function () {
+  "use strict";
+
+  var PROJECT_CATEGORIES = [
+    "App / Generator", "Business", "Content Creation", "Course / Workshop",
+    "Images / Graphics", "Marketing", "Mockups", "Product Listing",
+    "Prompts", "Research", "Website", "Other"
+  ];
+  var ACTIVE_KEY = "glamConciergeProject";
+  var SAVED_KEY = "glamSavedProjects";
+
+  var project = null;       // active in-progress project
+  var savedProjects = [];   // saved project list
+
+  function esc(v) {
+    return String(v == null ? "" : v)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+  function uid() { return "proj-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8); }
+
+  function loadSaved() { try { savedProjects = JSON.parse(localStorage.getItem(SAVED_KEY) || "[]") || []; } catch (e) { savedProjects = []; } }
+  function persistSaved() { try { localStorage.setItem(SAVED_KEY, JSON.stringify(savedProjects)); } catch (e) {} }
+  function loadActive() { try { project = JSON.parse(localStorage.getItem(ACTIVE_KEY) || "null"); } catch (e) { project = null; } }
+  function persistActive() {
+    try {
+      if (project) localStorage.setItem(ACTIVE_KEY, JSON.stringify(project));
+      else localStorage.removeItem(ACTIVE_KEY);
+    } catch (e) {}
+  }
+
+  function current() { return project; }
+
+  function fmtDate(iso) {
+    if (!iso) return "—";
+    try { return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }); }
+    catch (e) { return iso; }
+  }
+
+  function statusClass(s) {
+    s = (s || "").toLowerCase();
+    if (s.indexOf("ready") > -1) return "ready";
+    if (s.indexOf("need") > -1) return "needs";
+    return "building";
+  }
+
+  function statusMessage(s) {
+    s = (s || "").toLowerCase();
+    if (s.indexOf("ready") > -1) return "Your master prompt is ready to use, but we can still improve it if you want.";
+    if (s.indexOf("need") > -1) return "Tell me a little more so I can finish your master prompt.";
+    return "Your master prompt is taking shape. Ask a follow-up to keep building.";
+  }
+
+  function pickCategory(s) {
+    if (!s) return "Other";
+    var match = PROJECT_CATEGORIES.find(function (c) { return c.toLowerCase() === String(s).toLowerCase(); });
+    if (match) return match;
+    match = PROJECT_CATEGORIES.find(function (c) { return c.toLowerCase().indexOf(String(s).toLowerCase()) > -1; });
+    return match || "Other";
+  }
+
+  /* ---- beginner walkthrough ---- */
+  function walkthrough(ws, reason) {
+    var isWork = String(ws || "").toLowerCase().indexOf("work") > -1;
+    var place = isWork ? "Work" : "ChatGPT chat";
+    return [
+      '<div class="walkthrough">',
+      '<div class="kicker">How to use it</div>',
+      '<div class="walk-row"><strong>Where to paste it:</strong> Paste your Master Prompt into a new ChatGPT chat.</div>',
+      '<div class="walk-row"><strong>Which one to use:</strong> ' + esc(ws || "ChatGPT chat") + '.</div>',
+      '<div class="walk-row"><strong>Normal chat vs ChatGPT Work:</strong> Normal chat is one conversation for quick, one-off tasks. ChatGPT Work is a workspace that keeps a project together — its own chats, files, images, and tools in one place so you can come back to it anytime.</div>',
+      '<div class="walk-row"><strong>Why this fits:</strong> ' + esc(reason || "It keeps everything for this project organized in one place.") + '</div>',
+      '<div class="walk-steps"><strong>Next steps:</strong><ol>',
+      '<li>Open ChatGPT.</li>',
+      '<li>Choose ' + esc(ws || "ChatGPT chat") + (isWork ? ' and open your Work space.' : '.') + '</li>',
+      (isWork ? '<li>Start a new project in Work.</li>' : '<li>Start a new chat.</li>'),
+      '<li>Paste your Master Prompt.</li>',
+      '<li>Add any files or images the project needs.</li>',
+      '<li>Review the first result.</li>',
+      '<li>Come back here if you want to improve the prompt.</li>',
+      '</ol></div>',
+      '<div class="you-are-here"><span class="yah-label">You are here:</span> Your project is ready → Best place to use it: ' + place + ' → Next step: Open ' + place + ' and paste your master prompt.</div>',
+      '</div>'
+    ].join("");
+  }
+
+  /* ---- main render: called from askLearningHub after each AI response ---- */
+  function render(data, question) {
+    if (!data) return;
+    var answer = document.getElementById("askChatgptAnswer");
+    var status = document.getElementById("askChatgptStatus");
+    if (!answer) return;
+
+    var masterPrompt = data.masterPrompt || data.copyPrompt || "";
+    var isNew = !project;
+    var prevSavedId = project ? project.savedProjectId : null;
+
+    if (isNew) {
+      project = {
+        id: uid(),
+        name: (data.projectNameSuggestion || "Untitled project").slice(0, 80),
+        category: pickCategory(data.categorySuggestion),
+        masterPrompt: masterPrompt,
+        summary: data.projectSummary || "",
+        recommendedWorkspace: data.recommendedWorkspace || "ChatGPT chat",
+        workspaceReason: data.workspaceReason || "",
+        status: data.projectStatus || "Building",
+        history: [{ role: "user", content: question }, { role: "assistant", content: data.answer || "" }],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        savedProjectId: null
+      };
+    } else {
+      project.masterPrompt = masterPrompt || project.masterPrompt;
+      project.summary = data.projectSummary || project.summary;
+      project.recommendedWorkspace = data.recommendedWorkspace || project.recommendedWorkspace;
+      project.workspaceReason = data.workspaceReason || project.workspaceReason;
+      project.status = data.projectStatus || project.status;
+      if (data.projectNameSuggestion && !project.userNamed) project.name = data.projectNameSuggestion.slice(0, 80);
+      if (data.categorySuggestion && !project.userCategorized) project.category = pickCategory(data.categorySuggestion);
+      project.history.push({ role: "user", content: question }, { role: "assistant", content: data.answer || "" });
+      if (project.history.length > 40) project.history.splice(0, project.history.length - 40);
+      project.updatedAt = new Date().toISOString();
+      project.savedProjectId = prevSavedId;
+    }
+    persistActive();
+
+    // if already saved, keep the saved record in sync as the master prompt grows
+    if (project.savedProjectId) {
+      var sp = savedProjects.find(function (p) { return p.id === project.savedProjectId; });
+      if (sp) {
+        sp.masterPrompt = project.masterPrompt;
+        sp.summary = project.summary;
+        sp.recommendedWorkspace = project.recommendedWorkspace;
+        sp.status = project.status;
+        sp.history = project.history;
+        sp.updatedAt = project.updatedAt;
+        persistSaved();
+      }
+    }
+
+    paint(answer, data);
+    if (status) status.textContent = statusMessage(project.status);
+    answer.classList.add("show");
+  }
+
+  function paint(answer, data) {
+    var p = project;
+    var steps = Array.isArray(data.nextSteps) ? data.nextSteps : [];
+    var lessonExists = data.lessonId && Array.isArray(window.lessons) && lessons.some(function (l) { return l.id === data.lessonId; });
+    var saved = !!(p && p.savedProjectId);
+
+    answer.innerHTML =
+      '<div class="kicker">Your AI guide</div>' +
+      '<h3 style="margin:5px 0 7px;font-size:25px;letter-spacing:-.035em;">' + esc(data.answer || "Here's where I'd start.") + '</h3>' +
+      '<div class="ask-answer-grid">' +
+        '<div class="ask-answer-card"><small>What you\'re trying to do</small><p>' + esc(data.whatYouNeed || "") + '</p></div>' +
+        '<div class="ask-answer-card"><small>Best ChatGPT feature</small><p>' + esc(data.bestFeature || "") + '</p></div>' +
+        '<div class="ask-answer-card"><small>Your next steps</small><ol>' + steps.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join("") + '</ol></div>' +
+        '<div class="ask-answer-card"><small>Ask me next</small><p>' + esc(data.followUp || "Tell me what part you want help with next.") + '</p></div>' +
+      '</div>' +
+      '<div class="project-status-line"><span class="project-status-badge ' + statusClass(p && p.status) + '">' + esc((p && p.status) || "Building") + '</span><span class="project-status-note">' + esc(statusMessage(p && p.status)) + '</span></div>' +
+      '<div class="master-prompt-section">' +
+        '<div class="master-prompt-head"><small>Master Prompt</small><span class="mp-name">' + esc((p && p.name) || "Untitled project") + '</span><span class="mp-cat">' + esc((p && p.category) || "Other") + '</span></div>' +
+        '<div class="ask-copy-box" id="masterPromptBox">' + esc((p && p.masterPrompt) || "") + '</div>' +
+        '<div class="ask-recommend">' +
+          '<button class="btn secondary" type="button" onclick="ConciergeProjects.copyMaster()">Copy Master Prompt</button>' +
+          '<button class="btn primary" type="button" id="saveProjectBtn" onclick="ConciergeProjects.toggleSave()">' + (saved ? "Update Saved Project" : "Save Project") + '</button>' +
+          '<button class="btn secondary" type="button" onclick="ConciergeProjects.confirmReset()">Start New Project</button>' +
+        '</div>' +
+        '<div class="project-save-fields" id="projectSaveFields" style="display:none">' +
+          '<input type="text" id="projectNameInput" placeholder="Project name" maxlength="80">' +
+          '<select id="projectCategorySelect">' + PROJECT_CATEGORIES.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join("") + '</select>' +
+          '<button class="btn primary" type="button" onclick="ConciergeProjects.confirmSave()">Save</button>' +
+          '<button class="btn secondary" type="button" onclick="ConciergeProjects.toggleSave()">Cancel</button>' +
+        '</div>' +
+      '</div>' +
+      walkthrough(p && p.recommendedWorkspace, p && p.workspaceReason) +
+      (lessonExists ? '<div class="ask-recommend" style="margin-top:10px"><button class="btn primary" type="button" onclick="openLesson(\'' + esc(data.lessonId) + '\')">Open lesson: ' + esc(data.lessonTitle) + '</button></div>' : "");
+
+    var nameInput = document.getElementById("projectNameInput");
+    var catSelect = document.getElementById("projectCategorySelect");
+    if (nameInput && p) nameInput.value = p.name || "";
+    if (catSelect && p) catSelect.value = p.category || "Other";
+  }
+
+  function copyMaster() { var box = document.getElementById("masterPromptBox"); if (box) copyText(box.innerText); }
+
+  function toggleSave() {
+    if (project && project.savedProjectId) { updateSaved(); return; }
+    var fields = document.getElementById("projectSaveFields");
+    if (!fields) return;
+    fields.style.display = (fields.style.display === "none" || !fields.style.display) ? "flex" : "none";
+    if (fields.style.display === "flex") { var n = document.getElementById("projectNameInput"); if (n) n.focus(); }
+  }
+
+  function confirmSave() {
+    var nameInput = document.getElementById("projectNameInput");
+    var catSelect = document.getElementById("projectCategorySelect");
+    if (!nameInput || !nameInput.value.trim()) { if (nameInput) nameInput.focus(); toast("Give your project a name first."); return; }
+    if (!project) return;
+    project.name = nameInput.value.trim();
+    project.category = catSelect ? catSelect.value : "Other";
+    project.userNamed = true;
+    project.userCategorized = true;
+    project.savedProjectId = project.id;
+    project.updatedAt = new Date().toISOString();
+    var rec = {
+      id: project.id, name: project.name, category: project.category,
+      masterPrompt: project.masterPrompt, summary: project.summary,
+      recommendedWorkspace: project.recommendedWorkspace, status: project.status,
+      history: project.history, createdAt: project.createdAt, updatedAt: project.updatedAt,
+      source: "Prompt Concierge"
+    };
+    var idx = savedProjects.findIndex(function (p) { return p.id === project.id; });
+    if (idx > -1) savedProjects[idx] = rec; else savedProjects.unshift(rec);
+    persistSaved();
+    toast("Project saved to your Playbook.");
+    var fields = document.getElementById("projectSaveFields"); if (fields) fields.style.display = "none";
+    var btn = document.getElementById("saveProjectBtn"); if (btn) btn.textContent = "Update Saved Project";
+    renderPlaybook();
+  }
+
+  function updateSaved() {
+    if (!project || !project.savedProjectId) { toggleSave(); return; }
+    project.updatedAt = new Date().toISOString();
+    var idx = savedProjects.findIndex(function (p) { return p.id === project.savedProjectId; });
+    if (idx > -1) {
+      savedProjects[idx] = {
+        id: project.savedProjectId, name: project.name, category: project.category,
+        masterPrompt: project.masterPrompt, summary: project.summary,
+        recommendedWorkspace: project.recommendedWorkspace, status: project.status,
+        history: project.history, createdAt: savedProjects[idx].createdAt || project.createdAt,
+        updatedAt: project.updatedAt, source: "Prompt Concierge"
+      };
+      persistSaved();
+      toast("Saved project updated.");
+      renderPlaybook();
+    } else {
+      project.savedProjectId = null;
+      toggleSave();
+    }
+  }
+
+  function reset() {
+    project = null;
+    persistActive();
+    var answer = document.getElementById("askChatgptAnswer");
+    var status = document.getElementById("askChatgptStatus");
+    var input = document.getElementById("askChatgptInput");
+    if (input) input.value = "";
+    if (answer) { answer.classList.remove("show"); answer.innerHTML = ""; }
+    if (status) status.textContent = "New project started. Tell me what you're trying to do.";
+    try { askHubHistory.splice(0); } catch (e) {}
+    if (input) input.focus();
+  }
+
+  function confirmReset() {
+    if (!project) { reset(); return; }
+    if (project.savedProjectId) {
+      reset();
+      toast("Started a new project. Your saved project is still in your Playbook.");
+    } else if (project.masterPrompt) {
+      if (confirm("Start a new project? This clears the current master prompt (not yet saved).")) reset();
+    } else {
+      reset();
+    }
+  }
+
+  /* ---- Playbook rendering (saved projects + saved prompts) ---- */
+  function renderPlaybook() {
+    var list = document.getElementById("playbookList");
+    if (list) {
+      var playbook = window.playbook || [];
+      if (!playbook.length) {
+        list.innerHTML = '<div class="empty-state">No saved prompts yet. Open a tool and tap <strong>Save to Playbook</strong>.</div>';
+      } else {
+        list.innerHTML = playbook.map(function (x) {
+          return '<div class="saved-item"><strong>' + esc(x.title) + '</strong><pre></pre><div class="saved-actions">' +
+            '<button class="tiny-btn" data-copy="' + esc(x.id) + '">Copy</button>' +
+            '<button class="tiny-btn" onclick="removePlaybook(\'' + esc(x.id) + '\')">Remove</button></div></div>';
+        }).join("");
+        Array.prototype.forEach.call(list.querySelectorAll(".saved-item"), function (el, i) { el.querySelector("pre").textContent = playbook[i].content; });
+        list.querySelectorAll("[data-copy]").forEach(function (btn) {
+          btn.onclick = function () { var item = playbook.find(function (x) { return x.id === btn.dataset.copy; }); if (item) copyText(item.content); };
+        });
+      }
+    }
+    var notes = document.getElementById("playbookNotes");
+    if (notes) notes.value = localStorage.getItem("glamPlaybookNotes") || "";
+    renderProjects();
+  }
+
+  function renderProjects() {
+    var container = document.getElementById("projectList");
+    if (!container) return;
+    var searchEl = document.getElementById("projectSearch");
+    var catEl = document.getElementById("projectCategoryFilter");
+    var sortEl = document.getElementById("projectSort");
+    var search = (searchEl ? searchEl.value : "").trim().toLowerCase();
+    var cat = catEl ? catEl.value : "all";
+    var sort = sortEl ? sortEl.value : "newest";
+
+    var items = savedProjects.slice();
+    if (search) {
+      items = items.filter(function (p) {
+        return (p.name || "").toLowerCase().indexOf(search) > -1 ||
+               (p.summary || "").toLowerCase().indexOf(search) > -1 ||
+               (p.masterPrompt || "").toLowerCase().indexOf(search) > -1 ||
+               (p.category || "").toLowerCase().indexOf(search) > -1;
+      });
+    }
+    if (cat && cat !== "all") items = items.filter(function (p) { return (p.category || "Other") === cat; });
+    items.sort(function (a, b) {
+      switch (sort) {
+        case "oldest": return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+        case "name-az": return (a.name || "").localeCompare(b.name || "");
+        case "name-za": return (b.name || "").localeCompare(a.name || "");
+        case "updated": return new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0);
+        case "newest":
+        default: return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+      }
+    });
+
+    if (!items.length) {
+      container.innerHTML = '<div class="empty-state">No saved projects yet. Build one in the Prompt Concierge and tap <strong>Save Project</strong>.</div>';
+      return;
+    }
+    container.innerHTML = items.map(function (p) {
+      return '<div class="project-card">' +
+        '<div class="pc-top"><strong class="pc-name">' + esc(p.name) + '</strong><span class="project-status-badge ' + statusClass(p.status) + '">' + esc(p.status || "Building") + '</span></div>' +
+        '<div class="pc-meta"><span class="pc-cat">' + esc(p.category || "Other") + '</span><span class="pc-date">Created ' + fmtDate(p.createdAt) + '</span><span class="pc-date">Updated ' + fmtDate(p.updatedAt) + '</span></div>' +
+        (p.summary ? '<div class="pc-summary">' + esc(p.summary) + '</div>' : '') +
+        '<div class="pc-actions">' +
+          '<button class="tiny-btn" onclick="ConciergeProjects.open(\'' + esc(p.id) + '\')">Open Project</button>' +
+          '<button class="tiny-btn" onclick="ConciergeProjects.copyMasterById(\'' + esc(p.id) + '\')">Copy Master Prompt</button>' +
+          '<button class="tiny-btn" onclick="ConciergeProjects.remove(\'' + esc(p.id) + '\')">Delete</button>' +
+        '</div>' +
+      '</div>';
+    }).join("");
+  }
+
+  function open(id) {
+    var p = savedProjects.find(function (x) { return x.id === id; });
+    if (!p) { toast("That project could not be found."); return; }
+    project = {
+      id: p.id, name: p.name, category: p.category || "Other",
+      masterPrompt: p.masterPrompt || "", summary: p.summary || "",
+      recommendedWorkspace: p.recommendedWorkspace || "ChatGPT chat", workspaceReason: "",
+      status: p.status || "Ready to Use", history: Array.isArray(p.history) ? p.history.slice() : [],
+      createdAt: p.createdAt || new Date().toISOString(), updatedAt: p.updatedAt || new Date().toISOString(),
+      savedProjectId: p.id, userNamed: true, userCategorized: true
+    };
+    persistActive();
+    try { askHubHistory.splice(0); (p.history || []).forEach(function (h) { askHubHistory.push({ role: h.role, content: h.content }); }); } catch (e) {}
+
+    var answer = document.getElementById("askChatgptAnswer");
+    var status = document.getElementById("askChatgptStatus");
+    if (answer) {
+      answer.classList.add("show");
+      answer.innerHTML =
+        '<div class="kicker">Continuing your project</div>' +
+        '<h3 style="margin:5px 0 7px;font-size:25px;letter-spacing:-.035em;">' + esc(p.name) + '</h3>' +
+        '<div class="project-status-line"><span class="project-status-badge ' + statusClass(p.status) + '">' + esc(p.status || "Ready to Use") + '</span><span class="project-status-note">' + esc(statusMessage(p.status)) + '</span></div>' +
+        '<div class="master-prompt-section">' +
+          '<div class="master-prompt-head"><small>Master Prompt</small><span class="mp-name">' + esc(p.name) + '</span><span class="mp-cat">' + esc(p.category || "Other") + '</span></div>' +
+          '<div class="ask-copy-box" id="masterPromptBox">' + esc(p.masterPrompt || "") + '</div>' +
+          '<div class="ask-recommend">' +
+            '<button class="btn secondary" type="button" onclick="ConciergeProjects.copyMaster()">Copy Master Prompt</button>' +
+            '<button class="btn primary" type="button" onclick="ConciergeProjects.update()">Update Saved Project</button>' +
+            '<button class="btn secondary" type="button" onclick="ConciergeProjects.confirmReset()">Start New Project</button>' +
+          '</div>' +
+        '</div>' +
+        walkthrough(p.recommendedWorkspace, p.workspaceReason);
+    }
+    if (status) status.textContent = "Continuing " + (p.name || "project") + ". Add details below and the master prompt will update.";
+    var hub = document.getElementById("askChatgptHub");
+    if (hub) hub.scrollIntoView({ behavior: "smooth", block: "start" });
+    var input = document.getElementById("askChatgptInput"); if (input) input.focus();
+  }
+
+  function update() { updateSaved(); }
+  function copyMasterById(id) { var p = savedProjects.find(function (x) { return x.id === id; }); if (p) copyText(p.masterPrompt || ""); }
+  function remove(id) {
+    if (!confirm("Delete this saved project? This cannot be undone.")) return;
+    savedProjects = savedProjects.filter(function (p) { return p.id !== id; });
+    persistSaved();
+    if (project && project.savedProjectId === id) { project.savedProjectId = null; persistActive(); }
+    renderProjects();
+    toast("Project deleted.");
+  }
+
+  /* ---- styles ---- */
+  function injectStyles() {
+    var css = [
+      ".project-status-line{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}",
+      ".project-status-badge{display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}",
+      ".project-status-badge.building{background:#fff3cd;color:#7a5900}",
+      ".project-status-badge.ready{background:#d8f5e6;color:#0a7a3f}",
+      ".project-status-badge.needs{background:#eef0f3;color:#555}",
+      ".project-status-note{color:var(--muted);font-size:13px}",
+      ".master-prompt-section{margin-top:12px;border:var(--border);border-radius:18px;padding:14px;background:linear-gradient(180deg,#fbfdff,#f4f8fc)}",
+      ".master-prompt-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}",
+      ".master-prompt-head small{color:var(--sapphire);font-weight:900;text-transform:uppercase;letter-spacing:.08em;font-size:11px}",
+      ".mp-name{font-weight:800;color:var(--ink)}",
+      ".mp-cat{color:var(--ink);font-size:12px;background:#eef3f8;padding:2px 8px;border-radius:999px}",
+      ".project-save-fields{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}",
+      ".project-save-fields input,.project-save-fields select{padding:8px 10px;border:var(--border);border-radius:10px;font:inherit;color:var(--ink);background:#fff}",
+      ".project-save-fields input{flex:1;min-width:180px}",
+      ".project-save-fields select{min-width:160px}",
+      ".walkthrough{margin-top:14px;border:var(--border);border-radius:18px;padding:14px;background:#fbfdff}",
+      ".walkthrough .kicker{margin-bottom:8px}",
+      ".walk-row{margin:6px 0;color:var(--ink);line-height:1.6;font-size:14px}",
+      ".walk-row strong{color:var(--sapphire)}",
+      ".walk-steps{margin-top:10px;color:var(--ink);font-size:14px;line-height:1.6}",
+      ".walk-steps ol{padding-left:20px;margin:6px 0}",
+      ".you-are-here{margin-top:12px;padding:10px 12px;border-radius:12px;background:linear-gradient(90deg,#eaf4ff,#f4f8fc);border:1px solid rgba(16,59,99,.12);color:var(--ink);font-size:13px;font-weight:600}",
+      ".you-are-here .yah-label{color:var(--sapphire);font-weight:900;text-transform:uppercase;font-size:11px;letter-spacing:.08em;margin-right:6px}",
+      ".playbook-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 12px}",
+      ".playbook-toolbar input,.playbook-toolbar select{padding:8px 10px;border:var(--border);border-radius:10px;font:inherit;color:var(--ink);background:#fff}",
+      ".playbook-toolbar input{flex:1;min-width:160px}",
+      ".project-list{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}",
+      ".project-card{border:var(--border);border-radius:14px;padding:12px 14px;background:#fff}",
+      ".pc-top{display:flex;justify-content:space-between;align-items:center;gap:8px}",
+      ".pc-name{color:var(--ink);font-size:15px}",
+      ".pc-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:4px 0}",
+      ".pc-cat{background:#eef3f8;color:var(--ink);padding:2px 8px;border-radius:999px}",
+      ".pc-summary{font-size:13px;color:var(--muted);margin:2px 0 8px;line-height:1.5}"
+    ].join("\n");
+    var style = document.createElement("style");
+    style.id = "concierge-projects-styles";
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+
+  /* ---- init ---- */
+  function init() {
+    injectStyles();
+    loadSaved();
+    loadActive();
+
+    var cf = document.getElementById("projectCategoryFilter");
+    if (cf) {
+      cf.innerHTML = '<option value="all">All categories</option>' + PROJECT_CATEGORIES.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join("");
+    }
+    var s = document.getElementById("projectSearch"); if (s) s.addEventListener("input", renderProjects);
+    if (cf) cf.addEventListener("change", renderProjects);
+    var so = document.getElementById("projectSort"); if (so) so.addEventListener("change", renderProjects);
+
+    renderPlaybook();
+
+    // restore an in-progress project into the Concierge
+    if (project && project.masterPrompt) {
+      var answer = document.getElementById("askChatgptAnswer");
+      var status = document.getElementById("askChatgptStatus");
+      if (answer) {
+        answer.classList.add("show");
+        answer.innerHTML =
+          '<div class="kicker">Your project so far</div>' +
+          '<h3 style="margin:5px 0 7px;font-size:25px;letter-spacing:-.035em;">' + esc(project.name) + '</h3>' +
+          '<div class="project-status-line"><span class="project-status-badge ' + statusClass(project.status) + '">' + esc(project.status || "Building") + '</span><span class="project-status-note">' + esc(statusMessage(project.status)) + '</span></div>' +
+          '<div class="master-prompt-section">' +
+            '<div class="master-prompt-head"><small>Master Prompt</small><span class="mp-name">' + esc(project.name) + '</span><span class="mp-cat">' + esc(project.category || "Other") + '</span></div>' +
+            '<div class="ask-copy-box" id="masterPromptBox">' + esc(project.masterPrompt) + '</div>' +
+            '<div class="ask-recommend">' +
+              '<button class="btn secondary" type="button" onclick="ConciergeProjects.copyMaster()">Copy Master Prompt</button>' +
+              '<button class="btn primary" type="button" id="saveProjectBtn" onclick="ConciergeProjects.toggleSave()">' + (project.savedProjectId ? "Update Saved Project" : "Save Project") + '</button>' +
+              '<button class="btn secondary" type="button" onclick="ConciergeProjects.confirmReset()">Start New Project</button>' +
+            '</div>' +
+          '</div>' +
+          walkthrough(project.recommendedWorkspace, project.workspaceReason);
+      }
+      if (status) status.textContent = "Pick up where you left off. Add details below to keep building your master prompt.";
+    }
+  }
+
+  window.ConciergeProjects = {
+    current: current,
+    render: render,
+    reset: reset,
+    confirmReset: confirmReset,
+    copyMaster: copyMaster,
+    copyMasterById: copyMasterById,
+    toggleSave: toggleSave,
+    confirmSave: confirmSave,
+    update: update,
+    open: open,
+    remove: remove,
+    renderPlaybook: renderPlaybook
+  };
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();

@@ -3907,8 +3907,21 @@
               </button>
             </div>
             <div class="box">
-              <div class="kicker">Saved items</div>
-              <h3>Prompts & Workflows</h3>
+              <div class="kicker">Saved projects &amp; prompts</div>
+              <h3>My Playbook</h3>
+              <div class="playbook-toolbar">
+                <input type="search" id="projectSearch" placeholder="Search projects..." aria-label="Search projects">
+                <select id="projectCategoryFilter" aria-label="Filter projects by category"></select>
+                <select id="projectSort" aria-label="Sort projects">
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                  <option value="name-az">Name A-Z</option>
+                  <option value="name-za">Name Z-A</option>
+                  <option value="updated">Last updated</option>
+                </select>
+              </div>
+              <div class="project-list" id="projectList"></div>
+              <div class="kicker" style="margin-top:18px">Saved prompts</div>
               <div class="playbook-list" id="playbookList"></div>
             </div>
           </div>
@@ -8731,33 +8744,9 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         startPromptSaveEnhancer();
       }
       function renderPlaybook() {
-        const list = document.getElementById("playbookList");
-        if (!list) return;
-        if (!playbook.length) {
-          list.innerHTML = `<div class="empty-state">Nothing saved yet. Open a lesson and tap <strong>Save Prompt</strong>.</div>`;
-        } else {
-          list.innerHTML = playbook
-            .map(
-              (
-                x,
-              ) => `<div class="saved-item"><strong>${x.title}</strong><pre></pre><div class="saved-actions">
-   <button class="tiny-btn" data-copy="${x.id}">Copy</button><button class="tiny-btn" onclick="removePlaybook('${x.id}')">Remove</button></div></div>`,
-            )
-            .join("");
-          [...list.querySelectorAll(".saved-item")].forEach(
-            (el, i) =>
-              (el.querySelector("pre").textContent = playbook[i].content),
-          );
-          list.querySelectorAll("[data-copy]").forEach(
-            (btn) =>
-              (btn.onclick = () => {
-                const item = playbook.find((x) => x.id === btn.dataset.copy);
-                if (item) copyText(item.content);
-              }),
-          );
+        if (window.ConciergeProjects && ConciergeProjects.renderPlaybook) {
+          ConciergeProjects.renderPlaybook();
         }
-        document.getElementById("playbookNotes").value =
-          localStorage.getItem("glamPlaybookNotes") || "";
       }
       document.getElementById("saveNotes").onclick = () => {
         localStorage.setItem(
@@ -9712,42 +9701,53 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       // Ask ChatGPT — real-time Learning Hub guide
       const askHubHistory = [];
       const ASK_HUB_ENDPOINT = "/api/apps/6a9aedd33cd938f0f47b9ff7/functions/hubAi";
+      const PROJECT_CATEGORIES = ["App / Generator","Business","Content Creation","Course / Workshop","Images / Graphics","Marketing","Mockups","Product Listing","Prompts","Research","Website","Other"];
       const CONCIERGE_RESPONSE_SCHEMA = {
         type: "object",
         properties: {
-          answer: { type: "string", description: "Main guidance headline answering the member's goal" },
-          whatYouNeed: { type: "string", description: "Restate what the member is trying to do" },
-          bestFeature: { type: "string", description: "The single best ChatGPT feature or workflow for this goal" },
-          nextSteps: { type: "array", items: { type: "string" }, description: "3 to 5 concrete actionable steps" },
-          copyPrompt: { type: "string", description: "Ready-to-copy starter prompt for ChatGPT" },
-          followUp: { type: "string", description: "One suggested follow-up question" },
+          answer: { type: "string", description: "Short guidance headline for the latest message" },
+          whatYouNeed: { type: "string", description: "Restate what the member is trying to do overall" },
+          bestFeature: { type: "string", description: "The single best ChatGPT feature or workflow for this project" },
+          nextSteps: { type: "array", items: { type: "string" }, description: "3 to 5 concrete actionable next steps" },
+          masterPrompt: { type: "string", description: "The full polished master prompt for the whole project. On the first message this is the starter prompt; on follow-ups this is the previous master prompt merged with the new information." },
+          projectStatus: { type: "string", description: "One of: 'Building', 'Ready to Use', or 'Needs More Details'" },
+          recommendedWorkspace: { type: "string", description: "Either 'ChatGPT chat' or 'ChatGPT Work'" },
+          workspaceReason: { type: "string", description: "A simple beginner reason this workspace fits the project" },
+          youAreHere: { type: "string", description: "One short you-are-here line: status -> best place to use it -> next step" },
+          projectSummary: { type: "string", description: "A one-sentence summary of the project" },
+          projectNameSuggestion: { type: "string", description: "A short project name (3-5 words)" },
+          categorySuggestion: { type: "string", description: "One category from the provided category list" },
+          followUp: { type: "string", description: "One focused follow-up question that improves the project; never ask for information already provided" },
+          copyPrompt: { type: "string", description: "Same as masterPrompt (kept for compatibility)" },
           lessonId: { type: "string", description: "id of the matching catalog lesson, or empty string" },
           lessonTitle: { type: "string", description: "title of the matching catalog lesson, or empty string" }
         },
-        required: ["answer", "whatYouNeed", "bestFeature", "nextSteps", "copyPrompt", "followUp", "lessonId", "lessonTitle"],
+        required: ["answer","whatYouNeed","bestFeature","nextSteps","masterPrompt","projectStatus","recommendedWorkspace","workspaceReason","youAreHere","projectSummary","projectNameSuggestion","categorySuggestion","followUp","copyPrompt","lessonId","lessonTitle"],
         additionalProperties: false
       };
-      function buildConciergePrompt(question, history, catalog) {
-        return [
-          "You are the GLAM ChatGPT Learning Hub AI Concierge. Help the member accomplish their goal with ChatGPT by recommending the single best feature or workflow.",
-          "Rules:",
-          "- Use the member's full request exactly as written; never omit, shorten, or summarize their details.",
-          "- Recommend ONE best ChatGPT feature or workflow for their specific goal.",
-          "- Give 3 to 5 concrete, actionable next steps.",
-          "- Provide a ready-to-copy starter prompt they can paste into ChatGPT.",
-          "- Suggest one short follow-up question.",
-          "- If the goal closely matches a lesson in the catalog, set lessonId and lessonTitle to that lesson's id and title; otherwise set both to empty strings.",
-          "- Be specific and practical. No filler.",
+      function buildConciergePrompt(question, history, catalog, project) {
+        var hasProject = project && project.masterPrompt && project.masterPrompt.trim();
+        var lines = [
+          "You are the GLAM ChatGPT Learning Hub AI Concierge. You help the member build ONE ongoing project with ONE master prompt that grows more complete over the conversation.",
+          "CATEGORY LIST (use one of these for categorySuggestion):",
+          PROJECT_CATEGORIES.join(", "),
           "",
-          "LESSON CATALOG (JSON, may be empty):",
-          JSON.stringify(catalog || []),
+          hasProject
+            ? "This is a CONTINUING project. Merge the member's new message into the existing master prompt. Rules: keep all previously approved details; if the member changes their mind, REPLACE the conflicting detail instead of keeping both; do not duplicate instructions; make the master prompt more complete and polished; never lose information the member already gave."
+            : "This is a NEW project (first message). Build the first master prompt from the member's request. Use the member's full request exactly as written; never omit, shorten, or summarize their details.",
           "",
-          "RECENT CONVERSATION (for context, may be empty):",
-          JSON.stringify(history || []),
+          "CURRENT MASTER PROMPT (empty means first message):",
+          hasProject ? project.masterPrompt : "(none yet)"
+        ];
+        if (hasProject && project.summary) { lines.push("", "CURRENT PROJECT SUMMARY:", project.summary); }
+        lines.push(
+          "", "LESSON CATALOG (JSON, may be empty):", JSON.stringify(catalog || []),
+          "", "RECENT CONVERSATION (for context, may be empty):", JSON.stringify(history || []),
+          "", "MEMBER'S NEW MESSAGE:", question,
           "",
-          "MEMBER REQUEST:",
-          question
-        ].join("\n");
+          "Return: the updated masterPrompt, projectStatus (Building / Ready to Use / Needs More Details), recommendedWorkspace (ChatGPT chat or ChatGPT Work) with a simple beginner workspaceReason, a one-line youAreHere (status -> best place to use it -> next step), a one-sentence projectSummary, a short projectNameSuggestion, a categorySuggestion from the list, and one focused followUp question that improves the project (do not re-ask information already provided). Be specific and practical. No filler."
+        );
+        return lines.join("\n");
       }
 
       function askHubEscape(value) {
@@ -9779,7 +9779,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           if (isLongAsk) status.textContent="Your request is detailed — I’m sending a lighter context package so none of your idea gets cut off…";
           const history = isLongAsk ? askHubHistory.slice(-2) : askHubHistory;
           const catalog = askHubCatalog(isLongAsk);
-          const composedPrompt = buildConciergePrompt(question, history, catalog);
+          const composedPrompt = buildConciergePrompt(question, history, catalog, ConciergeProjects.current());
           let res;
           try {
             res = await fetch(ASK_HUB_ENDPOINT, {
@@ -9804,37 +9804,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
             response: formatAskHistoryResponse(data),
             conversationLink: promptHistoryConversationLink(data)
           });
-          const steps=Array.isArray(data.nextSteps)?data.nextSteps:[];
-          const lessonExists=data.lessonId&&Array.isArray(lessons)&&lessons.some(l=>l.id===data.lessonId);
-          answerBox.innerHTML=`
-            <div class="kicker">Your AI guide</div>
-            <h3 style="margin:5px 0 7px;font-size:25px;letter-spacing:-.035em;">${askHubEscape(data.answer||"Here's where I'd start.")}</h3>
-            <div class="ask-answer-grid">
-              <div class="ask-answer-card"><small>What you're trying to do</small><p>${askHubEscape(data.whatYouNeed||"")}</p></div>
-              <div class="ask-answer-card"><small>Best ChatGPT feature</small><p>${askHubEscape(data.bestFeature||"")}</p></div>
-              <div class="ask-answer-card"><small>Your next steps</small><ol>${steps.map(step=>`<li>${askHubEscape(step)}</li>`).join("")}</ol></div>
-              <div class="ask-answer-card"><small>Ask me next</small><p>${askHubEscape(data.followUp||"Tell me what part you want help with next.")}</p></div>
-            </div>
-            <div class="ask-answer-card" style="margin-top:12px;">
-              <small>Starter prompt — copy this into ChatGPT</small>
-              <div class="ask-copy-box" id="askHubCopyPrompt">${askHubEscape(data.copyPrompt||"")}</div>
-              <div class="ask-recommend">
-                <button class="btn secondary" type="button" id="askHubCopyBtn" onclick="copyText(document.getElementById('askHubCopyPrompt').innerText)">Copy Prompt</button>
-                ${lessonExists?`<button class="btn primary" type="button" id="askHubLessonBtn">Open lesson: ${askHubEscape(data.lessonTitle)}</button>`:""}
-              </div>
-            </div>`;
-
-          document.getElementById("askHubCopyBtn")?.addEventListener("click",async e=>{
-            const copyButton = e.currentTarget;
-            try{
-              await navigator.clipboard.writeText(data.copyPrompt||"");
-              copyButton.textContent="Copied!";
-              setTimeout(()=>{ if(copyButton.isConnected) copyButton.textContent="Copy Prompt"; },1400);
-            }
-            catch{ if(copyButton?.isConnected) copyButton.textContent="Select + copy the prompt above"; }
-          });
-          document.getElementById("askHubLessonBtn")?.addEventListener("click",()=>openLesson(data.lessonId));
-          status.textContent="Ask a follow-up anytime — this remembers the last few messages in this session.";
+          ConciergeProjects.render(data, question);
           input.value="";
         } catch(error) {
           await savePromptHistory({ prompt: question, tool: "Prompt Concierge", response: `Request failed: ${error.message || "The Prompt Concierge is temporarily unavailable."}` });
@@ -9849,7 +9819,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       document.getElementById("askChatgptBtn")?.addEventListener("click",askLearningHub);
       document.getElementById("askChatgptClear")?.addEventListener("click",()=>{
         const input=document.getElementById("askChatgptInput"), answer=document.getElementById("askChatgptAnswer"), status=document.getElementById("askChatgptStatus");
-        input.value=""; answer.classList.remove("show"); answer.innerHTML=""; askHubHistory.splice(0); status.textContent="Real-time guidance from the Learning Hub AI."; input.focus();
+        ConciergeProjects.reset();
       });
 
     </script>
@@ -9870,5 +9840,6 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         }
       })();
     </script>
+    <script src="/hub-projects.js"></script>
   </body>
 </html>
