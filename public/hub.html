@@ -8040,24 +8040,15 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         box.innerHTML = `<div class="ai-coach-loading"><span class="ai-spinner"></span>Reading what you actually wrote and coaching this attempt…</div>`;
 
         try {
-          const res = await fetch("https://chatgpt-learning-hub.netlify.app/.netlify/functions/coach", {
-            method: "POST",
-            headers: hubProtectedHeaders(),
-            body: JSON.stringify({
-              attempt: input,
-              lesson: {
-                id: l.id,
-                title: l.title,
-                description: l.desc,
-                use: l.use,
-                commonMistake: l.mistake,
-                lessonSteps: l.steps,
-                examplePrompt: l.prompt,
-              },
-            }),
+          const data = await runHubCoach(input, {
+            id: l.id,
+            title: l.title,
+            description: l.desc,
+            use: l.use,
+            commonMistake: l.mistake,
+            lessonSteps: l.steps,
+            examplePrompt: l.prompt,
           });
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error || "AI coach unavailable.");
 
           usage.date = today;
           usage.count = used + 1;
@@ -8072,7 +8063,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         } catch (err) {
           await savePromptHistory({ prompt: input, tool: `Prompt Coach — ${l?.title || "Lesson"}`, response: `Request failed: ${err.message}` });
           box.innerHTML = `<strong>I couldn't reach the AI Coach.</strong><br>
-   <span style="color:var(--muted)">Your lesson is still working. Once the Netlify Function and API key are connected, this button will give personalized coaching. Error: ${escapeAttr(err.message)}</span>`;
+   <span style="color:var(--muted)">Your lesson is still working. The AI Coach could not connect right now. Please try again in a moment. Error: ${escapeAttr(err.message)}</span>`;
         }
       }
       function renderAICoaching(box, data, remaining, id, originalAttempt) {
@@ -9388,25 +9379,15 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         fb.innerHTML = `<div class="ai-coach-loading"><span class="ai-spinner"></span>AI Coach is reviewing this exact prompt…</div>`;
 
         try {
-          const res = await fetch("https://chatgpt-learning-hub.netlify.app/.netlify/functions/coach", {
-            method: "POST",
-            headers: hubProtectedHeaders(),
-            body: JSON.stringify({
-              attempt,
-              lesson: {
-                id: l.id,
-                title: l.title,
-                description: l.desc,
-                use: l.use,
-                commonMistake: l.mistake,
-                lessonSteps: l.steps,
-                examplePrompt: l.prompt,
-              },
-            }),
+          const data = await runHubCoach(attempt, {
+            id: l.id,
+            title: l.title,
+            description: l.desc,
+            use: l.use,
+            commonMistake: l.mistake,
+            lessonSteps: l.steps,
+            examplePrompt: l.prompt,
           });
-
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error || "AI Coach unavailable.");
 
           const score = Math.max(0, Math.min(100, Number(data.score) || 0));
           fb.innerHTML = `<div class="coach-report">
@@ -9785,7 +9766,6 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
 
       // Ask ChatGPT — real-time Learning Hub guide
       const askHubHistory = [];
-      const ASK_HUB_ENDPOINT = "https://chatgpt-learning-hub.netlify.app/.netlify/functions/ask";
 
       function askHubEscape(value) {
         return String(value ?? "")
@@ -9808,15 +9788,10 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         answerBox.classList.add("show");
         answerBox.innerHTML=`<div class="ask-loading"><span class="ask-spinner"></span>Figuring out the best way to help you…</div>`;
         try {
-          const res = await fetch(ASK_HUB_ENDPOINT, {
-            method: "POST",
-            headers: hubProtectedHeaders(),
-            body: JSON.stringify({ question, history: askHubHistory, catalog: askHubCatalog() }),
+          const data = await hubInvokeAI({
+            prompt: hubAskInstructions("concierge", question, askHubHistory, askHubCatalog()),
+            response_json_schema: HUB_ASK_RESPONSE_SCHEMA
           });
-          let data;
-          try { data = await res.json(); }
-          catch { throw new Error("The AI guide returned an unreadable response."); }
-          if (!res.ok) throw new Error(data.error || "The AI guide could not answer right now.");
 
           askHubHistory.push({role:"user",content:question},{role:"assistant",content:data.answer||""});
           if(askHubHistory.length>8) askHubHistory.splice(0,askHubHistory.length-8);
