@@ -9475,8 +9475,13 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
             </div>`;
 
           document.getElementById("askHubCopyBtn")?.addEventListener("click",async e=>{
-            try{ await navigator.clipboard.writeText(data.copyPrompt||""); e.currentTarget.textContent="Copied!"; setTimeout(()=>e.currentTarget.textContent="Copy Prompt",1400); }
-            catch{ e.currentTarget.textContent="Select + copy the prompt above"; }
+            const copyButton = e.currentTarget;
+            try{
+              await navigator.clipboard.writeText(data.copyPrompt||"");
+              copyButton.textContent="Copied!";
+              setTimeout(()=>{ if(copyButton.isConnected) copyButton.textContent="Copy Prompt"; },1400);
+            }
+            catch{ if(copyButton?.isConnected) copyButton.textContent="Select + copy the prompt above"; }
           });
           document.getElementById("askHubLessonBtn")?.addEventListener("click",()=>openLesson(data.lessonId));
           status.textContent="Ask a follow-up anytime — this remembers the last few messages in this session.";
