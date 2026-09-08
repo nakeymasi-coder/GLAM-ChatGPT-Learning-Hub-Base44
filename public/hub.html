@@ -7850,7 +7850,6 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
    <div id="lessonModeStage"></div>
    <div class="lesson-footer">
      <button class="btn primary" onclick="toggleComplete('${l.id}')">${completed.includes(l.id) ? "Mark Incomplete" : "Mark Lesson Complete"}</button>
-     <button class="btn secondary" onclick="saveToPlaybook('${l.id}',lessons.find(x=>x.id==='${l.id}').title,lessons.find(x=>x.id==='${l.id}').prompt)">Save Prompt</button>
      <button class="btn secondary" onclick="document.getElementById('lessonModal').classList.remove('open')">Back to Academy</button>
    </div>`;
         document.getElementById("lessonModal").classList.add("open");
@@ -8481,7 +8480,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         const now = new Date();
         const zone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Local time";
         const item = {
-          id: id || ("manual-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8)),
+          id: (!id || playbook.some((x) => x.id === id)) ? ("manual-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8)) : id,
           title: title || "Saved Prompt",
           content: exactContent,
           source: source || "Learning Hub",
@@ -8531,14 +8530,20 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       function playbookPanelName(element) {
         const panel = element.closest(".panel");
         const names = {
+          "panel-academy": "Learning Hub Lessons",
           "panel-asklibrary": "Ask AI Prompt Library",
           "panel-finder": "Feature Finder",
           "panel-coach": "Prompt Coach",
+          "panel-characterlab": "Character Prompt Builder",
+          "panel-environmentlab": "Background & Environment Builder",
+          "panel-typographylab": "Typography Builder",
+          "panel-clinic": "Prompt Clinic",
           "panel-business": "Business Hub",
-          "panel-practice": "Prompt Simulator",
-          "panel-lab": "Prompt Lab",
-          "panel-ask": "Prompt Concierge"
+          "panel-researchlab": "Business Research Lab",
+          "panel-practice": "Practice Lab",
+          "panel-simulator": "Prompt Simulator"
         };
+        if (element.closest("#askChatgptHub")) return "Prompt Concierge";
         return (panel && names[panel.id]) || "Learning Hub";
       }
       function playbookPromptTitle(element, source) {
