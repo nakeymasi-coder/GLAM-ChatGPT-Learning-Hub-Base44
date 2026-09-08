@@ -7096,10 +7096,16 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         </article>`).join("") || `<div class="box"><h3>No prompts found</h3><p class="help">Try another word such as app, generator, website, research, listing, class, fix, or organize.</p></div>`;
       }
 
+      function hubProtectedHeaders() {
+        const token = localStorage.getItem('base44_access_token') || localStorage.getItem('token');
+        if (!token) throw new Error('Your Hub session expired. Please sign in again.');
+        return { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
+      }
+
       async function runHubBrain(mode, question) {
         const res = await fetch("https://chatgpt-learning-hub.netlify.app/.netlify/functions/ask", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: hubProtectedHeaders(),
           body: JSON.stringify({ mode, question, history: [], catalog: askHubCatalog() })
         });
         let data;
@@ -7572,7 +7578,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         try {
           const res = await fetch("https://chatgpt-learning-hub.netlify.app/.netlify/functions/coach", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: hubProtectedHeaders(),
             body: JSON.stringify({
               attempt: input,
               lesson: {
@@ -8668,7 +8674,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         try {
           const res = await fetch("https://chatgpt-learning-hub.netlify.app/.netlify/functions/coach", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: hubProtectedHeaders(),
             body: JSON.stringify({
               attempt,
               lesson: {
@@ -9076,7 +9082,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         try {
           const res = await fetch(ASK_HUB_ENDPOINT, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: hubProtectedHeaders(),
             body: JSON.stringify({ question, history: askHubHistory, catalog: askHubCatalog() }),
           });
           let data;
