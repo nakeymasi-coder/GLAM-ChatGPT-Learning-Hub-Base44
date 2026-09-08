@@ -7151,6 +7151,280 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         return { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
       }
 
+      const PROMPT_HISTORY_APP_ID = "6a9aedd33cd938f0f47b9ff7";
+      const PROMPT_HISTORY_ENDPOINT = `/api/apps/${PROMPT_HISTORY_APP_ID}/entities/PromptHistory`;
+      let promptHistoryEntries = [];
+      let promptHistoryLoaded = false;
+
+      function promptHistoryValue(entry, key) {
+        return entry?.[key] ?? entry?.data?.[key] ?? "";
+      }
+
+      function normalizePromptHistoryEntry(entry) {
+        return {
+          id: entry?.id || entry?._id || entry?.data?.id || "",
+          prompt: String(promptHistoryValue(entry, "prompt") || ""),
+          tool_used: String(promptHistoryValue(entry, "tool_used") || "Learning Hub"),
+          response: String(promptHistoryValue(entry, "response") || ""),
+          conversation_link: String(promptHistoryValue(entry, "conversation_link") || ""),
+          submitted_at: String(promptHistoryValue(entry, "submitted_at") || entry?.created_date || ""),
+          submitted_at_ms: Number(promptHistoryValue(entry, "submitted_at_ms")) || Date.parse(promptHistoryValue(entry, "submitted_at") || entry?.created_date || "") || 0,
+          local_datetime: String(promptHistoryValue(entry, "local_datetime") || ""),
+          timezone: String(promptHistoryValue(entry, "timezone") || "")
+        };
+      }
+
+      function promptHistoryTimestamp() {
+        const now = new Date();
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Local time";
+        const localDateTime = new Intl.DateTimeFormat(undefined, {
+          dateStyle: "full",
+          timeStyle: "long"
+        }).format(now);
+        return {
+          submitted_at: now.toISOString(),
+          submitted_at_ms: now.getTime(),
+          local_datetime: localDateTime,
+          timezone
+        };
+      }
+
+      function promptHistoryConversationLink(data) {
+        return String(data?.conversationLink || data?.conversation_url || data?.conversationUrl || "");
+      }
+
+      function formatAskHistoryResponse(data) {
+        const steps = Array.isArray(data?.nextSteps) ? data.nextSteps.map((step, index) => `${index + 1}. ${step}`).join("\n") : "";
+        return [
+          data?.answer,
+          data?.whatYouNeed ? `What you need: ${data.whatYouNeed}` : "",
+          data?.bestFeature ? `Best ChatGPT feature: ${data.bestFeature}` : "",
+          steps ? `Next steps:\n${steps}` : "",
+          data?.copyPrompt ? `Starter prompt:\n${data.copyPrompt}` : "",
+          data?.followUp ? `Suggested follow-up: ${data.followUp}` : ""
+        ].filter(Boolean).join("\n\n");
+      }
+
+      function formatCoachHistoryResponse(data) {
+        const strengths = Array.isArray(data?.strengths) ? data.strengths.join("\n• ") : "";
+        const missing = Array.isArray(data?.missing) ? data.missing.map(item => `${item?.item || "Missing detail"}: ${item?.why || ""}`).join("\n") : "";
+        const tips = Array.isArray(data?.coachingTips) ? data.coachingTips.join("\n• ") : "";
+        return [
+          Number.isFinite(Number(data?.score)) ? `Score: ${data.score}` : "",
+          data?.headline,
+          data?.summary,
+          data?.interpretation ? `What ChatGPT understands:\n${data.interpretation}` : "",
+          strengths ? `Strengths:\n• ${strengths}` : "",
+          missing ? `Missing or unclear:\n${missing}` : "",
+          tips ? `Coaching tips:\n• ${tips}` : "",
+          data?.improvedPrompt ? `Stronger version:\n${data.improvedPrompt}` : "",
+          data?.whyBetter ? `Why this is stronger:\n${data.whyBetter}` : ""
+        ].filter(Boolean).join("\n\n");
+      }
+
+      async function savePromptHistory({ prompt, tool, response, conversationLink = "" }) {
+        const cleanPrompt = String(prompt || "").trim();
+        if (!cleanPrompt) return null;
+        const record = {
+          prompt: cleanPrompt,
+          tool_used: String(tool || "Learning Hub"),
+          response: String(response || "No response was returned."),
+          conversation_link: String(conversationLink || ""),
+          ...promptHistoryTimestamp()
+        };
+        try {
+          const res = await fetch(PROMPT_HISTORY_ENDPOINT, {
+            method: "POST",
+            headers: hubProtectedHeaders(),
+            credentials: "include",
+            body: JSON.stringify(record)
+          });
+          let saved = {};
+          try { saved = await res.json(); } catch {}
+          if (!res.ok) throw new Error(saved?.error || "Prompt history could not be saved.");
+          if (promptHistoryLoaded) {
+            const normalized = normalizePromptHistoryEntry(saved?.data || saved);
+            promptHistoryEntries.unshift(normalized.id ? normalized : { ...record, id: "" });
+            renderPromptHistory();
+          }
+          return saved;
+        } catch (error) {
+          console.warn("Automatic prompt history save failed.", error);
+          return null;
+        }
+      }
+
+      async function loadPromptHistory(force = false) {
+        if (promptHistoryLoaded && !force) {
+          renderPromptHistory();
+          return;
+        }
+        const status = document.getElementById("historyStatus");
+        if (status) status.textContent = "Loading your history…";
+        try {
+          const all = [];
+          const pageSize = 200;
+          for (let skip = 0; skip < 10000; skip += pageSize) {
+            const res = await fetch(`${PROMPT_HISTORY_ENDPOINT}?sort=-submitted_at_ms&limit=${pageSize}&skip=${skip}`, {
+              headers: hubProtectedHeaders(),
+              credentials: "include"
+            });
+            if (!res.ok) throw new Error("Prompt history could not be loaded.");
+            const payload = await res.json();
+            const page = Array.isArray(payload) ? payload : (payload?.data || payload?.items || payload?.results || []);
+            if (!Array.isArray(page)) break;
+            all.push(...page);
+            if (page.length < pageSize) break;
+          }
+          promptHistoryEntries = all.map(normalizePromptHistoryEntry);
+          promptHistoryLoaded = true;
+          updatePromptHistoryToolFilter();
+          renderPromptHistory();
+        } catch (error) {
+          if (status) status.textContent = "History is temporarily unavailable.";
+          const list = document.getElementById("promptHistoryList");
+          if (list) list.innerHTML = `<div class="history-empty">I couldn’t load your saved prompts right now. Please try again in a moment.</div>`;
+        }
+      }
+
+      function getFilteredPromptHistory() {
+        const search = (document.getElementById("historySearch")?.value || "").trim().toLowerCase();
+        const tool = document.getElementById("historyToolFilter")?.value || "";
+        const from = document.getElementById("historyFromDate")?.value;
+        const to = document.getElementById("historyToDate")?.value;
+        const fromMs = from ? new Date(`${from}T00:00:00`).getTime() : 0;
+        const toMs = to ? new Date(`${to}T23:59:59.999`).getTime() : Number.MAX_SAFE_INTEGER;
+        const sort = document.getElementById("historySort")?.value || "newest";
+        return promptHistoryEntries
+          .filter(entry => {
+            const haystack = `${entry.prompt} ${entry.response} ${entry.tool_used}`.toLowerCase();
+            return (!search || haystack.includes(search)) &&
+              (!tool || entry.tool_used === tool) &&
+              entry.submitted_at_ms >= fromMs &&
+              entry.submitted_at_ms <= toMs;
+          })
+          .sort((a, b) => sort === "oldest" ? a.submitted_at_ms - b.submitted_at_ms : b.submitted_at_ms - a.submitted_at_ms);
+      }
+
+      function updatePromptHistoryToolFilter() {
+        const select = document.getElementById("historyToolFilter");
+        if (!select) return;
+        const current = select.value;
+        const tools = [...new Set(promptHistoryEntries.map(entry => entry.tool_used).filter(Boolean))].sort();
+        select.innerHTML = `<option value="">All tools</option>${tools.map(tool => `<option value="${askHubEscape(tool)}">${askHubEscape(tool)}</option>`).join("")}`;
+        if (tools.includes(current)) select.value = current;
+      }
+
+      function safePromptHistoryLink(value) {
+        try {
+          const url = new URL(value);
+          return url.protocol === "https:" || url.protocol === "http:" ? url.href : "";
+        } catch {
+          return "";
+        }
+      }
+
+      function renderPromptHistory() {
+        const list = document.getElementById("promptHistoryList");
+        const status = document.getElementById("historyStatus");
+        if (!list) return;
+        const entries = getFilteredPromptHistory();
+        if (status) status.textContent = `${entries.length} of ${promptHistoryEntries.length} saved ${promptHistoryEntries.length === 1 ? "entry" : "entries"}`;
+        if (!entries.length) {
+          list.innerHTML = `<div class="history-empty">${promptHistoryEntries.length ? "No saved prompts match these filters." : "Your automatic prompt history will appear here after you use a Hub AI tool."}</div>`;
+          return;
+        }
+        list.innerHTML = entries.map(entry => {
+          const link = safePromptHistoryLink(entry.conversation_link);
+          const dateLabel = entry.local_datetime || entry.submitted_at || "Date unavailable";
+          return `<article class="history-card">
+            <div class="history-card-head">
+              <div class="history-card-meta">
+                <span class="history-tool">${askHubEscape(entry.tool_used)}</span>
+                <span>${askHubEscape(dateLabel)}</span>
+                <span>• ${askHubEscape(entry.timezone || "Local time zone")}</span>
+              </div>
+              ${link ? `<a class="history-link" href="${askHubEscape(link)}" target="_blank" rel="noopener noreferrer">Open conversation</a>` : ""}
+            </div>
+            <h4>Prompt</h4>
+            <p class="history-text">${askHubEscape(entry.prompt)}</p>
+            <h4>Response</h4>
+            <p class="history-text history-response">${askHubEscape(entry.response)}</p>
+            <div class="history-card-buttons">
+              <button class="tiny-btn" type="button" onclick="copyPromptHistoryEntry('${entry.id}')">Copy Entry</button>
+              <button class="tiny-btn" type="button" onclick="deletePromptHistoryEntry('${entry.id}')">Delete</button>
+            </div>
+          </article>`;
+        }).join("");
+      }
+
+      function copyPromptHistoryEntry(id) {
+        const entry = promptHistoryEntries.find(item => item.id === id);
+        if (!entry) return;
+        copyText(`Tool: ${entry.tool_used}\nDate: ${entry.local_datetime}\nTime zone: ${entry.timezone}\n\nPrompt:\n${entry.prompt}\n\nResponse:\n${entry.response}${entry.conversation_link ? `\n\nConversation: ${entry.conversation_link}` : ""}`);
+      }
+
+      async function deletePromptHistoryEntry(id) {
+        if (!id || !confirm("Delete this saved prompt and response? This cannot be undone.")) return;
+        try {
+          const res = await fetch(`${PROMPT_HISTORY_ENDPOINT}/${encodeURIComponent(id)}`, {
+            method: "DELETE",
+            headers: hubProtectedHeaders(),
+            credentials: "include"
+          });
+          if (!res.ok) throw new Error("Delete failed.");
+          promptHistoryEntries = promptHistoryEntries.filter(entry => entry.id !== id);
+          updatePromptHistoryToolFilter();
+          renderPromptHistory();
+          toast("History entry deleted.");
+        } catch {
+          toast("I couldn’t delete that entry. Please try again.");
+        }
+      }
+
+      function clearPromptHistoryFilters() {
+        ["historySearch", "historyToolFilter", "historyFromDate", "historyToDate"].forEach(id => {
+          const field = document.getElementById(id);
+          if (field) field.value = "";
+        });
+        const sort = document.getElementById("historySort");
+        if (sort) sort.value = "newest";
+        renderPromptHistory();
+      }
+
+      function downloadPromptHistoryFile(filename, contents, type) {
+        const blob = new Blob([contents], { type });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      function exportPromptHistory(format) {
+        const entries = getFilteredPromptHistory();
+        if (!entries.length) {
+          toast("There are no matching history entries to export.");
+          return;
+        }
+        const day = new Date().toISOString().slice(0, 10);
+        if (format === "json") {
+          downloadPromptHistoryFile(`glam-prompt-history-${day}.json`, JSON.stringify(entries, null, 2), "application/json");
+          return;
+        }
+        const csvCell = value => {
+          let text = String(value ?? "");
+          if (/^[=+@-]/.test(text)) text = `'${text}`;
+          return `"${text.replace(/"/g, '""')}"`;
+        };
+        const headers = ["Tool", "Local date and time", "Time zone", "Prompt", "Response", "Conversation link"];
+        const rows = entries.map(entry => [entry.tool_used, entry.local_datetime, entry.timezone, entry.prompt, entry.response, entry.conversation_link]);
+        downloadPromptHistoryFile(`glam-prompt-history-${day}.csv`, [headers, ...rows].map(row => row.map(csvCell).join(",")).join("\r\n"), "text/csv;charset=utf-8");
+      }
+
       async function runHubBrain(mode, question) {
         const res = await fetch("https://chatgpt-learning-hub.netlify.app/.netlify/functions/ask", {
           method: "POST",
