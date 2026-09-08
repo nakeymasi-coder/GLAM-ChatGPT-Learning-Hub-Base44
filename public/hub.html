@@ -7426,16 +7426,28 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
       }
 
       async function runHubBrain(mode, question) {
-        const res = await fetch("https://chatgpt-learning-hub.netlify.app/.netlify/functions/ask", {
-          method: "POST",
-          headers: hubProtectedHeaders(),
-          body: JSON.stringify({ mode, question, history: [], catalog: askHubCatalog() })
-        });
+        const tool = mode === "prompt_builder" ? "Prompt Library AI Builder" : "Learning Hub AI";
         let data;
-        try { data = await res.json(); }
-        catch { throw new Error("The Learning Hub AI returned an unreadable response."); }
-        if (!res.ok) throw new Error(data.error || "The Learning Hub AI could not answer right now.");
-        return data;
+        try {
+          const res = await fetch("https://chatgpt-learning-hub.netlify.app/.netlify/functions/ask", {
+            method: "POST",
+            headers: hubProtectedHeaders(),
+            body: JSON.stringify({ mode, question, history: [], catalog: askHubCatalog() })
+          });
+          try { data = await res.json(); }
+          catch { throw new Error("The Learning Hub AI returned an unreadable response."); }
+          if (!res.ok) throw new Error(data.error || "The Learning Hub AI could not answer right now.");
+          await savePromptHistory({
+            prompt: question,
+            tool,
+            response: formatAskHistoryResponse(data),
+            conversationLink: promptHistoryConversationLink(data)
+          });
+          return data;
+        } catch (error) {
+          await savePromptHistory({ prompt: question, tool, response: `Request failed: ${error.message}` });
+          throw error;
+        }
       }
 
       async function buildAskLibraryPrompt() {
@@ -7523,6 +7535,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           .forEach((x) => x.classList.toggle("active", x.dataset.sideTab === name));
         const tools = document.getElementById("toolboxDetails");
         if (tools && name !== "academy") tools.open = true;
+        if (name === "history") loadPromptHistory();
         closeHubSidebar();
         document
           .getElementById("hub")
@@ -7922,7 +7935,14 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           usage.count = used + 1;
           localStorage.setItem("glamAICoachUsage", JSON.stringify(usage));
           renderAICoaching(box, data, DAILY_LIMIT - (used + 1), id, input);
+          await savePromptHistory({
+            prompt: input,
+            tool: `Prompt Coach — ${l.title}`,
+            response: formatCoachHistoryResponse(data),
+            conversationLink: promptHistoryConversationLink(data)
+          });
         } catch (err) {
+          await savePromptHistory({ prompt: input, tool: `Prompt Coach — ${l?.title || "Lesson"}`, response: `Request failed: ${err.message}` });
           box.innerHTML = `<strong>I couldn't reach the AI Coach.</strong><br>
    <span style="color:var(--muted)">Your lesson is still working. Once the Netlify Function and API key are connected, this button will give personalized coaching. Error: ${escapeAttr(err.message)}</span>`;
         }
@@ -9028,7 +9048,14 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
    </div>`;
           document.getElementById("simImproved").textContent =
             data.improvedPrompt || attempt;
+          await savePromptHistory({
+            prompt: attempt,
+            tool: "Prompt Simulator",
+            response: formatCoachHistoryResponse(data),
+            conversationLink: promptHistoryConversationLink(data)
+          });
         } catch (e) {
+          await savePromptHistory({ prompt: attempt, tool: "Prompt Simulator", response: `Request failed: ${e.message}` });
           fb.innerHTML = `<div class="coach-panel"><strong>AI Coach unavailable.</strong><p class="help">${escapeAttr(e.message)}</p></div>`;
         }
       };
@@ -9355,6 +9382,12 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       document.getElementById("charChooseForMe").onclick = chooseCharacterDefaults;
       document.getElementById("charBuildBtn").onclick = buildCharacterPrompt;
 
+      ["historySearch", "historyToolFilter", "historyFromDate", "historyToDate", "historySort"].forEach(id => {
+        const field = document.getElementById(id);
+        field?.addEventListener(id === "historySearch" ? "input" : "change", renderPromptHistory);
+      });
+      renderPromptHistory();
+
       renderPaths();
       renderLessons();
       renderAskLibrary();
@@ -9415,6 +9448,12 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
 
           askHubHistory.push({role:"user",content:question},{role:"assistant",content:data.answer||""});
           if(askHubHistory.length>8) askHubHistory.splice(0,askHubHistory.length-8);
+          await savePromptHistory({
+            prompt: question,
+            tool: "Prompt Concierge",
+            response: formatAskHistoryResponse(data),
+            conversationLink: promptHistoryConversationLink(data)
+          });
           const steps=Array.isArray(data.nextSteps)?data.nextSteps:[];
           const lessonExists=data.lessonId&&Array.isArray(lessons)&&lessons.some(l=>l.id===data.lessonId);
           answerBox.innerHTML=`
@@ -9443,6 +9482,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           status.textContent="Ask a follow-up anytime — this remembers the last few messages in this session.";
           input.value="";
         } catch(error) {
+          await savePromptHistory({ prompt: question, tool: "Prompt Concierge", response: `Request failed: ${error.message || "The Prompt Concierge is temporarily unavailable."}` });
           answerBox.innerHTML=`<div class="ask-answer-card"><small>Couldn't connect</small><p>${askHubEscape(error.message||"The Prompt Concierge is temporarily unavailable.")}</p><p style="margin-top:8px;color:var(--muted);font-size:12px;">This app uses your existing protected AI backend. Try again in a moment if the service is busy.</p></div>`;
           status.textContent="Your question is still in the box so you can try again.";
         } finally { button.disabled=false; button.textContent="Ask AI"; }
