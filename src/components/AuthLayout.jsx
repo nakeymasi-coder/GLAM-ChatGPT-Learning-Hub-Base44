@@ -17,6 +17,11 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
         {footer && (
           <p className="text-center text-sm text-muted-foreground mt-6">{footer}</p>
         )}
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          <a href="/terms.html" target="_blank" rel="noopener noreferrer" className="hover:underline">Terms & Conditions</a>
+          <span className="mx-2">•</span>
+          <a href="/privacy.html" target="_blank" rel="noopener noreferrer" className="hover:underline">Privacy Policy</a>
+        </p>
       </div>
     </div>
   );
