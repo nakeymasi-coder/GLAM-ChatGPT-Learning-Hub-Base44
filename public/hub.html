@@ -11,15 +11,32 @@
     <script>
       (async function protectHub(){
         document.documentElement.style.visibility = 'hidden';
+        const APP_ID = '6a9aedd33cd938f0f47b9ff7';
+        const TERMS_VERSION = '2026-09-07';
+        const PRIVACY_VERSION = '2026-09-07';
         try {
           const token = localStorage.getItem('base44_access_token') || localStorage.getItem('token');
-          const headers = token ? { Authorization: `Bearer ${token}` } : {};
-          const response = await fetch('/api/apps/6a9aedd33cd938f0f47b9ff7/entities/User/me', { headers, credentials:'include' });
+          if (!token) throw new Error('auth_required');
+          const headers = { Authorization: `Bearer ${token}` };
+          const response = await fetch(`/api/apps/${APP_ID}/entities/User/me`, { headers, credentials:'include' });
           if (!response.ok) throw new Error('auth_required');
+
+          const legalResponse = await fetch(`/api/apps/${APP_ID}/entities/LegalAcceptance?sort=-created_date&limit=50`, { headers, credentials:'include' });
+          if (!legalResponse.ok) throw new Error('legal_check_failed');
+          const legalPayload = await legalResponse.json();
+          const records = Array.isArray(legalPayload) ? legalPayload : (legalPayload?.data || legalPayload?.items || legalPayload?.results || []);
+          const accepted = Array.isArray(records) && records.some(record => {
+            const terms = record?.terms_version ?? record?.data?.terms_version;
+            const privacy = record?.privacy_version ?? record?.data?.privacy_version;
+            return terms === TERMS_VERSION && privacy === PRIVACY_VERSION;
+          });
+          if (!accepted) {
+            window.location.replace('/legal-consent?returnTo=%2Fhub.html');
+            return;
+          }
           document.documentElement.style.visibility = 'visible';
         } catch (error) {
-          const returnTo = encodeURIComponent(window.location.href);
-          window.location.replace(`/login?from_url=${returnTo}`);
+          window.location.replace('/login?returnTo=%2Fhub.html');
         }
       })();
     </script>
