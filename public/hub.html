@@ -2686,6 +2686,27 @@
       .tutorial-step p { margin:4px 0 0; color:var(--muted); font-size:13px; line-height:1.5; }
       .tutorial-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
 
+      /* ===== AUTOMATIC PROMPT HISTORY ===== */
+      .history-toolbar { display:grid; grid-template-columns:minmax(220px,1.4fr) repeat(3,minmax(150px,.7fr)); gap:10px; margin-top:18px; }
+      .history-toolbar input, .history-toolbar select { width:100%; min-height:44px; border:1px solid var(--line); border-radius:12px; background:#fff; color:var(--ink); padding:10px 12px; font:inherit; }
+      .history-actions { display:flex; flex-wrap:wrap; gap:10px; margin:12px 0 16px; }
+      .history-status { color:var(--muted); font-size:13px; margin-left:auto; align-self:center; }
+      .history-list { display:grid; gap:14px; }
+      .history-card { border:1px solid var(--line); border-radius:20px; background:#fff; padding:18px; box-shadow:0 10px 28px rgba(16,59,99,.07); }
+      .history-card-head { display:flex; justify-content:space-between; gap:14px; align-items:flex-start; }
+      .history-card-meta { display:flex; flex-wrap:wrap; gap:7px; align-items:center; color:var(--muted); font-size:12px; }
+      .history-tool { display:inline-flex; align-items:center; border-radius:999px; background:var(--soft-blue); color:var(--deep); padding:6px 10px; font-weight:800; }
+      .history-card h4 { margin:14px 0 6px; font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--deep); }
+      .history-text { margin:0; white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.58; color:var(--ink); }
+      .history-response { max-height:240px; overflow:auto; padding:12px; border-radius:14px; background:var(--soft); border:1px solid var(--line); }
+      .history-card-buttons { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+      .history-empty { text-align:center; padding:32px 18px; border:1px dashed var(--silver); border-radius:18px; color:var(--muted); background:#fff; }
+      .history-link { color:var(--sapphire); font-weight:800; text-decoration:none; }
+      .history-link:hover { text-decoration:underline; }
+
+      @media (max-width: 900px) { .history-toolbar { grid-template-columns:1fr 1fr; } }
+      @media (max-width: 600px) { .history-toolbar { grid-template-columns:1fr; } .history-card-head { flex-direction:column; } .history-status { width:100%; margin-left:0; } }
+
       @media (max-width: 760px) {
         .start-choice-grid, .roadmap-grid { grid-template-columns:1fr; }
         .beginner-start { padding:20px; border-radius:22px; }
@@ -2768,6 +2789,7 @@
           <button class="side-link" data-side-tab="scenarios" type="button" onclick="goTab('scenarios')"><span class="side-icon">S</span>Scenario Coach</button>
           <button class="side-link" data-side-tab="simulator" type="button" onclick="goTab('simulator')"><span class="side-icon">≈</span>Prompt Simulator</button>
           <button class="side-link" data-side-tab="playbook" type="button" onclick="goTab('playbook')"><span class="side-icon">★</span>My Playbook</button>
+          <button class="side-link" data-side-tab="history" type="button" onclick="goTab('history')"><span class="side-icon">H</span>Prompt History</button>
           <button class="side-link" data-side-tab="quiz" type="button" onclick="goTab('quiz')"><span class="side-icon">Q</span>Skill Check</button>
           <button class="side-link" data-side-tab="assessment" type="button" onclick="goTab('assessment')"><span class="side-icon">✓</span>Final Assessment</button>
           <button class="side-link" data-side-tab="certificate" type="button" onclick="goTab('certificate')"><span class="side-icon">★</span>Certificate</button>
@@ -2900,6 +2922,7 @@
             <button class="tab" data-tab="researchlab">Business Research Lab</button>
             <button class="tab" data-tab="glossary">Glossary</button>
             <button class="tab" data-tab="playbook">My Playbook</button>
+            <button class="tab" data-tab="history">Prompt History</button>
             <button class="tab" data-tab="simulator">Prompt Simulator</button>
             <button class="tab" data-tab="assessment">Final Assessment</button>
             <button class="tab" data-tab="certificate">Certificate</button>
@@ -3834,6 +3857,31 @@
               <div class="playbook-list" id="playbookList"></div>
             </div>
           </div>
+        </div>
+
+        <div class="panel" id="panel-history">
+          <div class="box">
+            <div class="kicker">Saved automatically</div>
+            <h3>Prompt History</h3>
+            <p class="help">Every prompt sent through the Hub’s AI tools is saved here automatically with its response, tool, and your local date, time, and time zone.</p>
+            <div class="history-toolbar" aria-label="Prompt history filters">
+              <input id="historySearch" type="search" placeholder="Search prompts, responses, or tools..." />
+              <select id="historyToolFilter" aria-label="Filter by tool"><option value="">All tools</option></select>
+              <input id="historyFromDate" type="date" aria-label="From date" />
+              <input id="historyToDate" type="date" aria-label="To date" />
+            </div>
+            <div class="history-actions">
+              <select id="historySort" class="tiny-btn" aria-label="Sort prompt history">
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+              </select>
+              <button class="tiny-btn" type="button" onclick="clearPromptHistoryFilters()">Clear Filters</button>
+              <button class="tiny-btn" type="button" onclick="exportPromptHistory('csv')">Export CSV</button>
+              <button class="tiny-btn" type="button" onclick="exportPromptHistory('json')">Export JSON</button>
+              <span class="history-status" id="historyStatus">Loading your history…</span>
+            </div>
+          </div>
+          <div class="history-list" id="promptHistoryList" aria-live="polite"></div>
         </div>
 
         <div class="panel" id="panel-simulator">

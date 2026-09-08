@@ -1,0 +1,53 @@
+{
+  "properties": {
+    "conversation_link": {
+      "type": "string"
+    },
+    "local_datetime": {
+      "type": "string"
+    },
+    "prompt": {
+      "type": "string"
+    },
+    "response": {
+      "type": "string"
+    },
+    "submitted_at": {
+      "type": "string"
+    },
+    "submitted_at_ms": {
+      "type": "number"
+    },
+    "timezone": {
+      "type": "string"
+    },
+    "tool_used": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "prompt",
+    "tool_used",
+    "response",
+    "submitted_at",
+    "submitted_at_ms",
+    "local_datetime",
+    "timezone"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    }
+  },
+  "type": "object",
+  "name": "PromptHistory"
+}
