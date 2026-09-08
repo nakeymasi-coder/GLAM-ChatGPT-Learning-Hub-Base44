@@ -859,6 +859,57 @@
       .tiny-btn:hover {
         background: #eaf5fc;
       }
+      .playbook-save-control {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .prompt-save-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+      .playbook-save-btn {
+        background: var(--sapphire);
+        border-color: var(--sapphire);
+        color: #fff;
+        min-height: 38px;
+      }
+      .playbook-save-btn:hover {
+        background: #0878c9;
+        color: #fff;
+      }
+      .playbook-save-btn.saved {
+        background: #e9f8ef;
+        border-color: #91d3aa;
+        color: #176b3a;
+      }
+      .playbook-save-btn.error {
+        background: #fff1f1;
+        border-color: #ef9a9a;
+        color: #9b1c1c;
+      }
+      .playbook-save-btn:focus-visible,
+      .playbook-view-btn:focus-visible,
+      .playbook-remove-btn:focus-visible {
+        outline: 3px solid rgba(22, 143, 234, 0.35);
+        outline-offset: 2px;
+      }
+      .playbook-save-btn[aria-busy="true"] {
+        cursor: wait;
+        opacity: 0.8;
+      }
+      @media (max-width: 620px) {
+        .playbook-save-control,
+        .prompt-save-row {
+          width: 100%;
+        }
+        .playbook-save-control .tiny-btn {
+          min-height: 44px;
+        }
+      }
 
       .finder,
       .box {
@@ -8405,21 +8456,271 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
             )
             .join("") || `<div class="empty-state">No matching term.</div>`;
       }
-      function saveToPlaybook(id, title, content) {
-        if (playbook.some((x) => x.id === id)) {
-          toast("Already saved in your Playbook.");
-          return;
+      function normalizePlaybookPrompt(content) {
+        return String(content || "").replace(/\r\n/g, "\n").trim();
+      }
+      function findSavedPlaybookPrompt(content) {
+        const normalized = normalizePlaybookPrompt(content);
+        if (!normalized) return null;
+        return playbook.find((x) => normalizePlaybookPrompt(x.content) === normalized) || null;
+      }
+      function announcePlaybookSave(message) {
+        toast(message);
+        let live = document.getElementById("playbookSaveAnnouncements");
+        if (!live) {
+          live = document.createElement("div");
+          live.id = "playbookSaveAnnouncements";
+          live.className = "sr-only";
+          live.setAttribute("role", "status");
+          live.setAttribute("aria-live", "polite");
+          live.setAttribute("aria-atomic", "true");
+          document.body.appendChild(live);
         }
-        playbook.unshift({ id, title, content });
-        localStorage.setItem("glamPlaybook", JSON.stringify(playbook));
-        renderPlaybook();
-        toast("Saved to My Playbook.");
+        live.textContent = "";
+        window.setTimeout(() => { live.textContent = message; }, 20);
+      }
+      function writePlaybookEntry(id, title, content, source) {
+        const exactContent = String(content || "");
+        if (!normalizePlaybookPrompt(exactContent)) {
+          throw new Error("There is no prompt to save yet.");
+        }
+        const duplicate = findSavedPlaybookPrompt(exactContent);
+        if (duplicate) return { item: duplicate, duplicate: true };
+        const now = new Date();
+        const zone = Intl.DateTimeFormat().resolvedOptions().timeZone || "Local time";
+        const item = {
+          id: id || ("manual-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8)),
+          title: title || "Saved Prompt",
+          content: exactContent,
+          source: source || "Learning Hub",
+          savedAt: now.toISOString(),
+          metadata: {
+            savedFrom: "manual",
+            tool: source || "Learning Hub",
+            localDateTime: now.toLocaleString(undefined, { dateStyle: "full", timeStyle: "long" }),
+            timeZone: zone,
+            page: location.pathname
+          }
+        };
+        const nextPlaybook = [item, ...playbook];
+        localStorage.setItem("glamPlaybook", JSON.stringify(nextPlaybook));
+        playbook = nextPlaybook;
+        return { item, duplicate: false };
+      }
+      function saveToPlaybook(id, title, content, source = "Learning Hub") {
+        try {
+          const result = writePlaybookEntry(id, title, content, source);
+          renderPlaybook();
+          refreshPlaybookSaveButtons();
+          announcePlaybookSave(result.duplicate ? "This prompt is already saved in your Playbook." : "Prompt saved to your Playbook.");
+          return result.item;
+        } catch (error) {
+          announcePlaybookSave(error.message || "Prompt could not be saved. Please try again.");
+          return null;
+        }
       }
       function removePlaybook(id) {
-        playbook = playbook.filter((x) => x.id !== id);
-        localStorage.setItem("glamPlaybook", JSON.stringify(playbook));
-        renderPlaybook();
-        toast("Removed.");
+        try {
+          const nextPlaybook = playbook.filter((x) => x.id !== id);
+          localStorage.setItem("glamPlaybook", JSON.stringify(nextPlaybook));
+          playbook = nextPlaybook;
+          renderPlaybook();
+          refreshPlaybookSaveButtons();
+          announcePlaybookSave("Prompt removed from your Playbook.");
+        } catch (error) {
+          announcePlaybookSave("Prompt could not be removed. Please try again.");
+        }
+      }
+      function playbookPromptText(target) {
+        if (!target) return "";
+        if (target.matches("textarea,input")) return target.value;
+        return target.textContent || "";
+      }
+      function playbookPanelName(element) {
+        const panel = element.closest(".panel");
+        const names = {
+          "panel-asklibrary": "Ask AI Prompt Library",
+          "panel-finder": "Feature Finder",
+          "panel-coach": "Prompt Coach",
+          "panel-business": "Business Hub",
+          "panel-practice": "Prompt Simulator",
+          "panel-lab": "Prompt Lab",
+          "panel-ask": "Prompt Concierge"
+        };
+        return (panel && names[panel.id]) || "Learning Hub";
+      }
+      function playbookPromptTitle(element, source) {
+        const scope = element.closest(".result,.box,.prompt-template-card,.template-card,.coach-report,.research-output,.lesson-modal,.modal-card") || element.parentElement;
+        const heading = scope && scope.querySelector("h3,h4,.output-title,.label");
+        const text = heading && heading.textContent.trim();
+        return text ? text.slice(0, 110) : source + " Prompt";
+      }
+      function findPromptNearCopyButton(copyButton) {
+        const handler = copyButton.getAttribute("onclick") || "";
+        const idMatch = handler.match(/getElementById\(['"]([^'"]+)['"]\)/);
+        if (idMatch) {
+          const direct = document.getElementById(idMatch[1]);
+          if (direct) return direct;
+        }
+        let node = copyButton.parentElement;
+        for (let depth = 0; node && depth < 6; depth += 1, node = node.parentElement) {
+          const candidates = Array.from(node.querySelectorAll("pre,.prompt-preview,.ai-improved")).filter(
+            (el) => !el.closest("#playbookList") && !el.closest(".prompt-history")
+          );
+          if (candidates.length === 1) return candidates[0];
+          if (candidates.length > 1) {
+            const before = candidates.filter((el) => Boolean(el.compareDocumentPosition(copyButton) & Node.DOCUMENT_POSITION_FOLLOWING));
+            if (before.length) return before[before.length - 1];
+          }
+        }
+        return null;
+      }
+      function updatePlaybookSaveControl(control) {
+        const target = document.getElementById(control.dataset.promptTarget || "");
+        const saveButton = control.querySelector(".playbook-save-btn");
+        if (!target || !saveButton || saveButton.getAttribute("aria-busy") === "true") return;
+        const saved = findSavedPlaybookPrompt(playbookPromptText(target));
+        saveButton.classList.toggle("saved", Boolean(saved));
+        saveButton.classList.remove("error");
+        const desiredText = saved ? "✓ Saved to Playbook" : "Save to Playbook";
+        if (saveButton.textContent.trim() !== desiredText) {
+          saveButton.innerHTML = saved ? '<span aria-hidden="true">✓</span> Saved to Playbook' : 'Save to Playbook';
+        }
+        saveButton.setAttribute("aria-label", saved ? "Saved to Playbook. This prompt is already saved." : "Save this prompt to Playbook");
+        saveButton.dataset.savedId = saved ? saved.id : "";
+        let viewButton = control.querySelector(".playbook-view-btn");
+        let removeButton = control.querySelector(".playbook-remove-btn");
+        if (saved) {
+          if (!viewButton) {
+            viewButton = document.createElement("button");
+            viewButton.type = "button";
+            viewButton.className = "tiny-btn playbook-view-btn";
+            viewButton.textContent = "View in Playbook";
+            viewButton.onclick = viewPlaybook;
+            control.appendChild(viewButton);
+          }
+          if (!removeButton) {
+            removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.className = "tiny-btn playbook-remove-btn";
+            removeButton.textContent = "Remove";
+            control.appendChild(removeButton);
+          }
+          removeButton.onclick = () => removePlaybook(saved.id);
+        } else {
+          if (viewButton) viewButton.remove();
+          if (removeButton) removeButton.remove();
+        }
+      }
+      function refreshPlaybookSaveButtons() {
+        document.querySelectorAll(".playbook-save-control").forEach(updatePlaybookSaveControl);
+      }
+      function viewPlaybook() {
+        const modal = document.getElementById("lessonModal");
+        if (modal) modal.classList.remove("open");
+        goTab("playbook");
+        const heading = document.querySelector("#panel-playbook h2,#panel-playbook h3");
+        if (heading) {
+          heading.setAttribute("tabindex", "-1");
+          heading.focus({ preventScroll: false });
+        }
+      }
+      function savePromptFromControl(button) {
+        const control = button.closest(".playbook-save-control");
+        const target = control && document.getElementById(control.dataset.promptTarget || "");
+        if (!control || !target) {
+          announcePlaybookSave("This prompt is not ready to save yet.");
+          return;
+        }
+        const content = playbookPromptText(target);
+        const duplicate = findSavedPlaybookPrompt(content);
+        if (duplicate) {
+          updatePlaybookSaveControl(control);
+          announcePlaybookSave("This prompt is already saved in your Playbook.");
+          return;
+        }
+        const originalText = button.textContent;
+        button.disabled = true;
+        button.setAttribute("aria-busy", "true");
+        button.textContent = "Saving…";
+        window.setTimeout(() => {
+          try {
+            const result = writePlaybookEntry("", control.dataset.promptTitle, content, control.dataset.promptSource);
+            renderPlaybook();
+            button.disabled = false;
+            button.setAttribute("aria-busy", "false");
+            refreshPlaybookSaveButtons();
+            announcePlaybookSave(result.duplicate ? "This prompt is already saved in your Playbook." : "Prompt saved to your Playbook.");
+          } catch (error) {
+            button.disabled = false;
+            button.setAttribute("aria-busy", "false");
+            button.classList.add("error");
+            button.textContent = "Try Saving Again";
+            button.setAttribute("aria-label", "Save failed. Try saving this prompt again.");
+            announcePlaybookSave(error.message || "Prompt could not be saved. Please try again.");
+            window.setTimeout(() => {
+              if (!button.classList.contains("saved")) button.textContent = originalText || "Save to Playbook";
+            }, 2500);
+          }
+        }, 120);
+      }
+      let playbookPromptControlCounter = 0;
+      let playbookEnhanceQueued = false;
+      function enhancePromptSaveControls() {
+        document.querySelectorAll("button").forEach((copyButton) => {
+          if (copyButton.dataset.playbookEnhanced === "true") return;
+          if (copyButton.closest("#playbookList") || copyButton.closest(".prompt-history")) return;
+          const label = copyButton.textContent.trim().toLowerCase();
+          const handler = copyButton.getAttribute("onclick") || "";
+          if (!label.includes("copy") || (!handler.includes("copyText") && !copyButton.classList.contains("copy"))) return;
+          const promptTarget = findPromptNearCopyButton(copyButton);
+          if (!promptTarget || !normalizePlaybookPrompt(playbookPromptText(promptTarget))) return;
+          if (!promptTarget.id) promptTarget.id = "playbookPrompt-" + (++playbookPromptControlCounter);
+          const source = playbookPanelName(copyButton);
+          const title = playbookPromptTitle(promptTarget, source);
+          const actionArea = copyButton.closest(".card-actions,.research-actions,.saved-actions,.ask-actions,.output-actions");
+          const legacyScope = actionArea || copyButton.parentElement;
+          legacyScope.querySelectorAll("button").forEach((candidate) => {
+            if (candidate !== copyButton && !candidate.classList.contains("playbook-save-btn") && /save.*playbook/i.test(candidate.textContent)) candidate.remove();
+          });
+          const control = document.createElement("span");
+          control.className = "playbook-save-control";
+          control.dataset.promptTarget = promptTarget.id;
+          control.dataset.promptSource = source;
+          control.dataset.promptTitle = title;
+          control.innerHTML = '<button type="button" class="tiny-btn playbook-save-btn" aria-label="Save this prompt to Playbook">Save to Playbook</button>';
+          control.querySelector(".playbook-save-btn").onclick = function () { savePromptFromControl(this); };
+          if (actionArea) {
+            copyButton.insertAdjacentElement("afterend", control);
+          } else {
+            const row = document.createElement("div");
+            row.className = "prompt-save-row";
+            row.appendChild(control);
+            const promptBox = promptTarget.closest(".ai-improved,.formula-output") || promptTarget;
+            promptBox.insertAdjacentElement("afterend", row);
+          }
+          copyButton.dataset.playbookEnhanced = "true";
+          updatePlaybookSaveControl(control);
+        });
+      }
+      function queuePromptSaveEnhancement() {
+        if (playbookEnhanceQueued) return;
+        playbookEnhanceQueued = true;
+        requestAnimationFrame(() => {
+          playbookEnhanceQueued = false;
+          enhancePromptSaveControls();
+          refreshPlaybookSaveButtons();
+        });
+      }
+      function startPromptSaveEnhancer() {
+        enhancePromptSaveControls();
+        const observer = new MutationObserver(queuePromptSaveEnhancement);
+        observer.observe(document.body, { childList: true, subtree: true });
+      }
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", startPromptSaveEnhancer);
+      } else {
+        startPromptSaveEnhancer();
       }
       function renderPlaybook() {
         const list = document.getElementById("playbookList");
@@ -8970,12 +9271,8 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         saveCustomPlaybookV4(researchPromptTitles[type] || "Business Research Lab", prompt);
       }
 
-      function saveCustomPlaybookV4(title, content) {
-        const id = "v4-" + Date.now();
-        playbook.unshift({ id, title, content });
-        localStorage.setItem("glamPlaybook", JSON.stringify(playbook));
-        renderPlaybook();
-        toast("Saved to My Playbook.");
+      function saveCustomPlaybookV4(title, content, source = "Learning Hub") {
+        return saveToPlaybook("", title, content, source);
       }
 
       function renderSimulator() {
