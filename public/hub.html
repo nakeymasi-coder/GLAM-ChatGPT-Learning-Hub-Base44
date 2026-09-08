@@ -8,6 +8,7 @@
       name="description"
       content="An interactive beginner-friendly academy for learning ChatGPT features, prompts, workflows, research, files, images, projects, tasks, apps, memory, and business use."
     />
+    <script type="module" src="/assets/hub-api.js"></script>
     <script>
       (async function protectHub(){
         document.documentElement.style.visibility = 'hidden';
@@ -7480,18 +7481,79 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         downloadPromptHistoryFile(`glam-prompt-history-${day}.csv`, [headers, ...rows].map(row => row.map(csvCell).join(",")).join("\r\n"), "text/csv;charset=utf-8");
       }
 
-      async function runHubBrain(mode, question) {
-        const tool = mode === "prompt_builder" ? "Prompt Library AI Builder" : "Learning Hub AI";
-        let data;
-        try {
-          const res = await fetch("https://chatgpt-learning-hub.netlify.app/.netlify/functions/ask", {
-            method: "POST",
-            headers: hubProtectedHeaders(),
-            body: JSON.stringify({ mode, question, history: [], catalog: askHubCatalog() })
+      const HUB_ASK_RESPONSE_SCHEMA = {
+        type: "object",
+        properties: {
+          answer: { type: "string" },
+          whatYouNeed: { type: "string" },
+          bestFeature: { type: "string" },
+          nextSteps: { type: "array", items: { type: "string" } },
+          copyPrompt: { type: "string" },
+          followUp: { type: "string" },
+          lessonId: { type: "string" },
+          lessonTitle: { type: "string" },
+          conversationLink: { type: "string" }
+        },
+        required: ["answer", "whatYouNeed", "bestFeature", "nextSteps", "copyPrompt", "followUp", "lessonId", "lessonTitle"]
+      };
+      const HUB_COACH_RESPONSE_SCHEMA = {
+        type: "object",
+        properties: {
+          score: { type: "number" },
+          headline: { type: "string" },
+          summary: { type: "string" },
+          interpretation: { type: "string" },
+          strengths: { type: "array", items: { type: "string" } },
+          missing: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: { item: { type: "string" }, why: { type: "string" } },
+              required: ["item", "why"]
+            }
+          },
+          coachingTips: { type: "array", items: { type: "string" } },
+          whyBetter: { type: "string" },
+          improvedPrompt: { type: "string" },
+          nextChallenge: { type: "string" },
+          conversationLink: { type: "string" }
+        },
+        required: ["score", "headline", "summary", "interpretation", "strengths", "missing", "coachingTips", "whyBetter", "improvedPrompt", "nextChallenge"]
+      };
+      async function hubInvokeAI(request) {
+        if (typeof window.glamHubInvokeLLM !== "function") {
+          await new Promise((resolve, reject) => {
+            const timer = window.setTimeout(() => reject(new Error("The Learning Hub AI is still loading. Please try again.")), 8000);
+            window.addEventListener("glam-hub-ai-ready", () => {
+              window.clearTimeout(timer);
+              resolve();
+            }, { once: true });
           });
-          try { data = await res.json(); }
-          catch { throw new Error("The Learning Hub AI returned an unreadable response."); }
-          if (!res.ok) throw new Error(data.error || "The Learning Hub AI could not answer right now.");
+        }
+        return window.glamHubInvokeLLM(request);
+      }
+      function hubAskInstructions(mode, question, history = [], catalog = []) {
+        return [
+          "You are the AI guide inside the GLAM ChatGPT Learning Hub. Help complete beginners, especially adults 40+, in clear, warm, direct language.",
+          "MODE: " + mode,
+          "USER REQUEST:\n" + question,
+          "RECENT CONVERSATION:\n" + JSON.stringify(history),
+          "AVAILABLE HUB LESSONS AND TOOLS:\n" + JSON.stringify(catalog),
+          "Return useful, specific guidance. Do not invent a Hub feature. When recommending a lesson, use an exact lesson id and title from the catalog or return empty strings.",
+          "For prompt_builder or prompt_coach mode, copyPrompt must be a complete, polished, copy-ready prompt that preserves the user's facts, formatting needs, constraints, and requested platform.",
+          "For feature_finder mode, bestFeature must name the one best tool or workflow and copyPrompt must be a practical starter prompt.",
+          "For concierge mode, explain what the user is trying to do, choose the simplest suitable ChatGPT feature, give short ordered next steps, and create a reusable starter prompt.",
+          "Never claim you browsed or verified current information unless the user supplied it. If current facts matter, tell the user to ask ChatGPT to search the web in the copy-ready prompt.",
+          "Keep answer concise and beginner-friendly. Return only data matching the required response schema."
+        ].join("\n\n");
+      }
+      async function runHubBrain(mode, question, history = [], catalog = askHubCatalog()) {
+        const tool = mode === "prompt_builder" ? "Prompt Library AI Builder" : "Learning Hub AI";
+        try {
+          const data = await hubInvokeAI({
+            prompt: hubAskInstructions(mode, question, history, catalog),
+            response_json_schema: HUB_ASK_RESPONSE_SCHEMA
+          });
           await savePromptHistory({
             prompt: question,
             tool,
@@ -7500,9 +7562,21 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           });
           return data;
         } catch (error) {
-          await savePromptHistory({ prompt: question, tool, response: `Request failed: ${error.message}` });
+          await savePromptHistory({ prompt: question, tool, response: "Request failed: " + error.message });
           throw error;
         }
+      }
+      async function runHubCoach(attempt, lesson) {
+        const prompt = [
+          "You are a patient, practical prompt coach inside the GLAM ChatGPT Learning Hub.",
+          "Review the learner's exact prompt. Score clarity and usefulness from 0 to 100. Explain what ChatGPT will understand, what is missing, and how to improve it.",
+          "Preserve the learner's facts and intent. Do not add unsupported facts. Produce a stronger copy-ready prompt with useful structure, context, constraints, and output format.",
+          "Use clear language for a complete beginner. Be encouraging without hiding real problems.",
+          "LEARNER PROMPT:\n" + attempt,
+          "LESSON CONTEXT:\n" + JSON.stringify(lesson),
+          "Return only data matching the required response schema."
+        ].join("\n\n");
+        return hubInvokeAI({ prompt, response_json_schema: HUB_COACH_RESPONSE_SCHEMA });
       }
 
       async function buildAskLibraryPrompt() {
