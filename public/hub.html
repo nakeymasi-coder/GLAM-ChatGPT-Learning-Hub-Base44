@@ -9711,7 +9711,44 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
 
       // Ask ChatGPT — real-time Learning Hub guide
       const askHubHistory = [];
-      const ASK_HUB_ENDPOINT = "https://chatgpt-learning-hub.netlify.app/.netlify/functions/ask";
+      const ASK_HUB_ENDPOINT = "/api/apps/6a9aedd33cd938f0f47b9ff7/functions/hubAi";
+      const CONCIERGE_RESPONSE_SCHEMA = {
+        type: "object",
+        properties: {
+          answer: { type: "string", description: "Main guidance headline answering the member's goal" },
+          whatYouNeed: { type: "string", description: "Restate what the member is trying to do" },
+          bestFeature: { type: "string", description: "The single best ChatGPT feature or workflow for this goal" },
+          nextSteps: { type: "array", items: { type: "string" }, description: "3 to 5 concrete actionable steps" },
+          copyPrompt: { type: "string", description: "Ready-to-copy starter prompt for ChatGPT" },
+          followUp: { type: "string", description: "One suggested follow-up question" },
+          lessonId: { type: "string", description: "id of the matching catalog lesson, or empty string" },
+          lessonTitle: { type: "string", description: "title of the matching catalog lesson, or empty string" }
+        },
+        required: ["answer", "whatYouNeed", "bestFeature", "nextSteps", "copyPrompt", "followUp", "lessonId", "lessonTitle"],
+        additionalProperties: false
+      };
+      function buildConciergePrompt(question, history, catalog) {
+        return [
+          "You are the GLAM ChatGPT Learning Hub AI Concierge. Help the member accomplish their goal with ChatGPT by recommending the single best feature or workflow.",
+          "Rules:",
+          "- Use the member's full request exactly as written; never omit, shorten, or summarize their details.",
+          "- Recommend ONE best ChatGPT feature or workflow for their specific goal.",
+          "- Give 3 to 5 concrete, actionable next steps.",
+          "- Provide a ready-to-copy starter prompt they can paste into ChatGPT.",
+          "- Suggest one short follow-up question.",
+          "- If the goal closely matches a lesson in the catalog, set lessonId and lessonTitle to that lesson's id and title; otherwise set both to empty strings.",
+          "- Be specific and practical. No filler.",
+          "",
+          "LESSON CATALOG (JSON, may be empty):",
+          JSON.stringify(catalog || []),
+          "",
+          "RECENT CONVERSATION (for context, may be empty):",
+          JSON.stringify(history || []),
+          "",
+          "MEMBER REQUEST:",
+          question
+        ].join("\n");
+      }
 
       function askHubEscape(value) {
         return String(value ?? "")
@@ -9740,15 +9777,20 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         try {
           const isLongAsk = question.length > 700;
           if (isLongAsk) status.textContent="Your request is detailed — I’m sending a lighter context package so none of your idea gets cut off…";
-          const res = await fetch(ASK_HUB_ENDPOINT, {
-            method: "POST",
-            headers: hubProtectedHeaders(),
-            body: JSON.stringify({
-              question,
-              history: isLongAsk ? askHubHistory.slice(-2) : askHubHistory,
-              catalog: askHubCatalog(isLongAsk)
-            }),
-          });
+          const history = isLongAsk ? askHubHistory.slice(-2) : askHubHistory;
+          const catalog = askHubCatalog(isLongAsk);
+          const composedPrompt = buildConciergePrompt(question, history, catalog);
+          let res;
+          try {
+            res = await fetch(ASK_HUB_ENDPOINT, {
+              method: "POST",
+              headers: hubProtectedHeaders(),
+              credentials: "include",
+              body: JSON.stringify({ prompt: composedPrompt, response_json_schema: CONCIERGE_RESPONSE_SCHEMA })
+            });
+          } catch (networkError) {
+            throw new Error("Couldn't reach the Learning Hub AI backend. Check your connection and try again.");
+          }
           let data;
           try { data = await res.json(); }
           catch { throw new Error("The AI guide returned an unreadable response."); }
