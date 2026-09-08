@@ -1,42 +1,37 @@
 /* =========================================================================
    Prompt Concierge — project system
-   Keeps ONE ongoing project with ONE master prompt that grows over the
-   conversation. Saved projects live in the Playbook with search, category
-   filter, and sorting. Loaded after hub.html inline scripts so it can reuse
+   ONE ongoing project with ONE master prompt that grows over the
+   conversation. SAVED projects persist to the HubProject entity via the
+   hubProjects backend function (entity = source of truth). The active
+   in-progress draft lives in localStorage so it survives reloads before
+   the member names and saves it. A localStorage mirror of saved projects
+   is kept as a fallback so the Playbook still renders if the entity call
+   fails. Loaded after hub.html inline scripts so it can reuse
    askHubHistory, playbook, renderPlaybook, toast, copyText, openLesson, lessons.
    ========================================================================= */
 (function () {
   "use strict";
+
+  var APP_ID = "6a9aedd33cd938f0f47b9ff7";
+  var HUB_PROJECTS_ENDPOINT = "/api/apps/" + APP_ID + "/functions/hubProjects";
 
   var PROJECT_CATEGORIES = [
     "App / Generator", "Business", "Content Creation", "Course / Workshop",
     "Images / Graphics", "Marketing", "Mockups", "Product Listing",
     "Prompts", "Research", "Website", "Other"
   ];
-  var ACTIVE_KEY = "glamConciergeProject";
-  var SAVED_KEY = "glamSavedProjects";
+  var ACTIVE_KEY = "glamConciergeProject";   // in-progress draft (localStorage)
+  var SAVED_KEY = "glamSavedProjects";       // fallback mirror of saved projects
 
-  var project = null;       // active in-progress project
-  var savedProjects = [];   // saved project list
+  var project = null;       // active in-progress project (draft)
+  var savedProjects = [];   // cached list from the HubProject entity
+  var loadingProjects = false;
 
   function esc(v) {
     return String(v == null ? "" : v)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
   }
-  function uid() { return "proj-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8); }
-
-  function loadSaved() { try { savedProjects = JSON.parse(localStorage.getItem(SAVED_KEY) || "[]") || []; } catch (e) { savedProjects = []; } }
-  function persistSaved() { try { localStorage.setItem(SAVED_KEY, JSON.stringify(savedProjects)); } catch (e) {} }
-  function loadActive() { try { project = JSON.parse(localStorage.getItem(ACTIVE_KEY) || "null"); } catch (e) { project = null; } }
-  function persistActive() {
-    try {
-      if (project) localStorage.setItem(ACTIVE_KEY, JSON.stringify(project));
-      else localStorage.removeItem(ACTIVE_KEY);
-    } catch (e) {}
-  }
-
-  function current() { return project; }
 
   function fmtDate(iso) {
     if (!iso) return "—";
@@ -64,6 +59,112 @@
     if (match) return match;
     match = PROJECT_CATEGORIES.find(function (c) { return c.toLowerCase().indexOf(String(s).toLowerCase()) > -1; });
     return match || "Other";
+  }
+
+  /* ---- auth + entity API ---- */
+  function hubAuthHeaders() {
+    var token = localStorage.getItem("base44_access_token") || localStorage.getItem("token");
+    if (!token) throw new Error("Your Hub session expired. Please sign in again.");
+    return { "Content-Type": "application/json", Authorization: "Bearer " + token };
+  }
+
+  async function callHubProjects(op, payload) {
+    var res = await fetch(HUB_PROJECTS_ENDPOINT, {
+      method: "POST",
+      headers: hubAuthHeaders(),
+      credentials: "include",
+      body: JSON.stringify(Object.assign({ op: op }, payload || {}))
+    });
+    var data = {};
+    try { data = await res.json(); } catch (e) {}
+    if (!res.ok) throw new Error((data && data.error) || "The saved project request failed.");
+    return data;
+  }
+
+  function normalizeProject(p) {
+    p = p || {};
+    var hist = [];
+    try { hist = JSON.parse(p.conversation_history || "[]") || []; } catch (e) { hist = []; }
+    return {
+      id: p.id || "",
+      name: String(p.name || "Untitled project"),
+      category: p.category || "Other",
+      status: p.status || "Building",
+      masterPrompt: p.master_prompt || "",
+      summary: p.summary || "",
+      recommendedWorkspace: p.recommended_workspace || "ChatGPT chat",
+      workspaceReason: p.workspace_reason || "",
+      history: Array.isArray(hist) ? hist : [],
+      createdAt: p.created_date || "",
+      updatedAt: p.updated_date || "",
+      source: p.source || "Prompt Concierge"
+    };
+  }
+
+  function toEntityFields(p) {
+    return {
+      name: (p.name || "Untitled project").slice(0, 200),
+      category: p.category || "Other",
+      status: p.status || "Building",
+      master_prompt: p.masterPrompt || "",
+      summary: p.summary || "",
+      recommended_workspace: p.recommended_workspace || "ChatGPT chat",
+      workspace_reason: p.workspaceReason || "",
+      conversation_history: JSON.stringify(Array.isArray(p.history) ? p.history : []),
+      source: p.source || "Prompt Concierge"
+    };
+  }
+
+  /* ---- localStorage draft + fallback mirror ---- */
+  function loadDraft() { try { project = JSON.parse(localStorage.getItem(ACTIVE_KEY) || "null"); } catch (e) { project = null; } }
+  function persistDraft() {
+    try {
+      if (project) localStorage.setItem(ACTIVE_KEY, JSON.stringify(project));
+      else localStorage.removeItem(ACTIVE_KEY);
+    } catch (e) {}
+  }
+  function loadMirror() { try { return JSON.parse(localStorage.getItem(SAVED_KEY) || "[]") || []; } catch (e) { return []; } }
+  function persistMirror() { try { localStorage.setItem(SAVED_KEY, JSON.stringify(savedProjects)); } catch (e) {} }
+
+  function current() { return project; }
+
+  /* ---- load saved projects from the entity (fallback to mirror) ---- */
+  async function loadProjects() {
+    if (loadingProjects) return;
+    loadingProjects = true;
+    try {
+      var data = await callHubProjects("list");
+      var items = (data && (data.data || data.items || data)) || [];
+      if (!Array.isArray(items)) items = [];
+      savedProjects = items.map(normalizeProject);
+      persistMirror();
+      // one-time migration of pre-entity localStorage projects
+      if (!savedProjects.length) {
+        var legacy = loadMirror();
+        if (legacy && legacy.length) {
+          for (var i = 0; i < legacy.length; i++) {
+            try { await callHubProjects("create", { fields: toEntityFields(legacy[i]) }); } catch (e) {}
+          }
+          var fresh = await callHubProjects("list");
+          savedProjects = ((fresh && (fresh.data || fresh.items || fresh)) || []).map(normalizeProject);
+          persistMirror();
+        }
+      }
+    } catch (e) {
+      // entity unavailable — fall back to the localStorage mirror so the Playbook still renders
+      savedProjects = loadMirror();
+    } finally {
+      loadingProjects = false;
+    }
+  }
+
+  async function refreshProjects() {
+    try {
+      var data = await callHubProjects("list");
+      var items = (data && (data.data || data.items || data)) || [];
+      if (Array.isArray(items)) { savedProjects = items.map(normalizeProject); persistMirror(); }
+    } catch (e) { /* keep cache */ }
+    renderProjects();
   }
 
   /* ---- beginner walkthrough ---- */
@@ -100,11 +201,9 @@
 
     var masterPrompt = data.masterPrompt || data.copyPrompt || "";
     var isNew = !project;
-    var prevSavedId = project ? project.savedProjectId : null;
 
     if (isNew) {
       project = {
-        id: uid(),
         name: (data.projectNameSuggestion || "Untitled project").slice(0, 80),
         category: pickCategory(data.categorySuggestion),
         masterPrompt: masterPrompt,
@@ -128,27 +227,33 @@
       project.history.push({ role: "user", content: question }, { role: "assistant", content: data.answer || "" });
       if (project.history.length > 40) project.history.splice(0, project.history.length - 40);
       project.updatedAt = new Date().toISOString();
-      project.savedProjectId = prevSavedId;
     }
-    persistActive();
+    persistDraft();
 
     // if already saved, keep the saved record in sync as the master prompt grows
     if (project.savedProjectId) {
-      var sp = savedProjects.find(function (p) { return p.id === project.savedProjectId; });
-      if (sp) {
-        sp.masterPrompt = project.masterPrompt;
-        sp.summary = project.summary;
-        sp.recommendedWorkspace = project.recommendedWorkspace;
-        sp.status = project.status;
-        sp.history = project.history;
-        sp.updatedAt = project.updatedAt;
-        persistSaved();
-      }
+      syncSavedQuietly();
     }
 
     paint(answer, data);
     if (status) status.textContent = statusMessage(project.status);
     answer.classList.add("show");
+  }
+
+  async function syncSavedQuietly() {
+    if (!project || !project.savedProjectId) return;
+    try {
+      await callHubProjects("update", { id: project.savedProjectId, fields: toEntityFields(project) });
+      var sp = savedProjects.find(function (p) { return p.id === project.savedProjectId; });
+      if (sp) {
+        Object.assign(sp, {
+          masterPrompt: project.masterPrompt, summary: project.summary,
+          recommendedWorkspace: project.recommendedWorkspace, status: project.status,
+          history: project.history, updatedAt: project.updatedAt
+        });
+        persistMirror();
+      }
+    } catch (e) { /* silent — the next manual save will retry */ }
   }
 
   function paint(answer, data) {
@@ -201,7 +306,7 @@
     if (fields.style.display === "flex") { var n = document.getElementById("projectNameInput"); if (n) n.focus(); }
   }
 
-  function confirmSave() {
+  async function confirmSave() {
     var nameInput = document.getElementById("projectNameInput");
     var catSelect = document.getElementById("projectCategorySelect");
     if (!nameInput || !nameInput.value.trim()) { if (nameInput) nameInput.focus(); toast("Give your project a name first."); return; }
@@ -210,48 +315,46 @@
     project.category = catSelect ? catSelect.value : "Other";
     project.userNamed = true;
     project.userCategorized = true;
-    project.savedProjectId = project.id;
     project.updatedAt = new Date().toISOString();
-    var rec = {
-      id: project.id, name: project.name, category: project.category,
-      masterPrompt: project.masterPrompt, summary: project.summary,
-      recommendedWorkspace: project.recommendedWorkspace, status: project.status,
-      history: project.history, createdAt: project.createdAt, updatedAt: project.updatedAt,
-      source: "Prompt Concierge"
-    };
-    var idx = savedProjects.findIndex(function (p) { return p.id === project.id; });
-    if (idx > -1) savedProjects[idx] = rec; else savedProjects.unshift(rec);
-    persistSaved();
-    toast("Project saved to your Playbook.");
-    var fields = document.getElementById("projectSaveFields"); if (fields) fields.style.display = "none";
-    var btn = document.getElementById("saveProjectBtn"); if (btn) btn.textContent = "Update Saved Project";
-    renderPlaybook();
+    var btn = document.getElementById("saveProjectBtn");
+    if (btn) { btn.disabled = true; btn.textContent = "Saving…"; }
+    try {
+      if (project.savedProjectId) {
+        await callHubProjects("update", { id: project.savedProjectId, fields: toEntityFields(project) });
+      } else {
+        var created = await callHubProjects("create", { fields: toEntityFields(project) });
+        var rec = created && (created.data || created);
+        if (rec && rec.id) project.savedProjectId = rec.id;
+      }
+      toast("Project saved to your Playbook.");
+      var fields = document.getElementById("projectSaveFields"); if (fields) fields.style.display = "none";
+      if (btn) { btn.disabled = false; btn.textContent = "Update Saved Project"; }
+      refreshProjects();
+    } catch (e) {
+      if (btn) { btn.disabled = false; btn.textContent = "Save Project"; }
+      toast(String(e && e.message || "Could not save the project. Please try again."));
+    }
   }
 
-  function updateSaved() {
+  async function updateSaved() {
     if (!project || !project.savedProjectId) { toggleSave(); return; }
     project.updatedAt = new Date().toISOString();
-    var idx = savedProjects.findIndex(function (p) { return p.id === project.savedProjectId; });
-    if (idx > -1) {
-      savedProjects[idx] = {
-        id: project.savedProjectId, name: project.name, category: project.category,
-        masterPrompt: project.masterPrompt, summary: project.summary,
-        recommendedWorkspace: project.recommendedWorkspace, status: project.status,
-        history: project.history, createdAt: savedProjects[idx].createdAt || project.createdAt,
-        updatedAt: project.updatedAt, source: "Prompt Concierge"
-      };
-      persistSaved();
+    var btn = document.getElementById("saveProjectBtn");
+    if (btn) { btn.disabled = true; btn.textContent = "Updating…"; }
+    try {
+      await callHubProjects("update", { id: project.savedProjectId, fields: toEntityFields(project) });
       toast("Saved project updated.");
-      renderPlaybook();
-    } else {
-      project.savedProjectId = null;
-      toggleSave();
+      if (btn) { btn.disabled = false; btn.textContent = "Update Saved Project"; }
+      refreshProjects();
+    } catch (e) {
+      if (btn) { btn.disabled = false; btn.textContent = "Update Saved Project"; }
+      toast(String(e && e.message || "Could not update the project. Please try again."));
     }
   }
 
   function reset() {
     project = null;
-    persistActive();
+    persistDraft();
     var answer = document.getElementById("askChatgptAnswer");
     var status = document.getElementById("askChatgptStatus");
     var input = document.getElementById("askChatgptInput");
@@ -351,14 +454,14 @@
     var p = savedProjects.find(function (x) { return x.id === id; });
     if (!p) { toast("That project could not be found."); return; }
     project = {
-      id: p.id, name: p.name, category: p.category || "Other",
+      name: p.name, category: p.category || "Other",
       masterPrompt: p.masterPrompt || "", summary: p.summary || "",
-      recommendedWorkspace: p.recommendedWorkspace || "ChatGPT chat", workspaceReason: "",
+      recommendedWorkspace: p.recommendedWorkspace || "ChatGPT chat", workspaceReason: p.workspaceReason || "",
       status: p.status || "Ready to Use", history: Array.isArray(p.history) ? p.history.slice() : [],
       createdAt: p.createdAt || new Date().toISOString(), updatedAt: p.updatedAt || new Date().toISOString(),
       savedProjectId: p.id, userNamed: true, userCategorized: true
     };
-    persistActive();
+    persistDraft();
     try { askHubHistory.splice(0); (p.history || []).forEach(function (h) { askHubHistory.push({ role: h.role, content: h.content }); }); } catch (e) {}
 
     var answer = document.getElementById("askChatgptAnswer");
@@ -388,11 +491,13 @@
 
   function update() { updateSaved(); }
   function copyMasterById(id) { var p = savedProjects.find(function (x) { return x.id === id; }); if (p) copyText(p.masterPrompt || ""); }
-  function remove(id) {
+  async function remove(id) {
     if (!confirm("Delete this saved project? This cannot be undone.")) return;
+    try { await callHubProjects("delete", { id: id }); }
+    catch (e) { toast(String(e && e.message || "Could not delete the project.")); return; }
     savedProjects = savedProjects.filter(function (p) { return p.id !== id; });
-    persistSaved();
-    if (project && project.savedProjectId === id) { project.savedProjectId = null; persistActive(); }
+    persistMirror();
+    if (project && project.savedProjectId === id) { project.savedProjectId = null; persistDraft(); }
     renderProjects();
     toast("Project deleted.");
   }
@@ -441,10 +546,9 @@
   }
 
   /* ---- init ---- */
-  function init() {
+  async function init() {
     injectStyles();
-    loadSaved();
-    loadActive();
+    loadDraft();
 
     var cf = document.getElementById("projectCategoryFilter");
     if (cf) {
@@ -454,7 +558,9 @@
     if (cf) cf.addEventListener("change", renderProjects);
     var so = document.getElementById("projectSort"); if (so) so.addEventListener("change", renderProjects);
 
-    renderPlaybook();
+    renderPlaybook();           // render prompts + draft immediately
+    await loadProjects();       // then load saved projects from the entity
+    renderProjects();           // re-render project list once loaded
 
     // restore an in-progress project into the Concierge
     if (project && project.masterPrompt) {
@@ -493,7 +599,8 @@
     update: update,
     open: open,
     remove: remove,
-    renderPlaybook: renderPlaybook
+    renderPlaybook: renderPlaybook,
+    refreshProjects: refreshProjects
   };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
