@@ -1,0 +1,61 @@
+{
+  "name": "HubProject",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Project name the member gives the saved Prompt Concierge project."
+    },
+    "category": {
+      "type": "string",
+      "description": "Project category from the Concierge category list."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Building",
+        "Ready to Use",
+        "Needs More Details"
+      ],
+      "description": "Current state of the master prompt for this project."
+    },
+    "master_prompt": {
+      "type": "string",
+      "description": "The single evolving master prompt for this project."
+    },
+    "summary": {
+      "type": "string",
+      "description": "One-sentence summary of what the project is about."
+    },
+    "recommended_workspace": {
+      "type": "string",
+      "description": "Where to paste the master prompt inside ChatGPT: 'ChatGPT chat' or 'ChatGPT Work'."
+    },
+    "workspace_reason": {
+      "type": "string",
+      "description": "Short beginner-friendly reason for the recommended workspace."
+    },
+    "conversation_history": {
+      "type": "string",
+      "description": "JSON-encoded array of {role, content} messages for the whole Concierge conversation."
+    },
+    "source": {
+      "type": "string",
+      "description": "Where the project came from, e.g. 'Prompt Concierge'."
+    }
+  },
+  "required": [
+    "name"
+  ],
+  "rls": {
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}
