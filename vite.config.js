@@ -26,7 +26,7 @@ export default defineConfig({
       output: {
         entryFileNames: (chunkInfo) =>
           chunkInfo.name === 'hub-api'
-            ? 'assets/hub-api.js'
+            ? 'assets/hub-ai-secure-20260908.js'
             : 'assets/[name]-[hash].js'
       }
     }
