@@ -9718,8 +9718,12 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
           .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
       }
-      function askHubCatalog() {
-        return Array.isArray(lessons) ? lessons.map(l => ({ id:l.id, title:l.title, path:l.path, desc:l.desc })) : [];
+      function askHubCatalog(compact = false) {
+        if (!Array.isArray(lessons)) return [];
+        return lessons.map(l => compact
+          ? ({ id:l.id, title:l.title, path:l.path })
+          : ({ id:l.id, title:l.title, path:l.path, desc:l.desc })
+        );
       }
       async function askLearningHub() {
         const input=document.getElementById("askChatgptInput");
@@ -9734,10 +9738,16 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         answerBox.classList.add("show");
         answerBox.innerHTML=`<div class="ask-loading"><span class="ask-spinner"></span>Figuring out the best way to help you…</div>`;
         try {
+          const isLongAsk = question.length > 700;
+          if (isLongAsk) status.textContent="Your request is detailed — I’m sending a lighter context package so none of your idea gets cut off…";
           const res = await fetch(ASK_HUB_ENDPOINT, {
             method: "POST",
             headers: hubProtectedHeaders(),
-            body: JSON.stringify({ question, history: askHubHistory, catalog: askHubCatalog() }),
+            body: JSON.stringify({
+              question,
+              history: isLongAsk ? askHubHistory.slice(-2) : askHubHistory,
+              catalog: askHubCatalog(isLongAsk)
+            }),
           });
           let data;
           try { data = await res.json(); }
