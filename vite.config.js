@@ -1,6 +1,7 @@
 import base44 from "@base44/vite-plugin"
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
+import { resolve } from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -15,5 +16,19 @@ export default defineConfig({
       visualEditAgent: true
     }),
     react(),
-  ]
+  ],
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(process.cwd(), 'index.html'),
+        'hub-api': resolve(process.cwd(), 'src/hub-api.js')
+      },
+      output: {
+        entryFileNames: (chunkInfo) =>
+          chunkInfo.name === 'hub-api'
+            ? 'assets/hub-api.js'
+            : 'assets/[name]-[hash].js'
+      }
+    }
+  }
 });
