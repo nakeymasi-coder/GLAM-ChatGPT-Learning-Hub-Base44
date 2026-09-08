@@ -3642,13 +3642,6 @@
               <button class="copy" id="copyUpgradedPrompt">Copy</button>
               <pre id="upgradedPrompt"></pre>
             </div>
-            <button
-              class="tiny-btn"
-              id="saveClinicPrompt"
-              style="margin-top: 10px"
-            >
-              Save to My Playbook
-            </button>
           </div>
         </div>
 
@@ -8040,7 +8033,6 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
    <div class="card-actions">
      <button class="tiny-btn" onclick="document.getElementById('tryInput-${id}').value='';document.getElementById('tryInput-${id}').focus()">Let Me Try Again</button>
      <button class="tiny-btn" onclick="document.getElementById('tryInput-${id}').value=document.getElementById('aiImproved-${id}').innerText">Edit the Better Version</button>
-     <button class="tiny-btn" onclick="saveCustomPlaybookV4('AI Coach: '+lessons.find(x=>x.id==='${id}').title,document.getElementById('aiImproved-${id}').innerText)">Save to Playbook</button>
    </div>
    ${data.nextChallenge ? `<div class="coach-panel"><h4>Next challenge</h4><p class="help" style="margin:0">${escapeAttr(data.nextChallenge)}</p></div>` : ""}
    <div class="usage-note">${remaining} AI coaching session${remaining === 1 ? "" : "s"} remaining today on this browser.</div>
@@ -8678,7 +8670,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           if (!promptTarget.id) promptTarget.id = "playbookPrompt-" + (++playbookPromptControlCounter);
           const source = playbookPanelName(copyButton);
           const title = playbookPromptTitle(promptTarget, source);
-          const actionArea = copyButton.closest(".card-actions,.research-actions,.saved-actions,.ask-actions,.output-actions");
+          const actionArea = copyButton.closest(".card-actions,.research-actions,.saved-actions,.ask-actions,.ask-recommend,.output-actions");
           const legacyScope = actionArea || copyButton.parentElement;
           legacyScope.querySelectorAll("button").forEach((candidate) => {
             if (candidate !== copyButton && !candidate.classList.contains("playbook-save-btn") && /save.*playbook/i.test(candidate.textContent)) candidate.remove();
@@ -8905,7 +8897,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           parts.join(", ") +
           ". Keep the composition intentional, preserve the requested subject details, and do not add unrelated clutter.";
         document.getElementById("formulaResult").innerHTML =
-          `<div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('builtFormulaPrompt').innerText)">Copy</button><pre id="builtFormulaPrompt"></pre></div><div class="card-actions" style="margin-top:10px"><button class="tiny-btn" onclick="saveCustomPlaybookV4('Prompt Formula',document.getElementById('builtFormulaPrompt').innerText)">Save to Playbook</button></div>`;
+          `<div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('builtFormulaPrompt').innerText)">Copy</button><pre id="builtFormulaPrompt"></pre></div>`;
         document.getElementById("builtFormulaPrompt").textContent = prompt;
       };
 
@@ -9063,12 +9055,6 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       };
       document.getElementById("copyUpgradedPrompt").onclick = () =>
         copyText(document.getElementById("upgradedPrompt").innerText);
-      document.getElementById("saveClinicPrompt").onclick = () =>
-        saveCustomPlaybookV4(
-          "Prompt Clinic Upgrade",
-          document.getElementById("upgradedPrompt").innerText,
-        );
-
 
       const researchAudienceFields = ["rpAudience", "rqAudience", "rvAudience", "rppAudience"];
       const researchSessionFieldIds = [
@@ -9671,7 +9657,6 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
 
           <div class="card-actions" style="margin-top:12px">
             <button class="tiny-btn" onclick="addCharacterStackToPromptBuilder()">Add Stack to Prompt Builder</button>
-            <button class="tiny-btn" onclick="saveCustomPlaybookV4('Character Prompt Builder', document.getElementById('characterPromptFull').innerText)">Save to Playbook</button>
           </div>
         `;
       }
@@ -9766,7 +9751,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
               <small>Starter prompt — copy this into ChatGPT</small>
               <div class="ask-copy-box" id="askHubCopyPrompt">${askHubEscape(data.copyPrompt||"")}</div>
               <div class="ask-recommend">
-                <button class="btn secondary" type="button" id="askHubCopyBtn">Copy Prompt</button>
+                <button class="btn secondary" type="button" id="askHubCopyBtn" onclick="copyText(document.getElementById('askHubCopyPrompt').innerText)">Copy Prompt</button>
                 ${lessonExists?`<button class="btn primary" type="button" id="askHubLessonBtn">Open lesson: ${askHubEscape(data.lessonTitle)}</button>`:""}
               </div>
             </div>`;
