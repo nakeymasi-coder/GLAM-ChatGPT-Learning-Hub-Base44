@@ -3265,103 +3265,433 @@
                 Start with what you mean in plain English. Then choose a few visual options. If you do not know what to pick, use <strong>Choose For Me</strong>.
               </p>
               <div class="stack">
+                <div class="label">Character style</div>
                 <select id="charPreset">
-                  <option value="hyperReal">Hyper-realistic model</option>
-                  <option value="exaggeratedChibi">Exaggerated chibi character</option>
+                  <option value="hyperReal">Hyper-realistic person</option>
+                  <option value="cinematic">Cinematic character</option>
+                  <option value="lifestyle">Realistic lifestyle character</option>
                   <option value="beautyCampaign">Luxury beauty campaign</option>
                   <option value="editorial">Editorial fashion portrait</option>
+                  <option value="fashionDoll">Fashion doll</option>
+                  <option value="animated3d">Premium 3D animated character</option>
+                  <option value="exaggeratedChibi">Exaggerated chibi character</option>
+                  <option value="cartoon">Polished cartoon illustration</option>
+                  <option value="comic">Comic-book character</option>
+                  <option value="anime">Anime-inspired character</option>
+                  <option value="clay">Clay character</option>
+                  <option value="plush">Plush toy character</option>
                   <option value="designerToy">Collectible mascot / designer toy</option>
+                  <option value="fantasy">Fantasy character</option>
+                  <option value="storybook">Storybook character</option>
+                  <option value="retro">Retro illustration character</option>
+                  <option value="digitalPaint">Digital painting character</option>
+                  <option value="gameRealism">Realistic game character</option>
                 </select>
-                <input class="field" id="charSubject" placeholder="Who or what are you making? Example: plus-size African American woman" />
+                <input class="field" id="charSubject" placeholder="Who or what are you making? Example: African American woman, male chef, fantasy elf, brand mascot" />
+
+                <div class="label">Character basics</div>
                 <div class="finder-grid">
-                  <select id="charBodyType">
-                    <option value="plus-size">Plus-size</option>
-                    <option value="curvy">Curvy</option>
-                    <option value="thick">Thick</option>
-                    <option value="average">Average</option>
-                    <option value="slim">Slim</option>
+                  <select id="charPresentation">
+                    <option value="feminine presentation">Feminine presentation</option>
+                    <option value="masculine presentation">Masculine presentation</option>
+                    <option value="androgynous presentation">Androgynous presentation</option>
+                    <option value="gender-neutral presentation">Gender-neutral presentation</option>
+                    <option value="">Custom / describe in Extra Details</option>
                   </select>
                   <select id="charAge">
-                    <option value="adult">Adult</option>
                     <option value="young adult">Young adult</option>
-                    <option value="grown woman">Grown woman</option>
+                    <option value="adult" selected>Adult</option>
+                    <option value="adult in their 30s">30s</option>
+                    <option value="adult in their 40s">40s</option>
                     <option value="middle-aged adult">Middle-aged adult</option>
+                    <option value="mature adult">Mature adult</option>
+                    <option value="senior adult">Senior adult</option>
+                    <option value="ageless fantasy adult">Ageless fantasy adult</option>
+                  </select>
+                </div>
+                <div class="finder-grid">
+                  <select id="charBodyType">
+                    <option value="plus-size" selected>Plus-size</option>
+                    <option value="curvy">Curvy</option>
+                    <option value="thick">Thick</option>
+                    <option value="full-figured">Full-figured</option>
+                    <option value="soft athletic build">Soft athletic</option>
+                    <option value="athletic build">Athletic</option>
+                    <option value="muscular build">Muscular</option>
+                    <option value="broad build">Broad</option>
+                    <option value="average build">Average</option>
+                    <option value="slim build">Slim</option>
+                    <option value="petite build">Petite</option>
+                    <option value="tall statuesque build">Tall / statuesque</option>
+                  </select>
+                  <select id="charHeight">
+                    <option value="average height">Average height</option>
+                    <option value="petite height">Petite</option>
+                    <option value="short stature">Short</option>
+                    <option value="tall stature">Tall</option>
+                    <option value="very tall statuesque stature">Very tall / statuesque</option>
+                    <option value="">Custom / not specified</option>
                   </select>
                 </div>
                 <div class="finder-grid">
                   <select id="charSkinTone">
-                    <option value="deep brown skin tone">Deep brown skin tone</option>
-                    <option value="rich brown skin tone">Rich brown skin tone</option>
-                    <option value="warm brown skin tone">Warm brown skin tone</option>
-                    <option value="golden brown skin tone">Golden brown skin tone</option>
-                    <option value="medium brown skin tone">Medium brown skin tone</option>
+                    <option value="very deep brown skin tone">Very deep brown</option>
+                    <option value="deep brown skin tone" selected>Deep brown</option>
+                    <option value="rich brown skin tone">Rich brown</option>
+                    <option value="warm brown skin tone">Warm brown</option>
+                    <option value="golden brown skin tone">Golden brown</option>
+                    <option value="medium brown skin tone">Medium brown</option>
+                    <option value="tan skin tone">Tan</option>
+                    <option value="olive skin tone">Olive</option>
+                    <option value="medium skin tone">Medium</option>
+                    <option value="light-medium skin tone">Light-medium</option>
+                    <option value="light skin tone">Light</option>
+                    <option value="fair skin tone">Fair</option>
+                    <option value="porcelain skin tone">Porcelain</option>
+                    <option value="">Custom / describe in Extra Details</option>
                   </select>
-                  <select id="charFraming">
-                    <option value="editorial portrait">Editorial portrait</option>
-                    <option value="close-up beauty shot">Close-up beauty shot</option>
-                    <option value="waist-up portrait">Waist-up portrait</option>
-                    <option value="full-body fashion portrait">Full-body fashion portrait</option>
-                    <option value="packaging-style hero shot">Packaging-style hero shot</option>
+                  <select id="charUndertone">
+                    <option value="warm golden undertone">Warm golden undertone</option>
+                    <option value="neutral undertone">Neutral undertone</option>
+                    <option value="cool undertone">Cool undertone</option>
+                    <option value="olive undertone">Olive undertone</option>
+                    <option value="red-rich undertone">Red-rich undertone</option>
+                    <option value="">Custom / not specified</option>
+                  </select>
+                </div>
+
+                <div class="label">Face + features</div>
+                <div class="finder-grid">
+                  <select id="charFaceShape">
+                    <option value="oval face shape">Oval face</option>
+                    <option value="round face shape">Round face</option>
+                    <option value="heart-shaped face">Heart-shaped face</option>
+                    <option value="square face shape">Square face</option>
+                    <option value="diamond face shape">Diamond face</option>
+                    <option value="long face shape">Long face</option>
+                    <option value="soft full face">Soft full face</option>
+                    <option value="sculpted angular face">Sculpted angular face</option>
+                    <option value="">Custom / not specified</option>
+                  </select>
+                  <select id="charEyes">
+                    <option value="almond-shaped eyes" selected>Almond-shaped eyes</option>
+                    <option value="round expressive eyes">Round expressive eyes</option>
+                    <option value="doe eyes">Doe eyes</option>
+                    <option value="hooded eyes">Hooded eyes</option>
+                    <option value="upturned eyes">Upturned eyes</option>
+                    <option value="downturned eyes">Downturned eyes</option>
+                    <option value="deep-set eyes">Deep-set eyes</option>
+                    <option value="monolid eyes">Monolid eyes</option>
+                    <option value="oversized expressive eyes">Oversized expressive eyes</option>
                   </select>
                 </div>
                 <div class="finder-grid">
-                  <select id="charEyes">
-                    <option value="oversized expressive eyes">Oversized expressive eyes</option>
-                    <option value="almond-shaped eyes">Almond-shaped eyes</option>
-                    <option value="doe eyes">Doe eyes</option>
-                    <option value="cat-eye shape">Cat-eye shape</option>
+                  <select id="charEyeColor">
+                    <option value="deep brown eyes">Deep brown eyes</option>
+                    <option value="dark brown eyes">Dark brown eyes</option>
+                    <option value="warm brown eyes">Warm brown eyes</option>
+                    <option value="hazel eyes">Hazel eyes</option>
+                    <option value="amber eyes">Amber eyes</option>
+                    <option value="green eyes">Green eyes</option>
+                    <option value="blue eyes">Blue eyes</option>
+                    <option value="gray eyes">Gray eyes</option>
+                    <option value="violet fantasy eyes">Violet fantasy eyes</option>
+                    <option value="">Custom / not specified</option>
                   </select>
+                  <select id="charBrows">
+                    <option value="softly arched brows">Softly arched brows</option>
+                    <option value="full natural brows">Full natural brows</option>
+                    <option value="defined sculpted brows">Defined sculpted brows</option>
+                    <option value="straight brows">Straight brows</option>
+                    <option value="feathered brows">Feathered brows</option>
+                    <option value="thin vintage brows">Thin vintage brows</option>
+                    <option value="">Custom / not specified</option>
+                  </select>
+                </div>
+                <div class="finder-grid">
+                  <select id="charNose">
+                    <option value="soft rounded nose">Soft rounded nose</option>
+                    <option value="broad natural nose">Broad natural nose</option>
+                    <option value="button nose">Button nose</option>
+                    <option value="straight nose">Straight nose</option>
+                    <option value="defined sculpted nose">Defined sculpted nose</option>
+                    <option value="aquiline nose">Aquiline nose</option>
+                    <option value="">Custom / not specified</option>
+                  </select>
+                  <select id="charLipShape">
+                    <option value="full lips">Full lips</option>
+                    <option value="plush full lips">Plush full lips</option>
+                    <option value="defined cupid's-bow lips">Defined cupid's-bow lips</option>
+                    <option value="wide expressive lips">Wide expressive lips</option>
+                    <option value="soft rounded lips">Soft rounded lips</option>
+                    <option value="balanced natural lips">Balanced natural lips</option>
+                    <option value="">Custom / not specified</option>
+                  </select>
+                </div>
+                <div class="finder-grid">
                   <select id="charLashes">
                     <option value="wispy lashes">Wispy lashes</option>
                     <option value="dramatic lashes">Dramatic lashes</option>
                     <option value="spiky editorial lashes">Spiky editorial lashes</option>
                     <option value="natural flutter lashes">Natural flutter lashes</option>
+                    <option value="dense curled lashes">Dense curled lashes</option>
+                    <option value="minimal natural lashes">Minimal natural lashes</option>
                   </select>
-                </div>
-                <div class="finder-grid">
                   <select id="charLips">
                     <option value="glossy lips">Glossy lips</option>
                     <option value="candy-gloss lips">Candy-gloss lips</option>
-                    <option value="soft nude glossy lips">Soft nude glossy lips</option>
+                    <option value="soft neutral glossy lips">Soft neutral glossy lips</option>
                     <option value="high-shine neutral lips">High-shine neutral lips</option>
+                    <option value="velvet matte lips">Velvet matte lips</option>
+                    <option value="satin-finish lips">Satin-finish lips</option>
+                    <option value="bold statement lip color">Bold statement lip</option>
+                    <option value="natural hydrated lips">Natural hydrated lips</option>
                   </select>
+                </div>
+
+                <div class="label">Hair + beauty</div>
+                <div class="finder-grid">
+                  <select id="charHairTexture">
+                    <option value="silky straight texture">Silky straight</option>
+                    <option value="soft wavy texture">Soft wavy</option>
+                    <option value="defined curly texture">Defined curly</option>
+                    <option value="coily natural texture">Coily natural</option>
+                    <option value="kinky-coily natural texture">Kinky-coily</option>
+                    <option value="loc texture">Locs</option>
+                    <option value="braided texture">Braided</option>
+                    <option value="">Custom / not specified</option>
+                  </select>
+                  <select id="charHairLength">
+                    <option value="short hair length">Short</option>
+                    <option value="chin-length hair">Chin-length</option>
+                    <option value="shoulder-length hair">Shoulder-length</option>
+                    <option value="mid-back hair length">Mid-back</option>
+                    <option value="waist-length hair">Waist-length</option>
+                    <option value="extra-long dramatic hair">Extra-long</option>
+                    <option value="">Custom / not specified</option>
+                  </select>
+                </div>
+                <div class="finder-grid">
                   <select id="charHair">
                     <option value="sleek glass hair">Sleek glass hair</option>
                     <option value="mirror-shine body waves">Mirror-shine body waves</option>
                     <option value="ultra-sleek straight hair">Ultra-sleek straight hair</option>
                     <option value="Hollywood waves">Hollywood waves</option>
                     <option value="defined glossy curls">Defined glossy curls</option>
+                    <option value="voluminous natural afro">Voluminous natural afro</option>
+                    <option value="silk press hairstyle">Silk press</option>
+                    <option value="high ponytail">High ponytail</option>
+                    <option value="sleek bun">Sleek bun</option>
+                    <option value="bob haircut">Bob haircut</option>
+                    <option value="pixie cut">Pixie cut</option>
+                    <option value="long knotless braids">Long knotless braids</option>
+                    <option value="waist-length locs">Waist-length locs</option>
+                    <option value="half-up half-down hairstyle">Half-up, half-down</option>
+                    <option value="">Custom / describe in Extra Details</option>
+                  </select>
+                  <select id="charHairColor">
+                    <option value="natural black hair">Natural black</option>
+                    <option value="soft black hair">Soft black</option>
+                    <option value="dark brown hair">Dark brown</option>
+                    <option value="chocolate brown hair">Chocolate brown</option>
+                    <option value="honey-blonde hair">Honey blonde</option>
+                    <option value="platinum-blonde hair">Platinum blonde</option>
+                    <option value="copper hair">Copper</option>
+                    <option value="burgundy hair">Burgundy</option>
+                    <option value="silver-gray hair">Silver-gray</option>
+                    <option value="fashion-color ombré hair">Fashion-color ombré</option>
+                    <option value="">Custom / not specified</option>
+                  </select>
+                </div>
+                <select id="charMakeup">
+                  <option value="soft glam makeup">Soft glam makeup</option>
+                  <option value="natural no-makeup makeup">Natural / no-makeup makeup</option>
+                  <option value="precision makeup">Precision makeup</option>
+                  <option value="full glam makeup">Full glam makeup</option>
+                  <option value="beauty-campaign makeup">Beauty-campaign makeup</option>
+                  <option value="editorial makeup">Editorial makeup</option>
+                  <option value="smoky-eye glam makeup">Smoky-eye glam</option>
+                  <option value="dewy luminous makeup">Dewy luminous makeup</option>
+                  <option value="matte sculpted makeup">Matte sculpted makeup</option>
+                  <option value="bold colorful makeup">Bold colorful makeup</option>
+                  <option value="vintage-inspired makeup">Vintage-inspired makeup</option>
+                  <option value="">Custom / none</option>
+                </select>
+
+                <div class="label">Styling + personality</div>
+                <div class="finder-grid">
+                  <select id="charExpression">
+                    <option value="confident relaxed expression">Confident relaxed expression</option>
+                    <option value="warm natural smile">Warm natural smile</option>
+                    <option value="soft closed-mouth smile">Soft closed-mouth smile</option>
+                    <option value="serious editorial expression">Serious editorial expression</option>
+                    <option value="playful expression">Playful expression</option>
+                    <option value="joyful laughing expression">Joyful laughing expression</option>
+                    <option value="calm serene expression">Calm serene expression</option>
+                    <option value="mysterious expression">Mysterious expression</option>
+                    <option value="bold fierce expression">Bold fierce expression</option>
+                    <option value="surprised expressive look">Surprised expressive look</option>
+                  </select>
+                  <select id="charPose">
+                    <option value="natural relaxed standing pose">Natural relaxed standing pose</option>
+                    <option value="confident hands-on-hips pose">Hands on hips</option>
+                    <option value="walking naturally mid-stride">Walking mid-stride</option>
+                    <option value="seated relaxed pose">Seated relaxed pose</option>
+                    <option value="three-quarter fashion pose">Three-quarter fashion pose</option>
+                    <option value="over-the-shoulder pose">Over-the-shoulder pose</option>
+                    <option value="arms-crossed confident pose">Arms crossed</option>
+                    <option value="dynamic action pose">Dynamic action pose</option>
+                    <option value="candid lifestyle pose">Candid lifestyle pose</option>
+                    <option value="product-holding hero pose">Product-holding hero pose</option>
                   </select>
                 </div>
                 <div class="finder-grid">
-                  <select id="charMakeup">
-                    <option value="precision makeup">Precision makeup</option>
-                    <option value="soft glam makeup">Soft glam makeup</option>
-                    <option value="full glam makeup">Full glam makeup</option>
-                    <option value="beauty-campaign makeup">Beauty-campaign makeup</option>
-                  </select>
                   <select id="charOutfit">
                     <option value="sleek black fitted outfit">Sleek black fitted outfit</option>
                     <option value="luxury studio wardrobe">Luxury studio wardrobe</option>
                     <option value="glossy black dress">Glossy black dress</option>
+                    <option value="casual elevated everyday outfit">Elevated everyday casual</option>
+                    <option value="streetwear fashion look">Streetwear look</option>
+                    <option value="power suit tailoring">Power suit</option>
+                    <option value="luxury evening gown">Luxury evening gown</option>
+                    <option value="athleisure outfit">Athleisure</option>
+                    <option value="boho-chic outfit">Boho chic</option>
+                    <option value="retro vintage outfit">Retro vintage</option>
+                    <option value="futuristic couture outfit">Futuristic couture</option>
+                    <option value="fantasy costume styling">Fantasy costume</option>
+                    <option value="uniform or professional workwear">Professional workwear</option>
                     <option value="minimal beauty-studio styling">Minimal beauty-studio styling</option>
+                    <option value="">Custom / describe in Extra Details</option>
+                  </select>
+                  <select id="charShoes">
+                    <option value="sleek high heels">Sleek high heels</option>
+                    <option value="fashion sneakers">Fashion sneakers</option>
+                    <option value="ankle boots">Ankle boots</option>
+                    <option value="knee-high boots">Knee-high boots</option>
+                    <option value="flat sandals">Flat sandals</option>
+                    <option value="loafers">Loafers</option>
+                    <option value="dress shoes">Dress shoes</option>
+                    <option value="barefoot styling">Barefoot</option>
+                    <option value="">Custom / not visible</option>
+                  </select>
+                </div>
+                <div class="finder-grid">
+                  <select id="charAccessories">
+                    <option value="gold hoop earrings">Gold hoop earrings</option>
+                    <option value="silver statement earrings">Silver statement earrings</option>
+                    <option value="diamond stud earrings">Diamond studs</option>
+                    <option value="layered necklaces">Layered necklaces</option>
+                    <option value="statement necklace">Statement necklace</option>
+                    <option value="luxury watch and bracelets">Luxury watch and bracelets</option>
+                    <option value="fashion sunglasses">Fashion sunglasses</option>
+                    <option value="structured handbag">Structured handbag</option>
+                    <option value="minimal accessories">Minimal accessories</option>
+                    <option value="no accessories">No accessories</option>
+                    <option value="">Custom / describe in Extra Details</option>
+                  </select>
+                  <select id="charNails">
+                    <option value="short polished nails">Short polished nails</option>
+                    <option value="medium almond nails">Medium almond nails</option>
+                    <option value="long almond nails">Long almond nails</option>
+                    <option value="long coffin nails">Long coffin nails</option>
+                    <option value="square-tip manicure">Square-tip manicure</option>
+                    <option value="French-tip manicure">French-tip manicure</option>
+                    <option value="metallic manicure">Metallic manicure</option>
+                    <option value="glossy neutral manicure">Glossy neutral manicure</option>
+                    <option value="bold nail-art manicure">Bold nail art</option>
+                    <option value="">Custom / not specified</option>
+                  </select>
+                </div>
+
+                <div class="label">Scene + camera</div>
+                <div class="finder-grid">
+                  <select id="charFraming">
+                    <option value="tight face close-up">Tight face close-up</option>
+                    <option value="close-up beauty shot">Close-up beauty shot</option>
+                    <option value="head-and-shoulders portrait">Head-and-shoulders</option>
+                    <option value="editorial portrait" selected>Editorial portrait</option>
+                    <option value="waist-up portrait">Waist-up portrait</option>
+                    <option value="three-quarter body portrait">Three-quarter body</option>
+                    <option value="full-body fashion portrait">Full-body portrait</option>
+                    <option value="wide environmental portrait">Wide environmental portrait</option>
+                    <option value="packaging-style hero shot">Packaging-style hero shot</option>
+                  </select>
+                  <select id="charCameraAngle">
+                    <option value="eye-level camera angle">Eye level</option>
+                    <option value="slightly low camera angle">Slight low angle</option>
+                    <option value="low-angle hero view">Low-angle hero</option>
+                    <option value="slightly high camera angle">Slight high angle</option>
+                    <option value="overhead camera view">Overhead</option>
+                    <option value="three-quarter camera view">Three-quarter view</option>
+                    <option value="profile camera view">Profile view</option>
+                    <option value="candid documentary angle">Candid documentary angle</option>
                   </select>
                 </div>
                 <div class="finder-grid">
                   <select id="charBackground">
-                    <option value="clean beauty studio background">Clean beauty studio background</option>
-                    <option value="soft gradient studio background">Soft gradient studio background</option>
+                    <option value="clean beauty studio background">Clean beauty studio</option>
+                    <option value="soft gradient studio background">Soft gradient studio</option>
                     <option value="luxury campaign backdrop">Luxury campaign backdrop</option>
                     <option value="simple white background">Simple white background</option>
+                    <option value="sleek black studio background">Sleek black studio</option>
+                    <option value="upscale city street environment">Upscale city street</option>
+                    <option value="luxury interior environment">Luxury interior</option>
+                    <option value="cozy realistic home environment">Cozy home environment</option>
+                    <option value="outdoor park environment">Outdoor park</option>
+                    <option value="nature landscape background">Nature landscape</option>
+                    <option value="fantasy world environment">Fantasy world</option>
+                    <option value="retail or storefront environment">Retail / storefront</option>
+                    <option value="">Custom / describe in Extra Details</option>
                   </select>
                   <select id="charMood">
-                    <option value="luxury commercial illustration">Luxury commercial illustration</option>
                     <option value="premium advertising realism">Premium advertising realism</option>
-                    <option value="editorial fashion energy">Editorial fashion energy</option>
-                    <option value="collectible vinyl figure aesthetic">Collectible vinyl figure aesthetic</option>
+                    <option value="luxury commercial energy">Luxury commercial</option>
+                    <option value="editorial fashion energy">Editorial fashion</option>
+                    <option value="warm relatable lifestyle energy">Warm relatable lifestyle</option>
+                    <option value="bold confident energy">Bold confident</option>
+                    <option value="playful colorful energy">Playful colorful</option>
+                    <option value="soft feminine energy">Soft feminine</option>
+                    <option value="dark dramatic energy">Dark dramatic</option>
+                    <option value="dreamy ethereal energy">Dreamy ethereal</option>
+                    <option value="romantic cinematic energy">Romantic cinematic</option>
+                    <option value="mysterious cinematic energy">Mysterious cinematic</option>
+                    <option value="nostalgic retro energy">Nostalgic retro</option>
+                    <option value="collectible figure aesthetic">Collectible figure aesthetic</option>
+                    <option value="whimsical storybook energy">Whimsical storybook</option>
+                    <option value="">Custom / describe in Extra Details</option>
                   </select>
                 </div>
-                <textarea id="charExtras" placeholder="Extra details you want. Example: gold hoop earrings, glossy skin, no clutter, looks expensive."></textarea>
+                <div class="finder-grid">
+                  <select id="charLighting">
+                    <option value="bright beauty studio lighting">Bright beauty studio</option>
+                    <option value="soft diffused studio lighting">Soft diffused studio</option>
+                    <option value="cinematic directional lighting">Cinematic directional</option>
+                    <option value="golden-hour natural lighting">Golden hour</option>
+                    <option value="bright natural daylight">Bright daylight</option>
+                    <option value="moody low-key lighting">Moody low-key</option>
+                    <option value="dramatic rim lighting">Dramatic rim light</option>
+                    <option value="editorial flash photography lighting">Editorial flash</option>
+                    <option value="neon accent lighting">Neon accents</option>
+                    <option value="soft window lighting">Soft window light</option>
+                    <option value="volumetric fantasy lighting">Volumetric fantasy light</option>
+                    <option value="">Use style default</option>
+                  </select>
+                  <select id="charFinish">
+                    <option value="hyper-polished premium finish">Hyper-polished premium</option>
+                    <option value="natural realistic skin texture and detail">Natural realistic texture</option>
+                    <option value="editorial-grade finish">Editorial-grade finish</option>
+                    <option value="luxury campaign finish">Luxury campaign finish</option>
+                    <option value="glossy 3D finish">Glossy 3D finish</option>
+                    <option value="matte illustrated finish">Matte illustrated finish</option>
+                    <option value="soft painterly finish">Soft painterly finish</option>
+                    <option value="collector-grade toy finish">Collector-grade toy finish</option>
+                    <option value="storybook print finish">Storybook print finish</option>
+                    <option value="cinematic game-render finish">Cinematic game-render finish</option>
+                    <option value="">Use style default</option>
+                  </select>
+                </div>
+
+                <textarea id="charExtras" placeholder="Extra details or anything custom. Example: freckles, silver pixie cut, Caribbean sapphire-blue blazer, holding shopping bags, realistic skin texture."></textarea>
                 <input class="field" id="charAvoid" placeholder="What should it avoid? Example: no crowns, no clutter, no fake tech graphics" />
                 <div class="card-actions">
                   <button class="btn secondary" id="charChooseForMe">Choose For Me</button>
