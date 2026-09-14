@@ -7571,6 +7571,17 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         if (!token) throw new Error('Your Hub session expired. Please sign in again.');
         return { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
       }
+      // On a 401 from a Hub AI endpoint, the stored token is stale/expired.
+      // Clear it and send the member to sign in so the tool works after re-login.
+      function hubHandleAuthFailure(res) {
+        if (res && res.status === 401) {
+          try { localStorage.removeItem('base44_access_token'); localStorage.removeItem('token'); } catch (e) {}
+          var returnTo = window.location.pathname + window.location.search;
+          window.location.href = "/login?returnTo=" + encodeURIComponent(returnTo);
+          return true;
+        }
+        return false;
+      }
 
       const PROMPT_HISTORY_APP_ID = "6a9aedd33cd938f0f47b9ff7";
       const PROMPT_HISTORY_ENDPOINT = `/api/apps/${PROMPT_HISTORY_APP_ID}/entities/PromptHistory`;
@@ -9975,6 +9986,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
 
         try {
           const res = await fetch("/api/apps/6a9aedd33cd938f0f47b9ff7/functions/hubAi", {method:"POST",headers: hubProtectedHeaders(),credentials:"include",body:JSON.stringify({prompt:aiPrompt,response_json_schema:schema})});
+          if (hubHandleAuthFailure(res)) return;
           if (!res.ok) throw new Error(`AI request failed (${res.status})`);
           const data = await res.json();
           const result = data?.result || data;
@@ -10131,6 +10143,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           let data;
           try { data = await res.json(); }
           catch { throw new Error("The AI guide returned an unreadable response."); }
+          if (hubHandleAuthFailure(res)) return;
           if (!res.ok) throw new Error(data.error || "The AI guide could not answer right now.");
 
           askHubHistory.push({role:"user",content:question},{role:"assistant",content:data.answer||""});

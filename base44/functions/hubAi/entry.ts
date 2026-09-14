@@ -7,9 +7,23 @@ export default async function hubAi(req: Request): Promise<Response> {
     }
 
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
+    let user;
+    try {
+      user = await base44.auth.me();
+    } catch (_authError) {
+      // auth.me() throws when the session token is missing or expired.
+      // Return a clean 401 so the Hub can redirect to sign-in instead of
+      // surfacing a confusing "Couldn't connect" error.
+      return Response.json(
+        { error: "Your session has expired. Please sign in again." },
+        { status: 401 },
+      );
+    }
     if (!user) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
+      return Response.json(
+        { error: "Your session has expired. Please sign in again." },
+        { status: 401 },
+      );
     }
 
     const body = await req.json();
