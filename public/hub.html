@@ -3291,6 +3291,14 @@
 
                 <div class="label">Character basics</div>
                 <div class="finder-grid">
+                  <select id="charGender">
+                    <option value="woman">Woman</option>
+                    <option value="man">Man</option>
+                    <option value="nonbinary adult">Nonbinary adult</option>
+                    <option value="androgynous adult">Androgynous adult</option>
+                    <option value="fantasy humanoid adult">Fantasy humanoid adult</option>
+                    <option value="">Custom / describe below</option>
+                  </select>
                   <select id="charPresentation">
                     <option value="feminine presentation">Feminine presentation</option>
                     <option value="masculine presentation">Masculine presentation</option>
@@ -3298,6 +3306,8 @@
                     <option value="gender-neutral presentation">Gender-neutral presentation</option>
                     <option value="">Custom / describe in Extra Details</option>
                   </select>
+                </div>
+                <div class="finder-grid">
                   <select id="charAge">
                     <option value="young adult">Young adult</option>
                     <option value="adult" selected>Adult</option>
@@ -3517,6 +3527,17 @@
                   <option value="vintage-inspired makeup">Vintage-inspired makeup</option>
                   <option value="">Custom / none</option>
                 </select>
+                <select id="charFacialHair">
+                  <option value="clean-shaven face">Clean-shaven</option>
+                  <option value="neatly groomed stubble">Neat stubble</option>
+                  <option value="short boxed beard">Short boxed beard</option>
+                  <option value="full groomed beard">Full groomed beard</option>
+                  <option value="goatee">Goatee</option>
+                  <option value="mustache">Mustache</option>
+                  <option value="beard and mustache combination">Beard + mustache</option>
+                  <option value="salt-and-pepper beard">Salt-and-pepper beard</option>
+                  <option value="">None / custom</option>
+                </select>
 
                 <div class="label">Styling + personality</div>
                 <div class="finder-grid">
@@ -3603,91 +3624,93 @@
                   </select>
                 </div>
 
-                <div class="label">Scene + camera</div>
+                <div class="label">Outfit + finishing details</div>
                 <div class="finder-grid">
-                  <select id="charFraming">
-                    <option value="tight face close-up">Tight face close-up</option>
-                    <option value="close-up beauty shot">Close-up beauty shot</option>
-                    <option value="head-and-shoulders portrait">Head-and-shoulders</option>
-                    <option value="editorial portrait" selected>Editorial portrait</option>
-                    <option value="waist-up portrait">Waist-up portrait</option>
-                    <option value="three-quarter body portrait">Three-quarter body</option>
-                    <option value="full-body fashion portrait">Full-body portrait</option>
-                    <option value="wide environmental portrait">Wide environmental portrait</option>
-                    <option value="packaging-style hero shot">Packaging-style hero shot</option>
+                  <select id="charOutfitStyle">
+                    <option value="luxury polished style">Luxury polished</option>
+                    <option value="classic timeless style">Classic timeless</option>
+                    <option value="elevated casual style">Elevated casual</option>
+                    <option value="streetwear style">Streetwear</option>
+                    <option value="business professional style">Business professional</option>
+                    <option value="soft feminine style">Soft feminine</option>
+                    <option value="bold glam style">Bold glam</option>
+                    <option value="minimalist style">Minimalist</option>
+                    <option value="boho style">Boho</option>
+                    <option value="preppy style">Preppy</option>
+                    <option value="sporty style">Sporty</option>
+                    <option value="edgy fashion style">Edgy</option>
+                    <option value="vintage-inspired style">Vintage-inspired</option>
+                    <option value="old-money style">Old money</option>
+                    <option value="avant-garde fashion style">Avant-garde</option>
+                    <option value="fantasy couture style">Fantasy couture</option>
+                    <option value="">Custom / describe below</option>
                   </select>
-                  <select id="charCameraAngle">
-                    <option value="eye-level camera angle">Eye level</option>
-                    <option value="slightly low camera angle">Slight low angle</option>
-                    <option value="low-angle hero view">Low-angle hero</option>
-                    <option value="slightly high camera angle">Slight high angle</option>
-                    <option value="overhead camera view">Overhead</option>
-                    <option value="three-quarter camera view">Three-quarter view</option>
-                    <option value="profile camera view">Profile view</option>
-                    <option value="candid documentary angle">Candid documentary angle</option>
+                  <select id="charOutfitColor">
+                    <option value="black wardrobe palette">Black</option>
+                    <option value="white wardrobe palette">White</option>
+                    <option value="neutral wardrobe palette">Neutrals</option>
+                    <option value="earth-tone wardrobe palette">Earth tones</option>
+                    <option value="jewel-tone wardrobe palette">Jewel tones</option>
+                    <option value="pastel wardrobe palette">Pastels</option>
+                    <option value="monochrome wardrobe palette">Monochrome</option>
+                    <option value="bold colorful wardrobe palette">Bold color</option>
+                    <option value="metallic wardrobe accents">Metallic accents</option>
+                    <option value="">Custom / not specified</option>
                   </select>
                 </div>
                 <div class="finder-grid">
-                  <select id="charBackground">
-                    <option value="clean beauty studio background">Clean beauty studio</option>
-                    <option value="soft gradient studio background">Soft gradient studio</option>
-                    <option value="luxury campaign backdrop">Luxury campaign backdrop</option>
-                    <option value="simple white background">Simple white background</option>
-                    <option value="sleek black studio background">Sleek black studio</option>
-                    <option value="upscale city street environment">Upscale city street</option>
-                    <option value="luxury interior environment">Luxury interior</option>
-                    <option value="cozy realistic home environment">Cozy home environment</option>
-                    <option value="outdoor park environment">Outdoor park</option>
-                    <option value="nature landscape background">Nature landscape</option>
-                    <option value="fantasy world environment">Fantasy world</option>
-                    <option value="retail or storefront environment">Retail / storefront</option>
-                    <option value="">Custom / describe in Extra Details</option>
+                  <select id="charJewelry">
+                    <option value="gold hoop earrings">Gold hoops</option>
+                    <option value="silver hoop earrings">Silver hoops</option>
+                    <option value="diamond stud earrings">Diamond studs</option>
+                    <option value="pearl earrings">Pearl earrings</option>
+                    <option value="statement drop earrings">Statement drops</option>
+                    <option value="small huggie earrings">Huggies</option>
+                    <option value="ear cuffs">Ear cuffs</option>
+                    <option value="layered gold necklaces">Layered gold necklaces</option>
+                    <option value="silver chain necklace">Silver chain</option>
+                    <option value="luxury watch">Luxury watch</option>
+                    <option value="stacked bracelets">Stacked bracelets</option>
+                    <option value="minimal jewelry">Minimal jewelry</option>
+                    <option value="no jewelry">No jewelry</option>
+                    <option value="">Custom / describe below</option>
                   </select>
-                  <select id="charMood">
-                    <option value="premium advertising realism">Premium advertising realism</option>
-                    <option value="luxury commercial energy">Luxury commercial</option>
-                    <option value="editorial fashion energy">Editorial fashion</option>
-                    <option value="warm relatable lifestyle energy">Warm relatable lifestyle</option>
-                    <option value="bold confident energy">Bold confident</option>
-                    <option value="playful colorful energy">Playful colorful</option>
-                    <option value="soft feminine energy">Soft feminine</option>
-                    <option value="dark dramatic energy">Dark dramatic</option>
-                    <option value="dreamy ethereal energy">Dreamy ethereal</option>
-                    <option value="romantic cinematic energy">Romantic cinematic</option>
-                    <option value="mysterious cinematic energy">Mysterious cinematic</option>
-                    <option value="nostalgic retro energy">Nostalgic retro</option>
-                    <option value="collectible figure aesthetic">Collectible figure aesthetic</option>
-                    <option value="whimsical storybook energy">Whimsical storybook</option>
-                    <option value="">Custom / describe in Extra Details</option>
+                  <select id="charHeadwear">
+                    <option value="no headwear">No headwear</option>
+                    <option value="baseball cap">Baseball cap</option>
+                    <option value="wide-brim fashion hat">Wide-brim hat</option>
+                    <option value="fedora">Fedora</option>
+                    <option value="beanie">Beanie</option>
+                    <option value="headwrap">Headwrap</option>
+                    <option value="silk scarf head styling">Silk scarf</option>
+                    <option value="cowboy hat">Cowboy hat</option>
+                    <option value="bucket hat">Bucket hat</option>
+                    <option value="">Custom / none</option>
                   </select>
                 </div>
                 <div class="finder-grid">
-                  <select id="charLighting">
-                    <option value="bright beauty studio lighting">Bright beauty studio</option>
-                    <option value="soft diffused studio lighting">Soft diffused studio</option>
-                    <option value="cinematic directional lighting">Cinematic directional</option>
-                    <option value="golden-hour natural lighting">Golden hour</option>
-                    <option value="bright natural daylight">Bright daylight</option>
-                    <option value="moody low-key lighting">Moody low-key</option>
-                    <option value="dramatic rim lighting">Dramatic rim light</option>
-                    <option value="editorial flash photography lighting">Editorial flash</option>
-                    <option value="neon accent lighting">Neon accents</option>
-                    <option value="soft window lighting">Soft window light</option>
-                    <option value="volumetric fantasy lighting">Volumetric fantasy light</option>
-                    <option value="">Use style default</option>
+                  <select id="charEyewear">
+                    <option value="no eyewear">No eyewear</option>
+                    <option value="clear fashion eyeglasses">Clear fashion glasses</option>
+                    <option value="black optical frames">Black optical frames</option>
+                    <option value="cat-eye glasses">Cat-eye glasses</option>
+                    <option value="aviator sunglasses">Aviators</option>
+                    <option value="oversized sunglasses">Oversized sunglasses</option>
+                    <option value="sport sunglasses">Sport sunglasses</option>
+                    <option value="tinted fashion glasses">Tinted fashion glasses</option>
+                    <option value="">Custom / none</option>
                   </select>
-                  <select id="charFinish">
-                    <option value="hyper-polished premium finish">Hyper-polished premium</option>
-                    <option value="natural realistic skin texture and detail">Natural realistic texture</option>
-                    <option value="editorial-grade finish">Editorial-grade finish</option>
-                    <option value="luxury campaign finish">Luxury campaign finish</option>
-                    <option value="glossy 3D finish">Glossy 3D finish</option>
-                    <option value="matte illustrated finish">Matte illustrated finish</option>
-                    <option value="soft painterly finish">Soft painterly finish</option>
-                    <option value="collector-grade toy finish">Collector-grade toy finish</option>
-                    <option value="storybook print finish">Storybook print finish</option>
-                    <option value="cinematic game-render finish">Cinematic game-render finish</option>
-                    <option value="">Use style default</option>
+                  <select id="charSpecialFeatures">
+                    <option value="natural skin texture">Natural skin texture</option>
+                    <option value="soft freckles">Freckles</option>
+                    <option value="beauty mark">Beauty mark</option>
+                    <option value="visible dimples">Dimples</option>
+                    <option value="vitiligo skin pattern">Vitiligo</option>
+                    <option value="subtle facial scar">Subtle facial scar</option>
+                    <option value="visible tattoos">Visible tattoos</option>
+                    <option value="facial piercings">Facial piercings</option>
+                    <option value="ear piercings">Multiple ear piercings</option>
+                    <option value="">None / custom</option>
                   </select>
                 </div>
 
@@ -9858,52 +9881,56 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       };
 
       function chooseCharacterDefaults() {
-        const preset = characterBuilderPresets[document.getElementById("charPreset").value] || characterBuilderPresets.hyperReal;
-        const toyLike = /chibi|vinyl|doll|3D animated|clay|plush/.test(preset.style);
-        const illustrated = /cartoon|comic|anime|storybook|digital painting|retro/.test(preset.style);
-        const recommended = {
-          charSubject: document.getElementById("charSubject").value.trim() || "African American woman",
-          charPresentation: "feminine presentation",
-          charBodyType: "plus-size",
-          charHeight: "average height",
-          charAge: "adult",
-          charSkinTone: "deep brown skin tone",
-          charUndertone: "warm golden undertone",
-          charFaceShape: "soft full face",
-          charEyes: toyLike ? "oversized expressive eyes" : "almond-shaped eyes",
-          charEyeColor: "deep brown eyes",
-          charBrows: "softly arched brows",
-          charNose: "soft rounded nose",
-          charLipShape: "full lips",
-          charLashes: toyLike ? "dramatic lashes" : "wispy lashes",
-          charLips: toyLike ? "candy-gloss lips" : "glossy lips",
-          charHairTexture: "soft wavy texture",
-          charHairLength: "mid-back hair length",
-          charHair: toyLike ? "sleek glass hair" : "mirror-shine body waves",
-          charHairColor: "natural black hair",
-          charMakeup: preset.style.includes("beauty") ? "beauty-campaign makeup" : illustrated ? "soft glam makeup" : "soft glam makeup",
-          charExpression: "confident relaxed expression",
-          charPose: toyLike ? "product-holding hero pose" : "natural relaxed standing pose",
-          charOutfit: toyLike ? "minimal beauty-studio styling" : "sleek black fitted outfit",
-          charShoes: toyLike ? "" : "sleek high heels",
-          charAccessories: "gold hoop earrings",
-          charNails: "medium almond nails",
-          charFraming: preset.style.includes("fashion") ? "waist-up portrait" : toyLike ? "packaging-style hero shot" : "editorial portrait",
-          charCameraAngle: "eye-level camera angle",
-          charBackground: toyLike ? "simple white background" : "clean beauty studio background",
-          charMood: preset.vibe,
-          charLighting: preset.lighting[0] || "bright beauty studio lighting",
-          charFinish: preset.finish[0] || "hyper-polished premium finish",
-          charExtras: document.getElementById("charExtras").value.trim() || "controlled spacing, polished details, realistic proportions, no clutter",
-          charAvoid: document.getElementById("charAvoid").value.trim() || "no crowns, no clutter, no fake AI graphics, no random floating icons"
-        };
-        Object.entries(recommended).forEach(([id, value]) => {
+        const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+        const pickSelect = (id, preferredValues = null) => {
           const el = document.getElementById(id);
-          if (!el) return;
-          if (el.tagName === "SELECT" && ![...el.options].some(option => option.value === value)) return;
+          if (!el) return "";
+          let options = [...el.options].filter(o => o.value);
+          if (preferredValues?.length) {
+            const preferred = options.filter(o => preferredValues.includes(o.value));
+            if (preferred.length) options = preferred;
+          }
+          if (!options.length) return "";
+          const value = pick(options).value;
           el.value = value;
-        });
-        toast("Character options chosen for you.");
+          return value;
+        };
+
+        // Keep the user's chosen character style, but genuinely randomize the character details.
+        const gender = pickSelect("charGender");
+        const masculine = gender === "man";
+        const feminine = gender === "woman";
+        document.getElementById("charPresentation").value = masculine ? pick(["masculine presentation","gender-neutral presentation"]) : feminine ? pick(["feminine presentation","gender-neutral presentation"]) : pick(["androgynous presentation","gender-neutral presentation","feminine presentation","masculine presentation"]);
+
+        ["charAge","charBodyType","charHeight","charSkinTone","charUndertone","charFaceShape","charEyes","charEyeColor","charBrows","charNose","charLipShape","charHairTexture","charHairLength","charHair","charHairColor","charExpression","charPose","charOutfitStyle","charOutfitColor","charHeadwear","charEyewear","charSpecialFeatures"].forEach(id => pickSelect(id));
+
+        if (masculine) {
+          pickSelect("charLashes", ["minimal natural lashes","natural flutter lashes"]);
+          pickSelect("charLips", ["natural hydrated lips","satin-finish lips"]);
+          document.getElementById("charMakeup").value = pick(["natural no-makeup makeup", ""]);
+          pickSelect("charFacialHair");
+          pickSelect("charOutfit", ["casual elevated everyday outfit","streetwear fashion look","power suit tailoring","athleisure outfit","uniform or professional workwear"]);
+          pickSelect("charShoes", ["fashion sneakers","ankle boots","loafers","dress shoes"]);
+          pickSelect("charJewelry", ["diamond stud earrings","silver chain necklace","luxury watch","minimal jewelry","no jewelry"]);
+          document.getElementById("charNails").value = "short polished nails";
+        } else {
+          pickSelect("charLashes");
+          pickSelect("charLips");
+          pickSelect("charMakeup");
+          document.getElementById("charFacialHair").value = "";
+          pickSelect("charOutfit");
+          pickSelect("charShoes");
+          pickSelect("charJewelry");
+          pickSelect("charNails");
+        }
+        pickSelect("charAccessories");
+
+        if (!document.getElementById("charSubject").value.trim()) {
+          document.getElementById("charSubject").value = masculine ? "adult man" : feminine ? "adult woman" : "adult character";
+        }
+        document.getElementById("charExtras").value = "";
+        document.getElementById("charAvoid").value = document.getElementById("charAvoid").value.trim() || "no crowns, no clutter, no fake AI graphics, no random floating icons";
+        toast("Fresh character combination chosen for you.");
       }
 
       function addCharacterStackToPromptBuilder() {
@@ -9929,102 +9956,51 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         toast("Stack added. Now tap Build My Prompt.");
       }
 
-      function buildCharacterPrompt() {
+      async function buildCharacterPrompt() {
         const presetKey = document.getElementById("charPreset").value;
         const preset = characterBuilderPresets[presetKey] || characterBuilderPresets.hyperReal;
         const val = id => document.getElementById(id)?.value?.trim() || "";
-
-        const subject = val("charSubject") || "African American woman";
-        const presentation = val("charPresentation");
-        const bodyType = val("charBodyType");
-        const height = val("charHeight");
-        const age = val("charAge");
-        const skinTone = val("charSkinTone");
-        const undertone = val("charUndertone");
-        const faceShape = val("charFaceShape");
-        const eyes = val("charEyes");
-        const eyeColor = val("charEyeColor");
-        const brows = val("charBrows");
-        const nose = val("charNose");
-        const lipShape = val("charLipShape");
-        const lashes = val("charLashes");
-        const lips = val("charLips");
-        const hairTexture = val("charHairTexture");
-        const hairLength = val("charHairLength");
-        const hair = val("charHair");
-        const hairColor = val("charHairColor");
-        const makeup = val("charMakeup");
-        const expression = val("charExpression");
-        const pose = val("charPose");
-        const outfit = val("charOutfit");
-        const shoes = val("charShoes");
-        const accessories = val("charAccessories");
-        const nails = val("charNails");
-        const framing = val("charFraming");
-        const cameraAngle = val("charCameraAngle");
-        const background = val("charBackground");
-        const mood = val("charMood") || preset.vibe;
-        const chosenLighting = val("charLighting");
-        const chosenFinish = val("charFinish");
+        const ids = ["charGender","charPresentation","charAge","charBodyType","charHeight","charSkinTone","charUndertone","charFaceShape","charEyes","charEyeColor","charBrows","charNose","charLipShape","charLashes","charLips","charHairTexture","charHairLength","charHair","charHairColor","charMakeup","charFacialHair","charExpression","charPose","charOutfitStyle","charOutfitColor","charOutfit","charShoes","charJewelry","charAccessories","charNails","charHeadwear","charEyewear","charSpecialFeatures"];
+        const selections = Object.fromEntries(ids.map(id => [id, val(id)]).filter(([,v]) => v));
+        const subject = val("charSubject") || selections.charGender || "adult character";
         const extras = val("charExtras");
-        const avoid = val("charAvoid");
+        const avoid = val("charAvoid") || "no crowns, no clutter, no fake AI graphics, no random floating icons";
+        const btn = document.getElementById("charBuildBtn");
+        const oldText = btn.textContent;
+        btn.disabled = true; btn.textContent = "Building with AI…";
+        document.getElementById("characterBuilderResult").innerHTML = '<div class="output">AI is building a polished character prompt from your choices…</div>';
 
-        const identityStack = [age, presentation, bodyType, height, subject, skinTone, undertone].filter(Boolean);
-        const faceStack = [faceShape, eyes, eyeColor, brows, nose, lipShape, lashes, lips].filter(Boolean);
-        const hairBeautyStack = [hairTexture, hairLength, hair, hairColor, makeup].filter(Boolean);
-        const stylingStack = [expression, pose, outfit, shoes, accessories, nails].filter(Boolean);
-        const cameraStack = [framing, cameraAngle, background].filter(Boolean);
-        const lightingStack = [chosenLighting || preset.lighting[0], ...preset.lighting.filter(x => x !== (chosenLighting || preset.lighting[0]))].filter(Boolean);
-        const finishStack = [chosenFinish || preset.finish[0], ...preset.finish.filter(x => x !== (chosenFinish || preset.finish[0]))].filter(Boolean);
-        const renderingBits = [mood, preset.style].filter(Boolean);
-        const guardrails = [
-          bodyType ? `preserve the ${bodyType} body type and proportions` : "preserve the chosen body proportions",
-          `keep the subject visibly adult`,
-          skinTone ? `preserve the ${skinTone}${undertone ? ` with ${undertone}` : ""}` : "preserve the chosen skin tone",
-          `preserve facial features, hairstyle, styling, and character identity consistently`,
-          `keep hands, limbs, clothing, and accessories anatomically believable`,
-          `keep the composition intentional and all visible details unobstructed`,
-          avoid || "do not add unrelated clutter"
-        ];
-        const mainParts = [mood, preset.style, ...identityStack, ...faceStack, ...hairBeautyStack, ...stylingStack, ...cameraStack, ...lightingStack, ...finishStack, extras].filter(Boolean);
-        const fullPrompt = `${mainParts.join(", ")}, ${guardrails.join(", ")}.`;
-        const quickPrompt = [subject, bodyType, skinTone, eyes, hair, outfit, framing, preset.style, chosenLighting || preset.lighting[0], chosenFinish || preset.finish[0]].filter(Boolean).join(", ") + ".";
-        const stackArray = [...faceStack, ...hairBeautyStack, ...stylingStack, ...cameraStack, ...lightingStack, ...finishStack].filter(Boolean);
-        const keywordStack = stackArray.join(", ");
-        const negativePrompt = avoid || "no crowns, no clutter, no fake AI graphics, no random floating icons";
-        const starterTitle = `${preset.label} • ${subject}`;
+        const schema = {type:"object",properties:{title:{type:"string"},mainPrompt:{type:"string"},quickPrompt:{type:"string"},keywordStack:{type:"string"},guardrails:{type:"string"}},required:["title","mainPrompt","quickPrompt","keywordStack","guardrails"]};
+        const aiPrompt = `You are the AI engine inside a character-only prompt builder. Build one cohesive, high-quality image-generation CHARACTER prompt. Do not invent a background, setting, lighting setup, camera angle, framing, scenery, or environment. Focus only on the character's identity, physical features, hair, grooming, expression, pose, clothing, shoes, jewelry, nails, headwear, eyewear, and other character details. Respect the selected gender/presentation and keep choices compatible unless the user explicitly selected otherwise. Preserve plus-size/full-figured bodies instead of slimming them. Keep adult characters visibly adult. For masculine men, keep the character clearly masculine unless the selections explicitly say otherwise. Never add crowns or tiaras unless explicitly selected. Character style: ${preset.label} (${preset.style}). Subject: ${subject}. Selected details: ${JSON.stringify(selections)}. Extra details: ${extras || "none"}. Avoid: ${avoid}. Return: a concise title, a detailed main prompt, a useful quick prompt, a clean comma-separated keyword stack, and guardrails. Do not add scene/camera/lighting/background language.`;
 
-        lastCharacterBuild = {
-          subject: identityStack.join(", "),
-          features: [...faceStack, ...hairBeautyStack, expression, accessories, nails, extras].filter(Boolean).join(", "),
-          composition: [pose, framing, cameraAngle, background].filter(Boolean).join(", "),
-          rendering: renderingBits.join(", "),
-          lighting: lightingStack.join(", "),
-          finish: finishStack.join(", "),
-          guardrails: guardrails.join(", "),
-          stackArray
-        };
+        try {
+          const res = await fetch("/api/apps/6a9aedd33cd938f0f47b9ff7/functions/hubAi", {method:"POST",headers:{"Content-Type":"application/json"},credentials:"include",body:JSON.stringify({prompt:aiPrompt,response_json_schema:schema})});
+          if (!res.ok) throw new Error(`AI request failed (${res.status})`);
+          const data = await res.json();
+          const result = data?.result || data;
+          const parsed = typeof result === "string" ? JSON.parse(result) : result;
+          const mainPrompt = parsed.mainPrompt || parsed.main_prompt;
+          const quickPrompt = parsed.quickPrompt || parsed.quick_prompt;
+          const keywordStack = parsed.keywordStack || parsed.keyword_stack;
+          const guardrails = parsed.guardrails || avoid;
+          const title = parsed.title || `${preset.label} • ${subject}`;
+          if (!mainPrompt) throw new Error("AI returned an incomplete character prompt");
 
-        document.getElementById("characterBuilderResult").innerHTML = `
-          <div class="label">Prompt title</div>
-          <div class="output" id="characterPromptTitle">${escapeAttr(starterTitle)}</div>
-
-          <div class="label" style="margin-top:12px">Main prompt</div>
-          <div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('characterPromptFull').innerText)">Copy</button><pre id="characterPromptFull">${escapeAttr(fullPrompt)}</pre></div>
-
-          <div class="label" style="margin-top:12px">Quick version</div>
-          <div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('characterPromptQuick').innerText)">Copy</button><pre id="characterPromptQuick">${escapeAttr(quickPrompt)}</pre></div>
-
-          <div class="label" style="margin-top:12px">Keyword stack</div>
-          <div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('characterPromptKeywords').innerText)">Copy</button><pre id="characterPromptKeywords">${escapeAttr(keywordStack)}</pre></div>
-
-          <div class="label" style="margin-top:12px">Guardrails / avoid list</div>
-          <div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('characterPromptNegative').innerText)">Copy</button><pre id="characterPromptNegative">${escapeAttr(negativePrompt)}</pre></div>
-
-          <div class="card-actions" style="margin-top:12px">
-            <button class="tiny-btn" onclick="addCharacterStackToPromptBuilder()">Add Stack to Prompt Builder</button>
-          </div>
-        `;
+          const stackArray = String(keywordStack || "").split(",").map(x=>x.trim()).filter(Boolean);
+          lastCharacterBuild = {subject,features:Object.values(selections).join(", "),composition:val("charPose"),rendering:preset.style,lighting:"",finish:"",guardrails:String(guardrails),stackArray};
+          document.getElementById("characterBuilderResult").innerHTML = `
+            <div class="label">AI character title</div><div class="output" id="characterPromptTitle">${escapeAttr(title)}</div>
+            <div class="label" style="margin-top:12px">AI-built character prompt</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('characterPromptFull').innerText)">Copy</button><pre id="characterPromptFull">${escapeAttr(mainPrompt)}</pre></div>
+            <div class="label" style="margin-top:12px">Quick version</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('characterPromptQuick').innerText)">Copy</button><pre id="characterPromptQuick">${escapeAttr(quickPrompt || mainPrompt)}</pre></div>
+            <div class="label" style="margin-top:12px">Keyword stack</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('characterPromptKeywords').innerText)">Copy</button><pre id="characterPromptKeywords">${escapeAttr(keywordStack || Object.values(selections).join(", "))}</pre></div>
+            <div class="label" style="margin-top:12px">Guardrails / avoid list</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('characterPromptNegative').innerText)">Copy</button><pre id="characterPromptNegative">${escapeAttr(guardrails)}</pre></div>
+            <div class="card-actions" style="margin-top:12px"><button class="tiny-btn" onclick="addCharacterStackToPromptBuilder()">Add Stack to Prompt Builder</button></div>`;
+          toast("AI character prompt ready.");
+        } catch (err) {
+          console.error(err);
+          document.getElementById("characterBuilderResult").innerHTML = `<div class="output">The AI character builder could not finish this result. Please try again. Your selections are still here.</div>`;
+          toast("AI could not build the character prompt. Try again.");
+        } finally { btn.disabled=false; btn.textContent=oldText; }
       }
 
       document.getElementById("charChooseForMe").onclick = chooseCharacterDefaults;
