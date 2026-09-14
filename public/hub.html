@@ -9859,21 +9859,42 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
 
       function chooseCharacterDefaults() {
         const preset = characterBuilderPresets[document.getElementById("charPreset").value] || characterBuilderPresets.hyperReal;
+        const toyLike = /chibi|vinyl|doll|3D animated|clay|plush/.test(preset.style);
+        const illustrated = /cartoon|comic|anime|storybook|digital painting|retro/.test(preset.style);
         const recommended = {
-          charSubject: document.getElementById("charSubject").value.trim() || "plus-size African American woman",
+          charSubject: document.getElementById("charSubject").value.trim() || "African American woman",
+          charPresentation: "feminine presentation",
           charBodyType: "plus-size",
+          charHeight: "average height",
           charAge: "adult",
           charSkinTone: "deep brown skin tone",
-          charFraming: preset.style.includes("fashion") ? "waist-up portrait" : preset.style.includes("chibi") || preset.style.includes("vinyl") ? "packaging-style hero shot" : "editorial portrait",
-          charEyes: preset.style.includes("chibi") || preset.style.includes("vinyl") ? "oversized expressive eyes" : "almond-shaped eyes",
-          charLashes: "wispy lashes",
-          charLips: preset.style.includes("chibi") || preset.style.includes("vinyl") ? "candy-gloss lips" : "glossy lips",
-          charHair: preset.style.includes("chibi") || preset.style.includes("vinyl") ? "sleek glass hair" : "mirror-shine body waves",
-          charMakeup: preset.style.includes("beauty") ? "beauty-campaign makeup" : "soft glam makeup",
-          charOutfit: preset.style.includes("chibi") || preset.style.includes("vinyl") ? "minimal beauty-studio styling" : "sleek black fitted outfit",
-          charBackground: preset.style.includes("chibi") || preset.style.includes("vinyl") ? "simple white background" : "clean beauty studio background",
+          charUndertone: "warm golden undertone",
+          charFaceShape: "soft full face",
+          charEyes: toyLike ? "oversized expressive eyes" : "almond-shaped eyes",
+          charEyeColor: "deep brown eyes",
+          charBrows: "softly arched brows",
+          charNose: "soft rounded nose",
+          charLipShape: "full lips",
+          charLashes: toyLike ? "dramatic lashes" : "wispy lashes",
+          charLips: toyLike ? "candy-gloss lips" : "glossy lips",
+          charHairTexture: "soft wavy texture",
+          charHairLength: "mid-back hair length",
+          charHair: toyLike ? "sleek glass hair" : "mirror-shine body waves",
+          charHairColor: "natural black hair",
+          charMakeup: preset.style.includes("beauty") ? "beauty-campaign makeup" : illustrated ? "soft glam makeup" : "soft glam makeup",
+          charExpression: "confident relaxed expression",
+          charPose: toyLike ? "product-holding hero pose" : "natural relaxed standing pose",
+          charOutfit: toyLike ? "minimal beauty-studio styling" : "sleek black fitted outfit",
+          charShoes: toyLike ? "" : "sleek high heels",
+          charAccessories: "gold hoop earrings",
+          charNails: "medium almond nails",
+          charFraming: preset.style.includes("fashion") ? "waist-up portrait" : toyLike ? "packaging-style hero shot" : "editorial portrait",
+          charCameraAngle: "eye-level camera angle",
+          charBackground: toyLike ? "simple white background" : "clean beauty studio background",
           charMood: preset.vibe,
-          charExtras: document.getElementById("charExtras").value.trim() || "gold hoop earrings, expressive eyes, controlled spacing, polished details, no clutter",
+          charLighting: preset.lighting[0] || "bright beauty studio lighting",
+          charFinish: preset.finish[0] || "hyper-polished premium finish",
+          charExtras: document.getElementById("charExtras").value.trim() || "controlled spacing, polished details, realistic proportions, no clutter",
           charAvoid: document.getElementById("charAvoid").value.trim() || "no crowns, no clutter, no fake AI graphics, no random floating icons"
         };
         Object.entries(recommended).forEach(([id, value]) => {
