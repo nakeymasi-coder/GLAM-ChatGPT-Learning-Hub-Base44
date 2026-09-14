@@ -9836,41 +9836,25 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       document.getElementById("envChoose").onclick=chooseEnvironment;document.getElementById("envBuild").onclick=buildEnvironment;document.getElementById("typeChoose").onclick=chooseTypography;document.getElementById("typeBuild").onclick=buildTypography;
 
       const characterBuilderPresets = {
-        hyperReal: {
-          label: "Hyper-realistic model",
-          vibe: "premium advertising realism",
-          lighting: ["bright beauty studio lighting", "reflective highlights", "luminous highlights"],
-          finish: ["hyper-polished rendering", "airbrushed rendering", "crisp micro-detail", "luxury packaging quality"],
-          style: "hyper-realistic model portrait"
-        },
-        exaggeratedChibi: {
-          label: "Exaggerated chibi character",
-          vibe: "glossy exaggerated chibi illustration",
-          lighting: ["bright beauty studio lighting", "specular lighting", "HDR lighting"],
-          finish: ["hyper-gloss finish", "premium 3D illustration", "collector-grade finish", "clean-edge rendering"],
-          style: "premium exaggerated chibi mascot"
-        },
-        beautyCampaign: {
-          label: "Luxury beauty campaign",
-          vibe: "luxury cosmetic advertising",
-          lighting: ["luxury cosmetic advertising lighting", "bright beauty studio lighting", "specular lighting"],
-          finish: ["beauty-campaign complexion", "luxury commercial illustration", "premium campaign quality"],
-          style: "luxury beauty campaign model"
-        },
-        editorial: {
-          label: "Editorial fashion portrait",
-          vibe: "editorial fashion energy",
-          lighting: ["editorial flash photography", "soft rim lighting", "directional key light"],
-          finish: ["editorial-grade finish", "stylized photorealism", "clean-edge rendering"],
-          style: "editorial fashion portrait"
-        },
-        designerToy: {
-          label: "Collectible mascot / designer toy",
-          vibe: "collectible vinyl figure aesthetic",
-          lighting: ["specular lighting", "reflective lighting", "HDR lighting"],
-          finish: ["hyper-gloss finish", "resin-doll complexion", "collector-grade finish", "premium 3D illustration"],
-          style: "premium mascot collectible vinyl figure"
-        }
+        hyperReal:{label:"Hyper-realistic person",vibe:"premium advertising realism",lighting:["bright beauty studio lighting","reflective highlights","luminous highlights"],finish:["hyper-polished rendering","natural skin detail","crisp micro-detail","premium commercial quality"],style:"hyper-realistic person portrait"},
+        cinematic:{label:"Cinematic character",vibe:"cinematic character realism",lighting:["cinematic directional lighting","soft rim lighting","natural shadow depth"],finish:["cinematic color grading","realistic texture detail","film-still quality"],style:"cinematic character portrait"},
+        lifestyle:{label:"Realistic lifestyle character",vibe:"warm relatable lifestyle realism",lighting:["bright natural daylight","soft window lighting","believable ambient light"],finish:["natural realistic texture","authentic lifestyle photography","clean commercial detail"],style:"realistic lifestyle character"},
+        beautyCampaign:{label:"Luxury beauty campaign",vibe:"luxury cosmetic advertising",lighting:["luxury cosmetic advertising lighting","bright beauty studio lighting","specular lighting"],finish:["beauty-campaign complexion","luxury commercial illustration","premium campaign quality"],style:"luxury beauty campaign model"},
+        editorial:{label:"Editorial fashion portrait",vibe:"editorial fashion energy",lighting:["editorial flash photography","soft rim lighting","directional key light"],finish:["editorial-grade finish","stylized photorealism","clean-edge rendering"],style:"editorial fashion portrait"},
+        fashionDoll:{label:"Fashion doll",vibe:"luxury fashion-doll aesthetic",lighting:["polished studio lighting","specular highlights","soft rim lighting"],finish:["premium doll finish","smooth sculpted detail","collector-quality rendering"],style:"high-fashion collectible doll character"},
+        animated3d:{label:"Premium 3D animated character",vibe:"premium animated feature-film energy",lighting:["cinematic 3D lighting","soft global illumination","rim lighting"],finish:["polished 3D rendering","clean materials","feature-animation quality"],style:"premium 3D animated character"},
+        exaggeratedChibi:{label:"Exaggerated chibi character",vibe:"glossy exaggerated chibi illustration",lighting:["bright beauty studio lighting","specular lighting","HDR lighting"],finish:["hyper-gloss finish","premium 3D illustration","collector-grade finish","clean-edge rendering"],style:"premium exaggerated chibi mascot"},
+        cartoon:{label:"Polished cartoon illustration",vibe:"clean expressive cartoon energy",lighting:["soft illustrated lighting","clean highlight control","gentle rim light"],finish:["polished digital illustration","clean linework","professional cartoon finish"],style:"polished cartoon character illustration"},
+        comic:{label:"Comic-book character",vibe:"bold graphic comic-book energy",lighting:["dramatic graphic lighting","hard-edged shadows","hero rim light"],finish:["inked comic detail","controlled halftone texture","premium cover-art finish"],style:"premium comic-book character"},
+        anime:{label:"Anime-inspired character",vibe:"polished anime-inspired energy",lighting:["soft anime lighting","cinematic rim light","luminous highlights"],finish:["clean cel-shaded detail","premium anime illustration","crisp linework"],style:"premium anime-inspired character"},
+        clay:{label:"Clay character",vibe:"handcrafted clay-animation aesthetic",lighting:["soft tabletop studio lighting","warm bounce light","subtle contact shadows"],finish:["tactile clay texture","handmade sculpted detail","stop-motion quality"],style:"handcrafted clay character"},
+        plush:{label:"Plush toy character",vibe:"soft collectible plush aesthetic",lighting:["soft product lighting","gentle rim light","warm highlights"],finish:["visible plush fibers","soft tactile texture","premium toy photography quality"],style:"premium plush toy character"},
+        designerToy:{label:"Collectible mascot / designer toy",vibe:"collectible vinyl figure aesthetic",lighting:["specular lighting","reflective lighting","HDR lighting"],finish:["hyper-gloss finish","resin-doll complexion","collector-grade finish","premium 3D illustration"],style:"premium mascot collectible vinyl figure"},
+        fantasy:{label:"Fantasy character",vibe:"cinematic fantasy realism",lighting:["volumetric fantasy lighting","dramatic rim light","atmospheric glow"],finish:["high-detail fantasy rendering","rich material textures","epic concept-art polish"],style:"cinematic fantasy character"},
+        storybook:{label:"Storybook character",vibe:"whimsical storybook energy",lighting:["soft illustrated daylight","gentle glow","warm ambient light"],finish:["storybook print texture","painterly illustration","clean whimsical detail"],style:"premium storybook character illustration"},
+        retro:{label:"Retro illustration character",vibe:"nostalgic retro advertising energy",lighting:["graphic vintage lighting","controlled highlights","soft print shadows"],finish:["retro print texture","vintage advertising polish","clean period detail"],style:"retro commercial illustration character"},
+        digitalPaint:{label:"Digital painting character",vibe:"painterly cinematic character art",lighting:["painterly key light","soft atmospheric light","subtle rim light"],finish:["rich brushwork","high-detail digital painting","concept-art polish"],style:"premium digital painting character"},
+        gameRealism:{label:"Realistic game character",vibe:"cinematic AAA game-character realism",lighting:["cinematic game lighting","ray-traced highlights","dramatic ambient light"],finish:["high-fidelity materials","realistic skin and fabric shaders","AAA character-render quality"],style:"realistic AAA game character"}
       };
 
       function chooseCharacterDefaults() {
