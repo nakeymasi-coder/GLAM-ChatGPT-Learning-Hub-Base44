@@ -9930,51 +9930,75 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       function buildCharacterPrompt() {
         const presetKey = document.getElementById("charPreset").value;
         const preset = characterBuilderPresets[presetKey] || characterBuilderPresets.hyperReal;
+        const val = id => document.getElementById(id)?.value?.trim() || "";
 
-        const subject = (document.getElementById("charSubject").value || "plus-size African American woman").trim();
-        const bodyType = document.getElementById("charBodyType").value;
-        const age = document.getElementById("charAge").value;
-        const skinTone = document.getElementById("charSkinTone").value;
-        const framing = document.getElementById("charFraming").value;
-        const eyes = document.getElementById("charEyes").value;
-        const lashes = document.getElementById("charLashes").value;
-        const lips = document.getElementById("charLips").value;
-        const hair = document.getElementById("charHair").value;
-        const makeup = document.getElementById("charMakeup").value;
-        const outfit = document.getElementById("charOutfit").value;
-        const background = document.getElementById("charBackground").value;
-        const mood = document.getElementById("charMood").value;
-        const extras = document.getElementById("charExtras").value.trim();
-        const avoid = document.getElementById("charAvoid").value.trim();
+        const subject = val("charSubject") || "African American woman";
+        const presentation = val("charPresentation");
+        const bodyType = val("charBodyType");
+        const height = val("charHeight");
+        const age = val("charAge");
+        const skinTone = val("charSkinTone");
+        const undertone = val("charUndertone");
+        const faceShape = val("charFaceShape");
+        const eyes = val("charEyes");
+        const eyeColor = val("charEyeColor");
+        const brows = val("charBrows");
+        const nose = val("charNose");
+        const lipShape = val("charLipShape");
+        const lashes = val("charLashes");
+        const lips = val("charLips");
+        const hairTexture = val("charHairTexture");
+        const hairLength = val("charHairLength");
+        const hair = val("charHair");
+        const hairColor = val("charHairColor");
+        const makeup = val("charMakeup");
+        const expression = val("charExpression");
+        const pose = val("charPose");
+        const outfit = val("charOutfit");
+        const shoes = val("charShoes");
+        const accessories = val("charAccessories");
+        const nails = val("charNails");
+        const framing = val("charFraming");
+        const cameraAngle = val("charCameraAngle");
+        const background = val("charBackground");
+        const mood = val("charMood") || preset.vibe;
+        const chosenLighting = val("charLighting");
+        const chosenFinish = val("charFinish");
+        const extras = val("charExtras");
+        const avoid = val("charAvoid");
 
-        const subjectLine = `${mood}, ${age} ${bodyType} ${subject}, ${skinTone}`;
-        const featureStack = [eyes, lashes, lips, hair, makeup].filter(Boolean);
-        const styleStack = [preset.style, framing, outfit, background, ...preset.lighting, ...preset.finish].filter(Boolean);
+        const identityStack = [age, presentation, bodyType, height, subject, skinTone, undertone].filter(Boolean);
+        const faceStack = [faceShape, eyes, eyeColor, brows, nose, lipShape, lashes, lips].filter(Boolean);
+        const hairBeautyStack = [hairTexture, hairLength, hair, hairColor, makeup].filter(Boolean);
+        const stylingStack = [expression, pose, outfit, shoes, accessories, nails].filter(Boolean);
+        const cameraStack = [framing, cameraAngle, background].filter(Boolean);
+        const lightingStack = [chosenLighting || preset.lighting[0], ...preset.lighting.filter(x => x !== (chosenLighting || preset.lighting[0]))].filter(Boolean);
+        const finishStack = [chosenFinish || preset.finish[0], ...preset.finish.filter(x => x !== (chosenFinish || preset.finish[0]))].filter(Boolean);
         const renderingBits = [mood, preset.style].filter(Boolean);
-        const finishBits = [background, ...preset.finish].filter(Boolean);
         const guardrails = [
-          `preserve the ${bodyType} body type`,
+          bodyType ? `preserve the ${bodyType} body type and proportions` : "preserve the chosen body proportions",
           `keep the subject visibly adult`,
-          `preserve the ${skinTone}`,
-          `keep the composition intentional`,
+          skinTone ? `preserve the ${skinTone}${undertone ? ` with ${undertone}` : ""}` : "preserve the chosen skin tone",
+          `preserve facial features, hairstyle, styling, and character identity consistently`,
+          `keep hands, limbs, clothing, and accessories anatomically believable`,
+          `keep the composition intentional and all visible details unobstructed`,
           avoid || "do not add unrelated clutter"
         ];
-        const extrasLine = extras ? `, ${extras}` : "";
-
-        const fullPrompt = `${subjectLine}, ${featureStack.join(", ")}, ${styleStack.join(", ")}${extrasLine}, ${guardrails.join(", ")}.`;
-        const quickPrompt = `${subject}, ${skinTone}, ${featureStack.slice(0, 3).join(", ")}, ${preset.style}, ${preset.lighting[0]}, ${preset.finish[0]}.`;
-        const stackArray = [...featureStack, ...preset.lighting, ...preset.finish];
+        const mainParts = [mood, preset.style, ...identityStack, ...faceStack, ...hairBeautyStack, ...stylingStack, ...cameraStack, ...lightingStack, ...finishStack, extras].filter(Boolean);
+        const fullPrompt = `${mainParts.join(", ")}, ${guardrails.join(", ")}.`;
+        const quickPrompt = [subject, bodyType, skinTone, eyes, hair, outfit, framing, preset.style, chosenLighting || preset.lighting[0], chosenFinish || preset.finish[0]].filter(Boolean).join(", ") + ".";
+        const stackArray = [...faceStack, ...hairBeautyStack, ...stylingStack, ...cameraStack, ...lightingStack, ...finishStack].filter(Boolean);
         const keywordStack = stackArray.join(", ");
         const negativePrompt = avoid || "no crowns, no clutter, no fake AI graphics, no random floating icons";
         const starterTitle = `${preset.label} • ${subject}`;
 
         lastCharacterBuild = {
-          subject: `${age} ${bodyType} ${subject}, ${skinTone}`,
-          features: [eyes, lashes, lips, hair, makeup, extras].filter(Boolean).join(", "),
-          composition: framing,
+          subject: identityStack.join(", "),
+          features: [...faceStack, ...hairBeautyStack, expression, accessories, nails, extras].filter(Boolean).join(", "),
+          composition: [pose, framing, cameraAngle, background].filter(Boolean).join(", "),
           rendering: renderingBits.join(", "),
-          lighting: preset.lighting.join(", "),
-          finish: finishBits.join(", "),
+          lighting: lightingStack.join(", "),
+          finish: finishStack.join(", "),
           guardrails: guardrails.join(", "),
           stackArray
         };
