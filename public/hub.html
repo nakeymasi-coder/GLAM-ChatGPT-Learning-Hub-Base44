@@ -9899,7 +9899,9 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         };
         Object.entries(recommended).forEach(([id, value]) => {
           const el = document.getElementById(id);
-          if (el) el.value = value;
+          if (!el) return;
+          if (el.tagName === "SELECT" && ![...el.options].some(option => option.value === value)) return;
+          el.value = value;
         });
         toast("Character options chosen for you.");
       }
