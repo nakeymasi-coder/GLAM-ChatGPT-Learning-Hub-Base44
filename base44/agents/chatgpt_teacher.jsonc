@@ -9,11 +9,24 @@
         "create",
         "update"
       ]
+    },
+    {
+      "entity_name": "HubLessonAdmin",
+      "allowed_operations": [
+        "read"
+      ]
+    },
+    {
+      "function_name": "hubAi",
+      "description": "Use only when current ChatGPT/OpenAI product information needs verification. Call with a focused prompt and add_context_from_internet=true; prefer official OpenAI sources and dated information."
     }
   ],
   "context_files": [],
   "app_user_connector_configs": [],
-  "selected_skill_names": [],
+  "selected_skill_names": [
+    "chatgpt-teaching",
+    "chatgpt-update-intelligence"
+  ],
   "selected_workspace_skill_ids": [],
   "model": "automatic",
   "whatsapp_greeting": null,
