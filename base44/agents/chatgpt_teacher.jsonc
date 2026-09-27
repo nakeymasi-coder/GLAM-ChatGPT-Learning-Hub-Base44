@@ -29,13 +29,11 @@
     "chatgpt-workflow-routing",
     "master-prompt-mining"
   ],
-  "selected_workspace_skill_ids": [
-    "6aa84077a9e3e13dce8b2399"
-  ],
+  "selected_workspace_skill_ids": [],
   "model": "automatic",
-  "whatsapp_greeting": "",
-  "telegram_greeting": "",
-  "line_greeting": "",
+  "whatsapp_greeting": null,
+  "telegram_greeting": null,
+  "line_greeting": null,
   "memory_config": {
     "enabled": true,
     "scope": "both",
