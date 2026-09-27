@@ -1,0 +1,7 @@
+import {useState} from 'react';
+import {Empty,secondary} from './ui';
+export default function HistoryTable({rows}) {
+  const [shown,setShown]=useState(25);
+  if(!rows.length)return <Empty>No entries match these filters.</Empty>;
+  return <div className="space-y-3">{rows.slice(0,shown).map(row=><article key={row.id} className="rounded-xl border border-border p-4 text-sm"><div className="flex flex-wrap justify-between gap-2 text-xs text-muted-foreground"><span>{row.local_datetime||new Date(row.submitted_at_ms||row.submitted_at).toLocaleString()} {row.timezone||''}</span><span>{row.tool_used||'Unknown tool'}</span></div><h3 className="mt-2 font-semibold whitespace-pre-wrap break-words">{row.prompt}</h3><details className="mt-2"><summary className="cursor-pointer text-primary">Show response</summary><p className="mt-2 whitespace-pre-wrap break-words text-muted-foreground">{row.response}</p></details>{row.conversation_link&&<a className="mt-2 inline-block text-primary underline" href={row.conversation_link} target="_blank" rel="noopener noreferrer">Open conversation</a>}</article>)}{shown<rows.length&&<button className={secondary} onClick={()=>setShown(n=>n+25)}>Show more ({rows.length-shown} remaining)</button>}</div>;
+}

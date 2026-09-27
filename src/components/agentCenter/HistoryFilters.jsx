@@ -1,0 +1,4 @@
+import {Field,input} from './ui';
+export default function HistoryFilters({query,setQuery,tool,setTool,tools,from,setFrom,to,setTo}) {
+  return <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><Field label="Search prompts and responses"><input className={input} value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search history"/></Field><Field label="Tool"><select className={input} value={tool} onChange={e=>setTool(e.target.value)}><option value="">All tools</option>{tools.map(name=><option key={name} value={name}>{name}</option>)}</select></Field><Field label="From date"><input type="date" className={input} value={from} onChange={e=>setFrom(e.target.value)}/></Field><Field label="Through date"><input type="date" className={input} value={to} onChange={e=>setTo(e.target.value)}/></Field></div>;
+}

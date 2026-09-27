@@ -11,8 +11,9 @@ import Vault from '@/components/agentCenter/Vault';
 import ImportCenter from '@/components/agentCenter/ImportCenter';
 import Settings from '@/components/agentCenter/Settings';
 import SetupGuide from '@/components/agentCenter/SetupGuide';
+import HistoryExplorer from '@/components/agentCenter/HistoryExplorer';
 import {Failure,primary} from '@/components/agentCenter/ui';
-const tabs=[['dashboard','Dashboard'],['setup','New Project Setup'],['teacher','ChatGPT Teacher'],['advisor','ChatGPT Advisor'],['intelligence','ChatGPT Intelligence'],['agent','Master Prompt Agent'],['vault','Master Prompt Vault'],['import','Import Center'],['settings','Settings / Admin']];
+const tabs=[['dashboard','Dashboard'],['setup','New Project Setup'],['history','Prompt History Guide'],['teacher','ChatGPT Teacher'],['advisor','ChatGPT Advisor'],['intelligence','ChatGPT Intelligence'],['agent','Master Prompt Agent'],['vault','Master Prompt Vault'],['import','Import Center'],['settings','Settings / Admin']];
 export default function AgentCenter(){
  const {user}=useAuth();const [params,setParams]=useSearchParams();const active=tabs.some(([id])=>id===params.get('section'))?params.get('section'):'dashboard';
  const [data,setData]=useState({progress:[],sessions:[],updates:[],prompts:[],versions:[],imports:[],summaries:[],history:[],projects:[],settings:[],uses:[]});const [loading,setLoading]=useState(true),[error,setError]=useState(''),[seed,setSeed]=useState(''),[key,setKey]=useState(0);
@@ -24,6 +25,7 @@ export default function AgentCenter(){
  return <div className="agent-center min-h-screen bg-background text-foreground"><header className="border-b border-border bg-card"><div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:px-6"><div><p className="text-xs font-bold uppercase tracking-widest text-ring">Glam Hustle Hub</p><h1 className="font-heading text-xl font-bold">Agent Center</h1></div><Link to="/" className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 py-2 text-sm font-semibold">Back to Hub</Link></div></header><div className="mx-auto grid max-w-7xl gap-5 px-4 py-5 sm:px-6 lg:grid-cols-[230px_minmax(0,1fr)]"><nav aria-label="Agent Center" className="flex gap-2 overflow-x-auto pb-2 lg:sticky lg:top-4 lg:h-fit lg:flex-col lg:overflow-visible">{tabs.map(([id,label])=><button key={id} className={`min-h-11 shrink-0 rounded-xl px-4 py-2 text-left text-sm font-semibold ${active===id?'bg-primary text-primary-foreground':'bg-card text-foreground hover:bg-secondary'}`} onClick={()=>go(id)}>{label}</button>)}</nav><main className="min-w-0 space-y-4">{loading?<p role="status" className="p-5">Loading Agent Center…</p>:error?<div><Failure error={error}/><button className={`${primary} mt-3`} onClick={load}>Try again</button></div>:<React.Fragment key={`${active}-${key}`}>
  {active==='dashboard'&&<Dashboard data={shared} go={go}/>}
   {active==='setup'&&<SetupGuide projects={data.projects} setProjects={setField('projects')}/>}
+  {active==='history'&&<HistoryExplorer userId={user?.id}/>}
  {active==='teacher'&&<Teacher progress={data.progress} setProgress={setField('progress')} initial={typeof seed==='string'?seed:''}/>}
  {active==='advisor'&&<Advisor sessions={data.sessions} setSessions={setField('sessions')} initial={typeof seed==='string'?seed:''} onAgent={text=>go('agent',text)} onTeacher={text=>go('teacher',text)}/>}
  {active==='intelligence'&&<Intelligence updates={data.updates} setUpdates={setField('updates')} isAdmin={user?.role==='admin'}/>}
