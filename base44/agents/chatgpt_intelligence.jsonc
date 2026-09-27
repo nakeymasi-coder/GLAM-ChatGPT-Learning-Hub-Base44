@@ -5,13 +5,21 @@
     {
       "entity_name": "AgentUpdate",
       "allowed_operations": [
-        "read"
+        "read",
+        "create",
+        "update"
       ]
+    },
+    {
+      "function_name": "hubAi",
+      "description": "Primary current-information tool. For ChatGPT/OpenAI update questions, call with a focused prompt and add_context_from_internet=true. Require dated sources and prefer official OpenAI sources; if verification is weak, say so."
     }
   ],
   "context_files": [],
   "app_user_connector_configs": [],
-  "selected_skill_names": [],
+  "selected_skill_names": [
+    "chatgpt-update-intelligence"
+  ],
   "selected_workspace_skill_ids": [],
   "model": "automatic",
   "whatsapp_greeting": null,
