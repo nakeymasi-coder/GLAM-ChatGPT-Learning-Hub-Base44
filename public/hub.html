@@ -334,7 +334,7 @@
       }
 
       .hero {
-        padding: 72px 0 38px;
+        padding: 30px 0 18px;
         display: grid;
         grid-template-columns: 1.17fr 0.83fr;
         gap: 32px;
@@ -513,7 +513,7 @@
         text-transform: uppercase;
         letter-spacing: 0.08em;
       }
-      .agent-dash > strong {
+      .agent-dash-removed-strong {
         display: block;
         margin-top: 4px;
         font-size: 17px;
@@ -524,7 +524,7 @@
         font-size: 12px;
         line-height: 1.5;
       }
-      .agent-dash-grid {
+      .agent-dash-grid { grid-template-columns:1fr 1fr; gap:6px;
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px;
@@ -572,7 +572,7 @@
         font-weight: 950;
       }
       @media (max-width: 480px) {
-        .agent-dash-grid { grid-template-columns: 1fr; }
+        .agent-dash-grid { grid-template-columns:1fr 1fr; gap:6px; grid-template-columns: 1fr; }
       }
 
       .section-head {
@@ -2855,7 +2855,7 @@
       /* ===== UX restructure additions ===== */
       .hub-main > .start-here { order:-4; }
       .hub-main > .recent-work { order:-3; }
-      .start-here { padding:26px 26px 30px; border:1px solid rgba(16,59,99,.09); border-radius:24px; background:linear-gradient(180deg,#ffffff 0%,#f4faff 100%); }
+      .start-here { padding:18px 22px 20px; border:1px solid rgba(16,59,99,.09); border-radius:24px; background:linear-gradient(180deg,#ffffff 0%,#f4faff 100%); }
       .start-here h2 { margin:4px 0 6px; }
       .start-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:16px; }
       .start-card { text-align:left; border:1px solid rgba(16,59,99,.14); border-radius:18px; padding:18px 16px; background:#fff; cursor:pointer; display:flex; flex-direction:column; gap:6px; transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
@@ -2865,7 +2865,7 @@
       .start-card > span.desc { color:var(--muted); font-size:12.5px; line-height:1.55; }
       .start-card .card-links { margin-top:auto; display:flex; flex-wrap:wrap; gap:6px; padding-top:10px; }
       .start-card .card-links span { font-size:11px; font-weight:700; color:var(--blue); border:1px solid rgba(6,63,111,.22); border-radius:999px; padding:3px 10px; background:#f4faff; }
-      .recent-work { border:1px solid rgba(16,59,99,.09); border-radius:20px; background:#fff; padding:18px 22px; }
+      .recent-work { border:1px solid rgba(16,59,99,.09); border-radius:20px; background:#fff; padding:13px 18px; }
       .recent-work-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
       .recent-work-head h3 { margin:2px 0 0; }
       .recent-list { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
@@ -2961,6 +2961,7 @@
           <div class="side-label">Help</div>
           <button class="side-link" data-side-tab="finder" type="button" onclick="goTab('finder')"><span class="side-icon">↗</span>Which Tool Do I Use?</button>
           <button class="side-link" data-side-tab="glossary" type="button" onclick="goTab('glossary')"><span class="side-icon">A</span>Glossary</button>
+          <button class="side-link" data-side-tab="concierge" type="button" onclick="goTab('concierge')"><span class="side-icon">?</span>Prompt Concierge</button>
         </div>
 
         <div class="side-group admin-only-link" id="adminOwnerGroup">
@@ -2971,33 +2972,6 @@
       <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeHubSidebar()"></div>
 
     <main class="hub-main">
-
-      <section class="ask-hub" id="askChatgptHub" aria-labelledby="askChatgptTitle">
-        <div class="ask-hub-inner">
-          <div class="ask-hub-copy">
-            <div class="ask-badge"><span class="ask-badge-dot"></span> Real-time AI help</div>
-            <h2 id="askChatgptTitle">Prompt Concierge. <span>Start where you are.</span></h2>
-            <p>Don't know which feature to use, what to type, or where to begin? Tell the Learning Hub what you're trying to do. It will help you choose the best feature, give you simple next steps, write a starter prompt, and point you to the right lesson.</p>
-            <div class="ask-quick" aria-label="Quick question starters">
-              <button type="button" data-ask-starter="I don't know where to start. Help me figure out what I need to do first.">I don't know where to start</button>
-              <button type="button" data-ask-starter="Which ChatGPT feature should I use for what I'm trying to do? Ask me what I need and help me choose.">Which feature should I use?</button>
-              <button type="button" data-ask-starter="Help me write a good prompt for what I'm trying to accomplish.">Help me write my prompt</button>
-              <button type="button" data-ask-starter="I need help using ChatGPT for my business. Help me turn my goal into clear next steps.">Help me with my business</button>
-              <button type="button" data-ask-starter="Explain what I should do in simple beginner-friendly steps. I will tell you my problem.">Explain it simply</button>
-            </div>
-          </div>
-          <div class="ask-panel">
-            <label for="askChatgptInput">What are you trying to do?</label>
-            <textarea id="askChatgptInput" placeholder="Example: I want to create a flyer for my business, but I don't know which ChatGPT feature to use or how to ask for what I want."></textarea>
-            <div class="ask-actions">
-              <button class="btn primary" type="button" id="askChatgptBtn">Ask AI</button>
-              <button class="btn secondary" type="button" id="askChatgptClear">Clear</button>
-              <span class="ask-status" id="askChatgptStatus">Real-time guidance from the Learning Hub AI.</span>
-            </div>
-          </div>
-        </div>
-        <div class="ask-answer" id="askChatgptAnswer" aria-live="polite"></div>
-      </section>
 
       <section class="hero">
         <div>
@@ -3058,15 +3032,12 @@
 
           <div class="agent-dash" aria-label="Agent Center">
             <small>Agent Center</small>
-            <strong>Your ChatGPT support team</strong>
-            <p>Jump straight into the agent you need without leaving your main Hub dashboard.</p>
             <div class="agent-dash-grid">
-              <a href="/agent-center?section=teacher"><strong>ChatGPT Teacher</strong><span>Learn features, tools, and workflows.</span></a>
-              <a href="/agent-center?section=advisor"><strong>ChatGPT Advisor</strong><span>Find the right mode, tool, or workflow.</span></a>
-              <a href="/agent-center?section=intelligence"><strong>ChatGPT Intelligence</strong><span>Track important ChatGPT changes.</span></a>
-              <a href="/agent-center?section=agent"><strong>Master Prompt Agent</strong><span>Turn repeated work into reusable prompts.</span></a>
+              <a href="/agent-center?section=teacher"><strong>ChatGPT Teacher</strong></a>
+              <a href="/agent-center?section=advisor"><strong>ChatGPT Advisor</strong></a>
+              <a href="/agent-center?section=intelligence"><strong>ChatGPT Intelligence</strong></a>
+              <a href="/agent-center?section=agent"><strong>Master Prompt Agent</strong></a>
             </div>
-            <a class="agent-dash-all" href="/agent-center">Open full Agent Center</a>
           </div>
         </aside>
       </section>
@@ -3115,11 +3086,6 @@
       </section>
 
       <section id="hub">
-        <div class="section-head">
-          <div class="kicker">Your ChatGPT 2026 Learning Path</div>
-          <h2>Your learning path</h2>
-          <p>Pick up where you left off or choose the next step below. Your progress is saved in this browser.</p>
-        </div>
 
         <div class="hub-location" id="hubLocation" aria-label="Where you are">
           <span>You are here:</span>
@@ -3156,10 +3122,43 @@
             <span class="tab-group-label">Help</span>
             <button class="tab" data-tab="finder">Which Tool Do I Use?</button>
             <button class="tab" data-tab="glossary">Glossary</button>
+            <button class="tab" data-tab="concierge">Prompt Concierge</button>
           </nav>
         </details>
 
+        <section class="panel ask-hub" id="panel-concierge" aria-labelledby="askChatgptTitle">
+        <div class="ask-hub-inner">
+          <div class="ask-hub-copy">
+            <div class="ask-badge"><span class="ask-badge-dot"></span> Real-time AI help</div>
+            <h2 id="askChatgptTitle">Prompt Concierge. <span>Start where you are.</span></h2>
+            <p>Don't know which feature to use, what to type, or where to begin? Tell the Learning Hub what you're trying to do. It will help you choose the best feature, give you simple next steps, write a starter prompt, and point you to the right lesson.</p>
+            <div class="ask-quick" aria-label="Quick question starters">
+              <button type="button" data-ask-starter="I don't know where to start. Help me figure out what I need to do first.">I don't know where to start</button>
+              <button type="button" data-ask-starter="Which ChatGPT feature should I use for what I'm trying to do? Ask me what I need and help me choose.">Which feature should I use?</button>
+              <button type="button" data-ask-starter="Help me write a good prompt for what I'm trying to accomplish.">Help me write my prompt</button>
+              <button type="button" data-ask-starter="I need help using ChatGPT for my business. Help me turn my goal into clear next steps.">Help me with my business</button>
+              <button type="button" data-ask-starter="Explain what I should do in simple beginner-friendly steps. I will tell you my problem.">Explain it simply</button>
+            </div>
+          </div>
+          <div class="ask-panel">
+            <label for="askChatgptInput">What are you trying to do?</label>
+            <textarea id="askChatgptInput" placeholder="Example: I want to create a flyer for my business, but I don't know which ChatGPT feature to use or how to ask for what I want."></textarea>
+            <div class="ask-actions">
+              <button class="btn primary" type="button" id="askChatgptBtn">Ask AI</button>
+              <button class="btn secondary" type="button" id="askChatgptClear">Clear</button>
+              <span class="ask-status" id="askChatgptStatus">Real-time guidance from the Learning Hub AI.</span>
+            </div>
+          </div>
+        </div>
+        <div class="ask-answer" id="askChatgptAnswer" aria-live="polite"></div>
+      </section>
+
         <div class="panel active" id="panel-academy">
+          <div class="section-head">
+            <div class="kicker">Your ChatGPT 2026 Learning Path</div>
+            <h2>Your learning path</h2>
+            <p>Pick up where you left off or choose the next step below. Your progress is saved in this browser.</p>
+          </div>
           <div class="beginner-start">
             <div class="kicker">Choose your starting point</div>
             <h2>Where are you right now?</h2>
@@ -8199,6 +8198,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         assessment: ["Learn", "Final Assessment"],
         certificate: ["Learn", "Certificate"],
         glossary: ["Help", "Glossary"],
+        concierge: ["Help", "Prompt Concierge"],
         asklibrary: ["Create & Build", "Prompt Library"],
         coach: ["Create & Build", "Prompt Coach"],
         clinic: ["Create & Build", "Prompt Clinic"],
@@ -8344,8 +8344,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
 
       function scrollToAskHub() {
         closeHubSidebar();
-        document.querySelectorAll("[data-side-tab]").forEach(x => x.classList.remove("active"));
-        document.getElementById("askChatgptHub")?.scrollIntoView({ behavior:"smooth", block:"start" });
+        goTab("concierge");
         setTimeout(() => document.getElementById("askChatgptInput")?.focus(), 450);
       }
 
