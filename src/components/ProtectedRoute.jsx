@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
 import { hasCurrentLegalAcceptance } from '@/lib/legalAcceptance';
-import { base44 } from '@/api/base44Client';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
 const DefaultFallback = () => (
@@ -19,6 +18,13 @@ export default function ProtectedRoute({ fallback = <DefaultFallback />, unauthe
   useEffect(() => {
     if (!authChecked && !isLoadingAuth) checkUserAuth();
   }, [authChecked, isLoadingAuth, checkUserAuth]);
+
+  function retryConsent() {
+    setConsent({ userId: user.id, status: 'loading' });
+    hasCurrentLegalAcceptance(user.id)
+      .then(accepted => setConsent({ userId: user.id, status: accepted ? 'accepted' : 'required' }))
+      .catch(error => setConsent({ userId: user.id, status: 'error', error: error.message }));
+  }
 
   useEffect(() => {
     if (!isAuthenticated || !user?.id) return;
@@ -43,7 +49,7 @@ export default function ProtectedRoute({ fallback = <DefaultFallback />, unauthe
 
   if (!isAuthenticated) return unauthenticatedElement;
   if (consent.userId !== user?.id || consent.status === 'loading') return fallback;
-  if (consent.status === 'error') return <div className="mx-auto max-w-md p-6 text-foreground" role="alert"><p>Could not verify your legal acceptance: {consent.error}</p><button className="mt-3 rounded-lg border border-border px-4 py-2" onClick={() => { setConsent({ userId: user.id, status: 'loading' }); hasCurrentLegalAcceptance(user.id).then(accepted => setConsent({ userId: user.id, status: accepted ? 'accepted' : 'required' })).catch(error => setConsent({ userId: user.id, status: 'error', error: error.message })); }}>Try again</button></div>;
+  if (consent.status === 'error') return <div className="mx-auto max-w-md p-6 text-foreground" role="alert"><p>Could not verify your legal acceptance: {consent.error}</p><button className="mt-3 rounded-lg border border-border px-4 py-2" onClick={retryConsent}>Try again</button></div>;
   if (consent.status === 'required') {
     const returnTo = location.pathname + location.search + location.hash;
     return <Navigate to={`/legal-consent?returnTo=${encodeURIComponent(returnTo)}`} replace />;
