@@ -12,8 +12,9 @@ import ImportCenter from '@/components/agentCenter/ImportCenter';
 import Settings from '@/components/agentCenter/Settings';
 import SetupGuide from '@/components/agentCenter/SetupGuide';
 import HistoryExplorer from '@/components/agentCenter/HistoryExplorer';
+import TemplateGuide from '@/components/agentCenter/TemplateGuide';
 import {Failure,primary} from '@/components/agentCenter/ui';
-const tabs=[['dashboard','Dashboard'],['setup','New Project Setup'],['history','Prompt History Guide'],['teacher','ChatGPT Teacher'],['advisor','ChatGPT Advisor'],['intelligence','ChatGPT Intelligence'],['agent','Master Prompt Agent'],['vault','Master Prompt Vault'],['import','Import Center'],['settings','Settings / Admin']];
+const tabs=[['dashboard','Dashboard'],['setup','New Project Setup'],['history','Prompt History Guide'],['templates','Template Guide'],['teacher','ChatGPT Teacher'],['advisor','ChatGPT Advisor'],['intelligence','ChatGPT Intelligence'],['agent','Master Prompt Agent'],['vault','Master Prompt Vault'],['import','Import Center'],['settings','Settings / Admin']];
 export default function AgentCenter(){
  const {user}=useAuth();const [params,setParams]=useSearchParams();const active=tabs.some(([id])=>id===params.get('section'))?params.get('section'):'dashboard';
  const [data,setData]=useState({progress:[],sessions:[],updates:[],prompts:[],versions:[],imports:[],summaries:[],history:[],projects:[],settings:[],uses:[]});const [loading,setLoading]=useState(true),[error,setError]=useState(''),[seed,setSeed]=useState(''),[key,setKey]=useState(0);
@@ -26,6 +27,7 @@ export default function AgentCenter(){
  {active==='dashboard'&&<Dashboard data={shared} go={go}/>}
   {active==='setup'&&<SetupGuide projects={data.projects} setProjects={setField('projects')}/>}
   {active==='history'&&<HistoryExplorer userId={user?.id}/>}
+  {active==='templates'&&<TemplateGuide projects={data.projects} setProjects={setField('projects')}/>}
  {active==='teacher'&&<Teacher progress={data.progress} setProgress={setField('progress')} initial={typeof seed==='string'?seed:''}/>}
  {active==='advisor'&&<Advisor sessions={data.sessions} setSessions={setField('sessions')} initial={typeof seed==='string'?seed:''} onAgent={text=>go('agent',text)} onTeacher={text=>go('teacher',text)}/>}
  {active==='intelligence'&&<Intelligence updates={data.updates} setUpdates={setField('updates')} isAdmin={user?.role==='admin'}/>}

@@ -1,0 +1,13 @@
+import {useEffect,useState} from 'react';
+import {base44} from '@/api/base44Client';
+import {Panel,Empty,Failure,input,primary} from './ui';
+import TemplateChat from './TemplateChat';
+import TemplateCatalog from './TemplateCatalog';
+import TemplateConfigurator from './TemplateConfigurator';
+export default function TemplateGuide({projects,setProjects}) {
+  const [templates,setTemplates]=useState([]),[loading,setLoading]=useState(true),[error,setError]=useState(''),[projectId,setProjectId]=useState(''),[selected,setSelected]=useState(null),[query,setQuery]=useState(''),[category,setCategory]=useState('');
+  useEffect(()=>{let active=true;async function load(){try{const all=[];let page;do{page=await base44.entities.HubPromptTemplate.filter({active:true},'sort_order',200,all.length);all.push(...page)}while(page.length===200&&active);if(active)setTemplates(all)}catch(e){if(active)setError(e.message||'Could not load templates.')}finally{if(active)setLoading(false)}}load();return()=>{active=false}},[]);
+  const project=projects.find(item=>item.id===projectId);
+  function saved(updated){setProjects(previous=>previous.map(item=>item.id===updated.id?updated:item))}
+  return <div className="space-y-5"><Panel title="Template Guide"><p className="mb-4 text-sm text-muted-foreground">Choose one of your projects, ask the guide for a recommendation, then configure and review an active template before applying it.</p><label className="block text-sm font-medium">Project<select className={`${input} mt-2`} value={projectId} onChange={e=>{setProjectId(e.target.value);setSelected(null);setQuery('');setCategory('')}}><option value="">Select a project</option>{projects.map(item=><option key={item.id} value={item.id}>{item.name} · {item.status||'Building'}</option>)}</select></label>{!projects.length&&<Empty>No projects yet. Use New Project Setup first, then return here.</Empty>}</Panel><Failure error={error}/>{project&&<><Panel title={`Find a template for ${project.name}`}><TemplateChat key={project.id} project={project}/></Panel><Panel title="Search active templates">{loading?<p role="status" className="text-sm">Loading templates…</p>:<TemplateCatalog {...{templates,project,selected,query,setQuery,category,setCategory}} onSelect={setSelected}/>}</Panel>{selected&&<Panel title={`Configure ${selected.title}`}><TemplateConfigurator key={`${project.id}-${selected.id}`} template={selected} project={project} onSaved={saved}/></Panel>}</>}</div>;
+}
