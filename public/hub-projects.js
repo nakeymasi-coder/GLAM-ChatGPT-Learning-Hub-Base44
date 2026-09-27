@@ -443,6 +443,7 @@
         (p.summary ? '<div class="pc-summary">' + esc(p.summary) + '</div>' : '') +
         '<div class="pc-actions">' +
           '<button class="tiny-btn" onclick="ConciergeProjects.open(\'' + esc(p.id) + '\')">Open Project</button>' +
+          '<a class="tiny-btn" href="/projects/' + encodeURIComponent(p.id) + '">View project</a>' +
           '<button class="tiny-btn" onclick="ConciergeProjects.copyMasterById(\'' + esc(p.id) + '\')">Copy Master Prompt</button>' +
           '<button class="tiny-btn" onclick="ConciergeProjects.remove(\'' + esc(p.id) + '\')">Delete</button>' +
         '</div>' +

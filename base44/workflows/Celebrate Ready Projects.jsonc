@@ -1,0 +1,40 @@
+{
+  "name": "Celebrate Ready Projects",
+  "description": "Records when a saved HubProject becomes Ready to Use so its owner sees a same-day congratulations in the project view.",
+  "trigger": {
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "HubProject",
+      "events": [
+        "update"
+      ]
+    },
+    "condition": "${ .trigger.data.status == \"Ready to Use\" and .trigger.old_data.status != \"Ready to Use\" }"
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "celebrate_ready_projects",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "mark_ready": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "markProjectReady",
+            "args": {
+              "project_id": "${ .trigger.entity_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Mark project ready",
+            "description": "Prepare the owner's congratulations"
+          }
+        }
+      }
+    ]
+  }
+}

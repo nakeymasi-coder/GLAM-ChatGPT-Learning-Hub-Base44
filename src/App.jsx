@@ -16,6 +16,7 @@ import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
 import LegalConsent from '@/pages/LegalConsent';
 import AgentCenter from '@/pages/AgentCenter';
+import HubProjectDetail from '@/pages/HubProjectDetail';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { Navigate } from 'react-router-dom';
 
@@ -55,6 +56,7 @@ const AuthenticatedApp = () => {
           <Route path="/" element={<Home />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/agent-center" element={<AgentCenter />} />
+          <Route path="/projects/:id" element={<HubProjectDetail />} />
         </Route>
       </Route>
       <Route path="*" element={<PageNotFound />} />

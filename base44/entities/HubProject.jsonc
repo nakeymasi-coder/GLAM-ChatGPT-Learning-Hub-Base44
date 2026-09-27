@@ -42,6 +42,11 @@
     "source": {
       "type": "string",
       "description": "Where the project came from, e.g. 'Prompt Concierge'."
+    },
+    "ready_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Time the project most recently changed to Ready to Use."
     }
   },
   "required": [
