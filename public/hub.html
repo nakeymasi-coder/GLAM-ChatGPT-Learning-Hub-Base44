@@ -2738,17 +2738,12 @@
       .side-link.active { background:#fff; color:var(--blue); box-shadow:0 6px 18px rgba(16,59,99,.08); }
       .side-icon { width:26px; height:26px; flex:0 0 26px; border-radius:9px; display:grid; place-items:center; background:#eef7ff; color:var(--blue); font-size:13px; }
       .hub-main { min-width:0; display:flex; flex-direction:column; }
-      .hub-main > .hero { order:-4; }
-      .hub-main > .home-quick-launch { order:-3; }
+      .hub-main > .hero { order:-5; }
+      .hub-main > .start-here { order:-4; }
+      .hub-main > .recent-work { order:-3; }
       .hub-main > #hub { order:-2; }
       .hub-main > .ask-hub { order:-1; }
       .beginner-start { display:none; }
-      .home-quick-launch { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:4px 0 34px; }
-      .home-quick-launch button { border:1px solid rgba(16,59,99,.10); background:#fff; border-radius:18px; padding:15px 16px; text-align:left; box-shadow:0 8px 24px rgba(16,59,99,.06); cursor:pointer; transition:.18s ease; }
-      .home-quick-launch button:hover { transform:translateY(-2px); box-shadow:0 12px 28px rgba(16,59,99,.10); }
-      .home-quick-launch small { display:block; color:#7b8b98; font-size:10px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; margin-bottom:5px; }
-      .home-quick-launch strong { display:block; color:var(--deep); font-size:14px; }
-      @media (max-width:760px){ .home-quick-launch { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; margin-bottom:24px; } .home-quick-launch button { padding:13px; border-radius:15px; } }
       .mobile-menu-btn { display:none; }
       .sidebar-backdrop { display:none; }
       .mobile-bottom-nav { display:none; }
@@ -2856,6 +2851,42 @@
         .mobile-menu-btn { display:inline-flex !important; font-size:12px; padding:9px 13px !important; }
         .hero { padding-top:22px; }
       }
+
+      /* ===== UX restructure additions ===== */
+      .hub-main > .start-here { order:-4; }
+      .hub-main > .recent-work { order:-3; }
+      .start-here { padding:26px 26px 30px; border:1px solid rgba(16,59,99,.09); border-radius:24px; background:linear-gradient(180deg,#ffffff 0%,#f4faff 100%); }
+      .start-here h2 { margin:4px 0 6px; }
+      .start-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:16px; }
+      .start-card { text-align:left; border:1px solid rgba(16,59,99,.14); border-radius:18px; padding:18px 16px; background:#fff; cursor:pointer; display:flex; flex-direction:column; gap:6px; transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+      .start-card:hover { transform:translateY(-2px); box-shadow:0 14px 30px rgba(8,24,38,.10); border-color:rgba(6,63,111,.42); }
+      .start-card > small { color:var(--muted); font-size:11px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; }
+      .start-card > strong { font-size:17px; color:var(--deep); line-height:1.25; }
+      .start-card > span.desc { color:var(--muted); font-size:12.5px; line-height:1.55; }
+      .start-card .card-links { margin-top:auto; display:flex; flex-wrap:wrap; gap:6px; padding-top:10px; }
+      .start-card .card-links span { font-size:11px; font-weight:700; color:var(--blue); border:1px solid rgba(6,63,111,.22); border-radius:999px; padding:3px 10px; background:#f4faff; }
+      .recent-work { border:1px solid rgba(16,59,99,.09); border-radius:20px; background:#fff; padding:18px 22px; }
+      .recent-work-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+      .recent-work-head h3 { margin:2px 0 0; }
+      .recent-list { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+      .recent-chip { display:inline-flex; align-items:center; gap:8px; border:1px solid rgba(16,59,99,.14); border-radius:12px; padding:9px 13px; font-size:12.5px; color:var(--deep); background:#fbfdff; cursor:pointer; text-align:left; }
+      .recent-chip:hover { border-color:rgba(6,63,111,.4); }
+      .recent-chip small { color:var(--muted); font-weight:700; text-transform:uppercase; font-size:9.5px; letter-spacing:.07em; }
+      .recent-empty { color:var(--muted); font-size:13px; }
+      .hub-location { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:0 0 14px; padding:10px 14px; border:1px dashed rgba(16,59,99,.2); border-radius:12px; background:#fbfdff; font-size:12.5px; color:var(--muted); }
+      .hub-location strong { color:var(--deep); }
+      .hub-location .loc-link { color:var(--blue); cursor:pointer; background:none; border:none; padding:0; font-size:12.5px; text-decoration:underline; }
+      .tab-group-label { flex-basis:100%; font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); padding:10px 2px 0; }
+      .landing-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-top:6px; }
+      .landing-box { border:1px solid rgba(16,59,99,.10); border-radius:18px; padding:18px; background:#fff; }
+      .landing-box h4 { margin:2px 0 10px; color:var(--deep); font-size:15px; }
+      .tool-links { display:grid; gap:8px; }
+      .tool-links > button, .tool-links > a { text-align:left; display:flex; flex-direction:column; gap:3px; border:1px solid rgba(16,59,99,.12); border-radius:12px; padding:10px 12px; background:#fbfdff; cursor:pointer; font-size:13.5px; color:var(--deep); text-decoration:none; font-weight:750; }
+      .tool-links > button:hover, .tool-links > a:hover { border-color:rgba(6,63,111,.4); }
+      .tool-links small { color:var(--muted); font-size:11.5px; line-height:1.5; font-weight:500; }
+      @media (max-width: 900px) { .landing-grid { grid-template-columns:1fr; } .tab-group-label { display:none; } }
+      @media (max-width: 980px) { .start-grid { grid-template-columns:repeat(2,1fr); } }
+      @media (max-width: 620px) { .start-grid { grid-template-columns:1fr; } .start-here { padding:18px; } }
     </style>
   </head>
   <body>
@@ -2880,8 +2911,8 @@
           >
             ↺
           </button>
-          <button class="btn dark" onclick="goTab('academy')">
-            Start Learning
+          <button class="btn dark" onclick="scrollHubHome()">
+            Start Here
           </button>
         </div>
       </div>
@@ -2889,53 +2920,51 @@
 
     <div class="hub-app-shell">
       <aside class="hub-sidebar" id="hubSidebar" aria-label="Learning Hub navigation">
-        <div class="sidebar-title"><strong>Explore the Hub</strong><span>Everything is here. Start with Learn, or jump directly to what you need.</span></div>
+        <div class="sidebar-title"><strong>Where to?</strong><span>Pick a destination. Extra tools live inside each area, so you only see them when you need them.</span></div>
 
         <div class="side-group">
-          <div class="side-label">Start Here</div>
-          <button class="side-link" type="button" onclick="scrollHubHome()"><span class="side-icon">⌂</span>Home</button>
+          <div class="side-label">Home</div>
+          <button class="side-link" type="button" onclick="scrollHubHome()"><span class="side-icon">⌂</span>Start Here</button>
           <button class="side-link" type="button" onclick="openHubTutorial()"><span class="side-icon">?</span>How to Use This Hub</button>
-          <button class="side-link" type="button" onclick="scrollToAskHub()"><span class="side-icon">✦</span>Prompt Concierge</button>
         </div>
 
         <div class="side-group">
-          <div class="side-label">Agent Center</div><a class="side-link" href="/agent-center"><span class="side-icon">AC</span>AGENT CENTER</a></div><div class="side-group"><div class="side-label">Learn</div>
-          <button class="side-link active" data-side-tab="academy" type="button" onclick="goTab('academy')"><span class="side-icon">01</span>Learning Path</button>
-          <button class="side-link" data-side-tab="asklibrary" type="button" onclick="goTab('asklibrary')"><span class="side-icon">P</span>Prompt Library</button>
+          <div class="side-label">Learn</div>
+          <button class="side-link" data-side-tab="academy" type="button" onclick="goTab('academy')"><span class="side-icon">01</span>Learning Path</button>
+          <a class="side-link" href="/agent-center?section=teacher"><span class="side-icon">T</span>ChatGPT Teacher</a>
+          <button class="side-link" data-side-tab="practice" type="button" onclick="goTab('practice')"><span class="side-icon">▶</span>Practice Lab</button>
+          <button class="side-link" data-side-tab="quiz" type="button" onclick="goTab('quiz')"><span class="side-icon">Q</span>Skill Check</button>
+        </div>
+
+        <div class="side-group">
+          <div class="side-label">Create &amp; Build</div>
+          <button class="side-link" data-side-tab="create" type="button" onclick="goTab('create','prompt')"><span class="side-icon">✍</span>Prompt Tools</button>
+          <button class="side-link" data-side-tab="create" type="button" onclick="goTab('create','visual')"><span class="side-icon">B</span>Visual Builders</button>
+          <button class="side-link" data-side-tab="create" type="button" onclick="goTab('create','business')"><span class="side-icon">$</span>Business Tools</button>
+          <button class="side-link" data-side-tab="create" type="button" onclick="goTab('create','projects')"><span class="side-icon">P</span>Projects</button>
+        </div>
+
+        <div class="side-group">
+          <div class="side-label">Agent Center</div>
+          <a class="side-link" href="/agent-center"><span class="side-icon">AC</span>Agent Center</a>
+        </div>
+
+        <div class="side-group">
+          <div class="side-label">My Stuff</div>
+          <button class="side-link" data-side-tab="mystuff" type="button" onclick="goTab('mystuff')"><span class="side-icon">M</span>My Projects</button>
+          <a class="side-link" href="/agent-center?section=vault"><span class="side-icon">★</span>Master Prompt Vault</a>
+          <button class="side-link" data-side-tab="history" type="button" onclick="goTab('history')"><span class="side-icon">H</span>Prompt History</button>
+          <button class="side-link" data-side-tab="playbook" type="button" onclick="goTab('playbook')"><span class="side-icon">✓</span>My Playbook</button>
+        </div>
+
+        <div class="side-group">
+          <div class="side-label">Help</div>
           <button class="side-link" data-side-tab="finder" type="button" onclick="goTab('finder')"><span class="side-icon">↗</span>Which Tool Do I Use?</button>
-          <button class="side-link" data-side-tab="coach" type="button" onclick="goTab('coach')"><span class="side-icon">✓</span>Prompt Coach</button>
           <button class="side-link" data-side-tab="glossary" type="button" onclick="goTab('glossary')"><span class="side-icon">A</span>Glossary</button>
         </div>
 
-        <div class="side-group">
-          <div class="side-label">Create</div>
-          <button class="side-link" data-side-tab="characterlab" type="button" onclick="goTab('characterlab')"><span class="side-icon">C</span>Character Builder</button>
-          <button class="side-link" data-side-tab="environmentlab" type="button" onclick="goTab('environmentlab')"><span class="side-icon">B</span>Background Builder</button>
-          <button class="side-link" data-side-tab="typographylab" type="button" onclick="goTab('typographylab')"><span class="side-icon">T</span>Typography Builder</button>
-          <button class="side-link" data-side-tab="powerwords" type="button" onclick="goTab('powerwords')"><span class="side-icon">✧</span>Power Words Lab</button>
-        </div>
-
-        <div class="side-group">
-          <div class="side-label">Business</div>
-          <button class="side-link" data-side-tab="business" type="button" onclick="goTab('business')"><span class="side-icon">$</span>Business Lab</button>
-          <button class="side-link" data-side-tab="researchlab" type="button" onclick="goTab('researchlab')"><span class="side-icon">R</span>Business Research Lab</button>
-        </div>
-
-        <div class="side-group">
-          <div class="side-label">Practice + Save</div>
-          <button class="side-link" data-side-tab="clinic" type="button" onclick="goTab('clinic')"><span class="side-icon">+</span>Prompt Clinic</button>
-          <button class="side-link" data-side-tab="practice" type="button" onclick="goTab('practice')"><span class="side-icon">▶</span>Practice Lab</button>
-          <button class="side-link" data-side-tab="scenarios" type="button" onclick="goTab('scenarios')"><span class="side-icon">S</span>Scenario Coach</button>
-          <button class="side-link" data-side-tab="simulator" type="button" onclick="goTab('simulator')"><span class="side-icon">≈</span>Prompt Simulator</button>
-          <button class="side-link" data-side-tab="playbook" type="button" onclick="goTab('playbook')"><span class="side-icon">★</span>My Playbook</button>
-          <button class="side-link" data-side-tab="history" type="button" onclick="goTab('history')"><span class="side-icon">H</span>Prompt History</button>
-          <button class="side-link" data-side-tab="quiz" type="button" onclick="goTab('quiz')"><span class="side-icon">Q</span>Skill Check</button>
-          <button class="side-link" data-side-tab="assessment" type="button" onclick="goTab('assessment')"><span class="side-icon">✓</span>Final Assessment</button>
-          <button class="side-link" data-side-tab="certificate" type="button" onclick="goTab('certificate')"><span class="side-icon">★</span>Certificate</button>
-        </div>
-
         <div class="side-group admin-only-link" id="adminOwnerGroup">
-          <div class="side-label">Owner</div>
+          <div class="side-label">Admin</div>
           <button class="side-link" type="button" onclick="window.location.href='/admin'"><span class="side-icon">⚙</span>Admin Dashboard</button>
         </div>
       </aside>
@@ -3042,12 +3071,48 @@
         </aside>
       </section>
 
-      <div class="home-quick-launch" aria-label="Quick access">
-        <button type="button" onclick="goTab('academy')"><small>Learn</small><strong>Learning Path</strong></button>
-        <button type="button" onclick="goTab('asklibrary')"><small>Create</small><strong>Prompt Library</strong></button>
-        <button type="button" onclick="goTab('business')"><small>Business</small><strong>Business Lab</strong></button>
-        <button type="button" onclick="goTab('finder')"><small>Help</small><strong>Which Tool Do I Use?</strong></button>
-      </div>
+      <section class="start-here" id="startHere" aria-labelledby="startHereTitle">
+        <div class="kicker">Start here</div>
+        <h2 id="startHereTitle">What do you want to do today?</h2>
+        <p class="help">Pick the one that sounds like you. Every other tool lives inside these four areas — you never have to hunt for it.</p>
+        <div class="start-grid">
+          <button class="start-card" type="button" onclick="goTab('academy')">
+            <small>Learn</small>
+            <strong>Learn Something</strong>
+            <span class="desc">Learn a ChatGPT feature or improve your skills, step by step.</span>
+            <span class="card-links"><span>Learning Path</span><span>Skill Check</span><span>Glossary</span></span>
+          </button>
+          <button class="start-card" type="button" onclick="scrollToAskHub()">
+            <small>Get help</small>
+            <strong>Get Help With a Task</strong>
+            <span class="desc">Tell me what you're trying to do and I'll help you choose the right ChatGPT tool or workflow.</span>
+            <span class="card-links"><span>Prompt Concierge</span><span>Which Tool?</span><span>Advisor</span></span>
+          </button>
+          <button class="start-card" type="button" onclick="goTab('create')">
+            <small>Create</small>
+            <strong>Create or Build Something</strong>
+            <span class="desc">Create prompts, visuals, business resources, apps, or other projects.</span>
+            <span class="card-links"><span>Prompt Tools</span><span>Visual Builders</span><span>Business</span></span>
+          </button>
+          <button class="start-card" type="button" onclick="goTab('mystuff')">
+            <small>Saved work</small>
+            <strong>Find My Work</strong>
+            <span class="desc">Open saved prompts, projects, history, playbooks, and Master Prompts.</span>
+            <span class="card-links"><span>My Projects</span><span>Prompt History</span><span>Vault</span></span>
+          </button>
+        </div>
+      </section>
+
+      <section class="recent-work" id="recentWork" aria-label="Your recent work">
+        <div class="recent-work-head">
+          <div>
+            <div class="kicker">Recent work</div>
+            <h3>Pick up where you left off</h3>
+          </div>
+          <button class="btn secondary" type="button" onclick="goTab('mystuff')">View All</button>
+        </div>
+        <div class="recent-list" id="recentWorkList"></div>
+      </section>
 
       <section id="hub">
         <div class="section-head">
@@ -3056,29 +3121,41 @@
           <p>Pick up where you left off or choose the next step below. Your progress is saved in this browser.</p>
         </div>
 
+        <div class="hub-location" id="hubLocation" aria-label="Where you are">
+          <span>You are here:</span>
+          <span id="hubBreadcrumb"><strong>Home</strong></span>
+          <button class="loc-link" type="button" onclick="scrollHubHome()">Back to Home</button>
+        </div>
+
         <details class="toolbox-details" id="toolboxDetails">
           <summary>Tool Library — open this only when you need a specific tool</summary>
           <nav class="main-tabs">
+            <span class="tab-group-label">Learn</span>
             <button class="tab active" data-tab="academy">Learning Path</button>
+            <button class="tab" data-tab="quiz">Skill Check</button>
+            <button class="tab" data-tab="assessment">Final Assessment</button>
+            <button class="tab" data-tab="certificate">Certificate</button>
+            <button class="tab" data-tab="practice">Practice Lab</button>
+            <button class="tab" data-tab="scenarios">Scenario Coach</button>
+            <button class="tab" data-tab="simulator">Prompt Simulator</button>
+            <span class="tab-group-label">Create &amp; Build</span>
+            <button class="tab" data-tab="create">Create &amp; Build</button>
             <button class="tab" data-tab="asklibrary">Prompt Library</button>
-            <button class="tab" data-tab="finder">Which Tool Do I Use?</button>
             <button class="tab" data-tab="coach">Prompt Coach</button>
+            <button class="tab" data-tab="clinic">Prompt Clinic</button>
+            <button class="tab" data-tab="powerwords">Power Words Lab</button>
             <button class="tab" data-tab="characterlab">Character Builder</button>
             <button class="tab" data-tab="environmentlab">Background Builder</button>
             <button class="tab" data-tab="typographylab">Typography Builder</button>
-            <button class="tab" data-tab="powerwords">Power Words Lab</button>
-            <button class="tab" data-tab="clinic">Prompt Clinic</button>
-            <button class="tab" data-tab="practice">Practice Lab</button>
-            <button class="tab" data-tab="scenarios">Scenario Coach</button>
             <button class="tab" data-tab="business">Business Lab</button>
             <button class="tab" data-tab="researchlab">Business Research Lab</button>
-            <button class="tab" data-tab="glossary">Glossary</button>
+            <span class="tab-group-label">My Stuff</span>
+            <button class="tab" data-tab="mystuff">My Stuff</button>
             <button class="tab" data-tab="playbook">My Playbook</button>
             <button class="tab" data-tab="history">Prompt History</button>
-            <button class="tab" data-tab="simulator">Prompt Simulator</button>
-            <button class="tab" data-tab="assessment">Final Assessment</button>
-            <button class="tab" data-tab="certificate">Certificate</button>
-            <button class="tab" data-tab="quiz">Skill Check</button>
+            <span class="tab-group-label">Help</span>
+            <button class="tab" data-tab="finder">Which Tool Do I Use?</button>
+            <button class="tab" data-tab="glossary">Glossary</button>
           </nav>
         </details>
 
@@ -3186,6 +3263,48 @@
             ChatGPT plan, workspace settings, device, and staged rollout.
           </div>
           </details>
+        </div>
+
+        <div class="panel" id="panel-create">
+          <div class="section-head" style="margin-top:0">
+            <div class="kicker">Create &amp; Build</div>
+            <h2>What are we making today?</h2>
+            <p>Pick the kind of thing you want to make. Each tool below is a full working feature — no need to memorize what anything is called.</p>
+          </div>
+          <div class="landing-grid">
+            <div class="landing-box" id="createAnchor-prompt">
+              <h4>Prompt Tools</h4>
+              <div class="tool-links">
+                <button type="button" onclick="goTab('asklibrary')"><strong>Prompt Library</strong><small>Ready-made prompts plus a guided builder — start when you know the result you want, not the exact words.</small></button>
+                <button type="button" onclick="goTab('coach')"><strong>Prompt Coach</strong><small>Paste a prompt and get coached on how to make it stronger.</small></button>
+                <button type="button" onclick="goTab('clinic')"><strong>Prompt Clinic</strong><small>A deeper fix-it session for prompts that keep disappointing you.</small></button>
+                <button type="button" onclick="goTab('powerwords')"><strong>Power Words Lab</strong><small>Find the exact words that get ChatGPT to do what you mean.</small></button>
+              </div>
+            </div>
+            <div class="landing-box" id="createAnchor-visual">
+              <h4>Visual Builders</h4>
+              <div class="tool-links">
+                <button type="button" onclick="goTab('characterlab')"><strong>Character Builder</strong><small>Design a consistent character — looks, outfit, mood, style — and get a reusable image prompt.</small></button>
+                <button type="button" onclick="goTab('environmentlab')"><strong>Background Builder</strong><small>Build the scene around your subject so your images stop looking empty.</small></button>
+                <button type="button" onclick="goTab('typographylab')"><strong>Typography Builder</strong><small>Word-art and lettering prompts for logos, covers, and graphics.</small></button>
+              </div>
+            </div>
+            <div class="landing-box" id="createAnchor-business">
+              <h4>Business Tools</h4>
+              <div class="tool-links">
+                <button type="button" onclick="goTab('business')"><strong>Business Lab</strong><small>Use ChatGPT for your business — offers, listings, content, and planning.</small></button>
+                <button type="button" onclick="goTab('researchlab')"><strong>Business Research Lab</strong><small>Research your market, audience, and competitors the safe way.</small></button>
+              </div>
+            </div>
+            <div class="landing-box" id="createAnchor-projects">
+              <h4>Project Building</h4>
+              <div class="tool-links">
+                <button type="button" onclick="scrollToAskHub()"><strong>Prompt Concierge — Start a New Project</strong><small>Tell the AI what you're building and it sets up the project and a master prompt that grows with the conversation.</small></button>
+                <button type="button" onclick="goTab('mystuff')"><strong>My Projects</strong><small>See every saved project and its master prompt.</small></button>
+                <a href="/agent-center?section=setup"><strong>New Project Setup (Agent Center)</strong><small>A guided agent that helps you scope and start a Hub project.</small></a>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="panel" id="panel-asklibrary">
@@ -4350,8 +4469,24 @@
               </button>
             </div>
             <div class="box">
-              <div class="kicker">Saved projects &amp; prompts</div>
+              <div class="kicker">Saved prompts</div>
               <h3>My Playbook</h3>
+              <p class="help">Prompts you saved from lessons and tools. Saved projects moved to My Stuff.</p>
+              <div class="playbook-list" id="playbookList"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel" id="panel-mystuff">
+          <div class="section-head" style="margin-top:0">
+            <div class="kicker">My Stuff</div>
+            <h2>Everything you've made, in one place.</h2>
+            <p>You never have to remember where something was created to find it again.</p>
+          </div>
+          <div class="landing-grid">
+            <div class="landing-box">
+              <h4>My Projects</h4>
+              <p class="help" style="margin-top:0">Your saved projects and their master prompts, kept in the Hub.</p>
               <div class="playbook-toolbar">
                 <input type="search" id="projectSearch" placeholder="Search projects..." aria-label="Search projects">
                 <select id="projectCategoryFilter" aria-label="Filter projects by category"></select>
@@ -4364,8 +4499,20 @@
                 </select>
               </div>
               <div class="project-list" id="projectList"></div>
-              <div class="kicker" style="margin-top:18px">Saved prompts</div>
-              <div class="playbook-list" id="playbookList"></div>
+            </div>
+            <div class="landing-box">
+              <h4>Master Prompt Vault &amp; Imports</h4>
+              <div class="tool-links">
+                <a href="/agent-center?section=vault"><strong>Open the Master Prompt Vault</strong><small>Your reusable Master Prompts live in the Agent Center.</small></a>
+                <a href="/agent-center?section=import"><strong>Imports</strong><small>Imported ChatGPT conversations and history summaries.</small></a>
+              </div>
+            </div>
+            <div class="landing-box">
+              <h4>Prompt History &amp; Playbook</h4>
+              <div class="tool-links">
+                <button type="button" onclick="goTab('history')"><strong>Prompt History</strong><small>Every prompt you've run through the Hub, saved automatically with its response.</small></button>
+                <button type="button" onclick="goTab('playbook')"><strong>My Playbook</strong><small>Your saved notes and favorite prompts.</small></button>
+              </div>
             </div>
           </div>
         </div>
@@ -4552,9 +4699,9 @@
     <nav class="mobile-bottom-nav" aria-label="Mobile Learning Hub navigation">
       <button type="button" onclick="scrollHubHome()"><span>⌂</span>Home</button>
       <button type="button" onclick="goTab('academy')"><span>01</span>Learn</button>
-      <button type="button" onclick="scrollToAskHub()"><span>✦</span>Ask</button>
-      <button type="button" onclick="goTab('asklibrary')"><span>P</span>Library</button>
-      <button type="button" onclick="toggleHubSidebar()"><span>☰</span>Menu</button>
+      <button type="button" onclick="goTab('create')"><span>C</span>Create</button>
+      <button type="button" onclick="window.location.href='/agent-center'"><span>AC</span>Agents</button>
+      <button type="button" onclick="goTab('mystuff')"><span>M</span>My Stuff</button>
     </nav>
 
     <div class="modal-bg" id="lessonModal">
@@ -4571,7 +4718,7 @@
         <h2 id="tutorialTitle">How to use the GLAM ChatGPT Learning Hub</h2>
         <p class="tutorial-intro">You do not need to explore everything at once. Use the Hub in this order and it will always tell you what to do next.</p>
         <div class="tutorial-steps">
-          <div class="tutorial-step"><span>1</span><div><strong>Choose where you are</strong><p>Pick <b>I'm brand new</b>, <b>I know a little</b>, or <b>I need help right now</b>.</p></div></div>
+          <div class="tutorial-step"><span>1</span><div><strong>Answer one question</strong><p><b>What do you want to do today?</b> Choose Learn, Get Help, Create, or Find My Work.</p></div></div>
           <div class="tutorial-step"><span>2</span><div><strong>Follow the 10-step roadmap</strong><p>Work left to right. You do not need to hunt through the Tool Library.</p></div></div>
           <div class="tutorial-step"><span>3</span><div><strong>Open one lesson</strong><p>Use Learn It → Show Me → Try It → Quiz Me. Then mark the lesson complete.</p></div></div>
           <div class="tutorial-step"><span>4</span><div><strong>Use Continue Learning</strong><p>The Hub will point you to the next lesson in the beginner order.</p></div></div>
@@ -8043,7 +8190,40 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           .replace(/</g, "&lt;")
           .replace(/>/g, "&gt;");
       }
-      function goTab(name) {
+      const TAB_LOCATION = {
+        academy: ["Learn", "Learning Path"],
+        practice: ["Learn", "Practice Lab"],
+        scenarios: ["Learn", "Scenario Coach"],
+        simulator: ["Learn", "Prompt Simulator"],
+        quiz: ["Learn", "Skill Check"],
+        assessment: ["Learn", "Final Assessment"],
+        certificate: ["Learn", "Certificate"],
+        glossary: ["Help", "Glossary"],
+        asklibrary: ["Create & Build", "Prompt Library"],
+        coach: ["Create & Build", "Prompt Coach"],
+        clinic: ["Create & Build", "Prompt Clinic"],
+        powerwords: ["Create & Build", "Power Words Lab"],
+        characterlab: ["Create & Build", "Character Builder"],
+        environmentlab: ["Create & Build", "Background Builder"],
+        typographylab: ["Create & Build", "Typography Builder"],
+        business: ["Create & Build", "Business Lab"],
+        researchlab: ["Create & Build", "Business Research Lab"],
+        create: ["Create & Build", "Create & Build"],
+        mystuff: ["My Stuff", "My Stuff"],
+        history: ["My Stuff", "Prompt History"],
+        playbook: ["My Stuff", "My Playbook"],
+        finder: ["Help", "Which Tool Do I Use?"],
+      };
+
+      function updateHubLocation(name) {
+        const el = document.getElementById("hubBreadcrumb");
+        if (!el) return;
+        const loc = TAB_LOCATION[name];
+        if (!loc) { el.innerHTML = "<strong>Home</strong>"; return; }
+        el.innerHTML = "Home &gt; " + loc[0] + " &gt; <strong>" + loc[1] + "</strong>";
+      }
+
+      function goTab(name, anchor) {
         document
           .querySelectorAll(".tab")
           .forEach((x) => x.classList.toggle("active", x.dataset.tab === name));
@@ -8058,10 +8238,17 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         const tools = document.getElementById("toolboxDetails");
         if (tools && name !== "academy") tools.open = true;
         if (name === "history") loadPromptHistory();
+        updateHubLocation(name);
         closeHubSidebar();
         document
           .getElementById("hub")
           .scrollIntoView({ behavior: "smooth", block: "start" });
+        if (anchor) {
+          setTimeout(() => {
+            const target = document.getElementById("createAnchor-" + anchor);
+            if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
+          }, 380);
+        }
       }
 
       function toggleHubSidebar() {
@@ -8076,8 +8263,58 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         document.getElementById("sidebarBackdrop")?.classList.remove("show");
       }
 
+      function renderRecentWork() {
+        const list = document.getElementById("recentWorkList");
+        if (!list) return;
+        const chips = [];
+        const esc = (v) => String(v == null ? "" : v)
+          .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        try {
+          const next = getNextBeginnerLesson();
+          if (next && next.id && next.title) {
+            chips.push('<button class="recent-chip" type="button" onclick="startBrandNew()"><small>Lesson</small> ' + esc(next.title) + '</button>');
+          }
+        } catch (e) {}
+        try {
+          const draft = JSON.parse(localStorage.getItem("glamConciergeProject") || "null");
+          if (draft && draft.name && String(draft.name).trim()) {
+            chips.push('<button class="recent-chip" type="button" onclick="scrollToAskHub()"><small>Project draft</small> ' + esc(draft.name) + '</button>');
+          }
+        } catch (e) {}
+        try {
+          const saved = JSON.parse(localStorage.getItem("glamSavedProjects") || "[]") || [];
+          saved
+            .slice()
+            .sort((a, b) => (b.updated_at_ms || 0) - (a.updated_at_ms || 0))
+            .slice(0, 3)
+            .forEach((p) => {
+              if (p && p.name && String(p.name).trim()) {
+                chips.push('<button class="recent-chip" type="button" onclick="goTab(\'mystuff\')"><small>Project</small> ' + esc(p.name) + '</button>');
+              }
+            });
+        } catch (e) {}
+        fetch(`${PROMPT_HISTORY_ENDPOINT}?sort=-submitted_at_ms&limit=3&skip=0`, {
+          headers: hubProtectedHeaders(),
+          credentials: "include",
+        }).then((res) => (res.ok ? res.json() : null)).then((payload) => {
+          if (!payload) return;
+          const page = Array.isArray(payload) ? payload : (payload?.data || payload?.items || []);
+          (Array.isArray(page) ? page : []).slice(0, 3).forEach((entry) => {
+            const text = String(entry?.prompt || "").trim();
+            if (text) {
+              chips.push('<button class="recent-chip" type="button" onclick="goTab(\'history\')"><small>Prompt</small> ' + esc(text.length > 46 ? text.slice(0, 46) + "…" : text) + '</button>');
+            }
+          });
+          list.innerHTML = chips.length
+            ? chips.join("")
+            : '<span class="recent-empty">Nothing saved yet — your lessons, projects, and prompts will appear here as you use the Hub.</span>';
+        }).catch(() => {});
+      }
+
       function scrollHubHome() {
         closeHubSidebar();
+        renderRecentWork();
         window.scrollTo({ top:0, behavior:"smooth" });
       }
 
@@ -9196,6 +9433,11 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         document.addEventListener("DOMContentLoaded", startPromptSaveEnhancer);
       } else {
         startPromptSaveEnhancer();
+      }
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", renderRecentWork);
+      } else {
+        renderRecentWork();
       }
       function renderPlaybook() {
         if (window.ConciergeProjects && ConciergeProjects.renderPlaybook) {
