@@ -2886,14 +2886,9 @@
       .search-empty { padding:16px 12px; font-size:13px; color:var(--muted, #52708c); text-align:center; }
 
       .hero-visual { position:relative; border-radius:26px; min-height:340px; background:linear-gradient(135deg,#0d6eb8 0%, #168fea 46%, #dbe4ee 100%); border:1px solid rgba(255,255,255,.55); box-shadow:0 24px 60px rgba(13,110,184,.28), inset 0 1px 0 rgba(255,255,255,.5); overflow:hidden; }
-      .hero-blob { position:absolute; border-radius:50%; filter:blur(42px); opacity:.55; animation:heroFloat 9s ease-in-out infinite alternate; }
-      .hero-blob-a { width:260px; height:260px; background:rgba(255,255,255,.35); top:-70px; right:-50px; }
-      .hero-blob-b { width:220px; height:220px; background:rgba(6,63,111,.35); bottom:-60px; left:-40px; animation-delay:-4s; }
+      .hero-video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
       @keyframes heroFloat { from { transform:translateY(0) scale(1); } to { transform:translateY(26px) scale(1.08); } }
-      .hero-visual-glass { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:grid; gap:6px; justify-items:center; text-align:center; padding:26px 30px; border-radius:18px; background:rgba(255,255,255,.16); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,.55); color:#fff; box-shadow:0 14px 34px rgba(6,63,111,.22); }
-      .hero-visual-glass .hero-visual-mark { font-size:26px; }
-      .hero-visual-glass strong { font-size:16.5px; letter-spacing:.02em; }
-      .hero-visual-glass small { font-size:12px; opacity:.9; }
+
       #panel-academy .dashboard { max-width:640px; margin:0 0 18px; }
 
       .footer-compact { background:#f7fbff; }
@@ -2929,10 +2924,8 @@
         .hero-copy { font-size: 14.5px; }
         .hero-actions { margin-top: 16px; }
         .hero-visual { min-height: clamp(170px, 46vw, 250px); border-radius: 20px; }
-        .hero-visual-glass { padding: 18px 20px; }
-        .hero-visual-glass .hero-visual-mark { font-size: 20px; }
       }
-      @media (max-width: 560px) { .footer-grid { grid-template-columns:1fr; gap:16px; } .hero-visual { min-height:170px; } .hero-actions .btn { width:100%; justify-content:center; } .hero-visual-glass strong { font-size:14.5px; } .hero-visual-glass small { font-size:11px; } }
+      @media (max-width: 560px) { .footer-grid { grid-template-columns:1fr; gap:16px; } .hero-visual { min-height:170px; } .hero-actions .btn { width:100%; justify-content:center; } }
     </style>
   </head>
   <body>
@@ -3043,13 +3036,9 @@
 
       <section class="hero">
         <div class="hero-visual" aria-hidden="true">
-          <div class="hero-blob hero-blob-a"></div>
-          <div class="hero-blob hero-blob-b"></div>
-          <div class="hero-visual-glass">
-            <span class="hero-visual-mark">✦</span>
-            <strong>Hero image placeholder</strong>
-            <small>Your final hero image will be uploaded here</small>
-          </div>
+          <video class="hero-video" autoplay muted loop playsinline preload="metadata">
+            <source src="/hero-video.mp4" type="video/mp4">
+          </video>
         </div>
         <div>
           <div class="eyebrow">
