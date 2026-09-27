@@ -1,0 +1,43 @@
+{
+  "name": "AgentPromptVersion",
+  "type": "object",
+  "properties": {
+    "prompt_id": {
+      "type": "string"
+    },
+    "version": {
+      "type": "number"
+    },
+    "body": {
+      "type": "string"
+    },
+    "locked_rules": {
+      "type": "string"
+    },
+    "variables": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "prompt_id",
+    "version",
+    "body"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

@@ -50,6 +50,22 @@
   }
 }
 
+/* Agent Center uses its own royal-blue and gold palette without changing the Hub. */
+.agent-center {
+  --background: 222 24% 5%;
+  --foreground: 0 0% 98%;
+  --card: 224 28% 10%;
+  --card-foreground: 0 0% 98%;
+  --secondary: 224 24% 16%;
+  --secondary-foreground: 0 0% 98%;
+  --muted-foreground: 220 16% 72%;
+  --primary: 222 87% 51%;
+  --primary-foreground: 0 0% 100%;
+  --border: 222 24% 27%;
+  --input: 222 24% 32%;
+  --ring: 43 78% 59%;
+}
+
 /* Slim custom scrollbar to match the control-surface aesthetic */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }

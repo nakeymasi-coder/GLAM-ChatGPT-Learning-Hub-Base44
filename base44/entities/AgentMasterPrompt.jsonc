@@ -1,0 +1,69 @@
+{
+  "name": "AgentMasterPrompt",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "purpose": {
+      "type": "string"
+    },
+    "platform": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string"
+    },
+    "locked_rules": {
+      "type": "string"
+    },
+    "variables": {
+      "type": "string"
+    },
+    "usage_notes": {
+      "type": "string"
+    },
+    "version_notes": {
+      "type": "string"
+    },
+    "version": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "approved",
+        "archived"
+      ]
+    },
+    "times_used": {
+      "type": "number"
+    },
+    "source": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "body",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}

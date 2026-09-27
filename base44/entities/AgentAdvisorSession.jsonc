@@ -1,0 +1,33 @@
+{
+  "name": "AgentAdvisorSession",
+  "type": "object",
+  "properties": {
+    "task": {
+      "type": "string"
+    },
+    "answers": {
+      "type": "string"
+    },
+    "recommendation": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "task",
+    "recommendation"
+  ],
+  "rls": {
+    "create": {
+      "created_by_id": "{{user.id}}"
+    },
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
+}
