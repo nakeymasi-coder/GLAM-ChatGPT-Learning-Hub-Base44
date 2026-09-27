@@ -2945,12 +2945,16 @@
     </div>
     <header>
       <div class="nav">
-        <div class="brand">
-          <div class="logo">G</div>
-          <div class="brand-title">GLAM <span>ChatGPT Learning Hub</span></div>
+        <div class="nav-leading">
+          <button class="hub-menu-toggle" id="hubMenuToggle" type="button" onclick="toggleHubSidebar()" aria-label="Open navigation" aria-controls="hubSidebar" aria-expanded="true">
+            <span></span><span></span><span></span>
+          </button>
+          <div class="brand">
+            <div class="logo">G</div>
+            <div class="brand-title">GLAM <span>ChatGPT Learning Hub</span></div>
+          </div>
         </div>
         <div class="nav-actions">
-          <button class="btn secondary mobile-menu-btn" type="button" onclick="toggleHubSidebar()">Menu</button>
           <button class="btn secondary" type="button" onclick="openHubTutorial()">
             How to Use This Hub
           </button>
@@ -2970,6 +2974,7 @@
 
     <div class="hub-app-shell">
       <aside class="hub-sidebar" id="hubSidebar" aria-label="Learning Hub navigation">
+        <button class="sidebar-close" type="button" onclick="closeHubSidebar()" aria-label="Close navigation">×</button>
         <div class="sidebar-title"><strong>Where to?</strong><span>Pick a destination. Extra tools live inside each area, so you only see them when you need them.</span></div>
 
         <div class="side-group">
@@ -3029,17 +3034,14 @@
             <span class="spark"></span> ChatGPT without the confusing tech talk
           </div>
           <h1>
-            Learn ChatGPT <span class="blue">Without the Confusion.</span>
+            Pick up <span class="blue">where you left off.</span>
           </h1>
           <p class="hero-copy">
-            Start where you are. The Hub will show you what to learn next, what tool to use, and how to practice it.
+            Your learning progress and next step are right here. Everything else starts from the four choices above.
           </p>
           <div class="hero-actions">
             <button class="btn primary" onclick="startBrandNew()">
               Continue Learning
-            </button>
-            <button class="btn secondary" onclick="scrollToAskHub()">
-              Prompt Concierge
             </button>
           </div>
           <div class="hero-note">
@@ -3082,12 +3084,7 @@
 
           <div class="agent-dash" aria-label="Agent Center">
             <small>Agent Center</small>
-            <div class="agent-dash-grid">
-              <a href="/agent-center?section=teacher"><strong>ChatGPT Teacher</strong></a>
-              <a href="/agent-center?section=advisor"><strong>ChatGPT Advisor</strong></a>
-              <a href="/agent-center?section=intelligence"><strong>ChatGPT Intelligence</strong></a>
-              <a href="/agent-center?section=agent"><strong>Master Prompt Agent</strong></a>
-            </div>
+            <a class="agent-dash-all" href="/agent-center"><strong>Open Agent Center</strong></a>
           </div>
         </aside>
       </section>
