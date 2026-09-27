@@ -2713,6 +2713,10 @@
       .hub-main { min-width:0; display:flex; flex-direction:column; }
       .hub-main > .hero { order:-5; }
       .hub-main > .start-here { order:-4; }
+      .start-here { display:none; }
+      .start-here.open { display:block; animation: startHereIn .32s ease; }
+      @keyframes startHereIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+      .pill-cta { border-radius:999px; }
       .hub-main > .recent-work { order:-3; }
       .hub-main > #hub { order:-2; }
       #hub { display:none; }
@@ -2967,7 +2971,6 @@
             <input id="globalSearch" type="search" placeholder="Search lessons, tools, glossary…" autocomplete="off" aria-label="Search the Hub" />
             <div class="search-drop" id="searchDrop"></div>
           </div>
-          <button class="btn primary nav-cta" type="button" onclick="startBrandNew()">Start Learning</button>
           <button class="hamburger" id="hubHamburger" type="button" onclick="toggleHubSidebar()" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
         </div>
       </div>
@@ -3063,7 +3066,9 @@
             Start where you are. The Hub will show you what to learn next, what tool to use, and how to practice it.
           </p>
           <div class="hero-actions">
-            <button class="btn primary" onclick="startBrandNew()">Start Learning</button>
+            <button class="btn primary pill-cta" type="button" id="startHereToggle" onclick="toggleStartHere()" aria-expanded="false" aria-controls="startHere">
+              <span>What are you learning today?</span>
+            </button>
           </div>
           <div class="hero-note">
             Menu names can vary slightly by plan, device, and rollout. Lessons
@@ -8382,7 +8387,21 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
       function scrollHubHome() {
         closeHubSidebar();
         document.getElementById("hub")?.classList.remove("hub-open");
+        document.getElementById("startHere")?.classList.remove("open");
+        document.getElementById("startHereToggle")?.setAttribute("aria-expanded", "false");
         window.scrollTo({ top:0, behavior:"smooth" });
+      }
+
+      function toggleStartHere() {
+        const el = document.getElementById("startHere");
+        const btn = document.getElementById("startHereToggle");
+        if (!el || !btn) return;
+        const nowOpen = !el.classList.contains("open");
+        el.classList.toggle("open", nowOpen);
+        btn.setAttribute("aria-expanded", String(nowOpen));
+        if (nowOpen) {
+          setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+        }
       }
 
       function openHubTutorial() {
