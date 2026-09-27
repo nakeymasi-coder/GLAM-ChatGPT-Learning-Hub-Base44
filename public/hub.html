@@ -103,41 +103,6 @@
         display: none !important;
       }
 
-      .announce {
-        overflow: hidden;
-        white-space: nowrap;
-        color: #fff;
-        background: linear-gradient(90deg, #168fea 0%, #56b8ff 48%, #168fea 100%);
-        border-bottom: 1px solid rgba(255,255,255,.45);
-        box-shadow: 0 8px 24px rgba(22,143,234,.20);
-      }
-      .announce-track {
-        display: inline-block;
-        min-width: 100%;
-        padding: 10px 0;
-        font-size: 12px;
-        font-weight: 950;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-        animation: glamMarquee 18s linear infinite;
-      }
-      .announce-track span { padding-left: 100%; }
-      @keyframes glamMarquee {
-        from { transform: translateX(0); }
-        to { transform: translateX(-100%); }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .announce-track { animation: none; text-align: center; }
-        .announce-track span { padding-left: 0; }
-      }
-      header {
-        position: sticky;
-        top: 0;
-        z-index: 70;
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(18px);
-        border-bottom: 1px solid rgba(16, 59, 99, 0.08);
-      }
       .nav {
         max-width: 1260px;
         margin: auto;
@@ -146,41 +111,6 @@
         align-items: center;
         justify-content: space-between;
         gap: 15px;
-      }
-      .nav-leading {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        min-width: 0;
-      }
-      .hub-menu-toggle {
-        width: 44px;
-        height: 44px;
-        flex: 0 0 44px;
-        display: inline-flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 4px;
-        border: 1px solid rgba(16,59,99,.14);
-        border-radius: 13px;
-        background: #fff;
-        color: var(--deep);
-        cursor: pointer;
-        box-shadow: 0 6px 18px rgba(16,59,99,.06);
-        transition: .18s ease;
-      }
-      .hub-menu-toggle:hover,
-      .hub-menu-toggle:focus-visible {
-        border-color: rgba(22,143,234,.5);
-        box-shadow: 0 8px 22px rgba(16,59,99,.10);
-      }
-      .hub-menu-toggle span {
-        display: block;
-        width: 19px;
-        height: 2px;
-        border-radius: 999px;
-        background: currentColor;
       }
       .brand {
         display: flex;
@@ -369,9 +299,9 @@
       }
 
       .hero {
-        padding: 30px 0 18px;
+        padding: 34px 0 20px;
         display: grid;
-        grid-template-columns: 1.17fr 0.83fr;
+        grid-template-columns: 1.05fr 0.95fr;
         gap: 32px;
         align-items: center;
       }
@@ -2759,13 +2689,10 @@
       @media (max-width:760px){ .prompt-library-grid,.prompt-template-grid { grid-template-columns:1fr; } }
 
       /* ===== APP SIDEBAR ===== */
-      .hub-app-shell { display:grid; grid-template-columns:250px minmax(0,1fr); max-width:1540px; margin:0 auto; transition:grid-template-columns .22s ease; }
-      .hub-sidebar { position:sticky; top:72px; align-self:start; height:calc(100vh - 84px); overflow:auto; padding:18px 14px 28px 18px; border-right:1px solid rgba(16,59,99,.09); background:linear-gradient(180deg,#fbfdff 0%,#f5faff 100%); z-index:55; transition:transform .22s ease, opacity .18s ease; }
-      .sidebar-close { display:none; }
-      @media (min-width:1101px){
-        body.desktop-sidebar-collapsed .hub-app-shell { grid-template-columns:0 minmax(0,1fr); }
-        body.desktop-sidebar-collapsed .hub-sidebar { transform:translateX(-110%); opacity:0; pointer-events:none; }
-      }
+      .hub-app-shell { max-width:1280px; margin:0 auto; }
+      .hub-sidebar { position:fixed; top:0; left:0; bottom:0; width:min(320px,88vw); height:100vh; transform:translateX(-102%); transition:transform .22s ease; z-index:9997; overflow:auto; padding:18px 14px 28px 18px; border-right:1px solid rgba(16,59,99,.09); background:linear-gradient(180deg,#fbfdff 0%,#f5faff 100%); box-shadow:0 20px 50px rgba(8,24,38,.2); }
+      .hub-sidebar.open { transform:translateX(0); }
+      .sidebar-backdrop.show { display:block; }
       .hub-sidebar::-webkit-scrollbar { width:7px; }
       .hub-sidebar::-webkit-scrollbar-thumb { background:rgba(16,59,99,.13); border-radius:20px; }
       .sidebar-title { padding:4px 8px 12px; }
@@ -2778,8 +2705,8 @@
       .side-link.active { background:#fff; color:var(--blue); box-shadow:0 6px 18px rgba(16,59,99,.08); }
       .side-icon { width:26px; height:26px; flex:0 0 26px; border-radius:9px; display:grid; place-items:center; background:#eef7ff; color:var(--blue); font-size:13px; }
       .hub-main { min-width:0; display:flex; flex-direction:column; }
-      .hub-main > .start-here { order:-5; }
-      .hub-main > .hero { order:-4; }
+      .hub-main > .hero { order:-5; }
+      .hub-main > .start-here { order:-4; }
       .hub-main > .recent-work { order:-3; }
       .hub-main > #hub { order:-2; }
       .hub-main > .ask-hub { order:-1; }
@@ -2798,9 +2725,6 @@
         .logo { width:38px; height:38px; border-radius:12px; font-size:18px; box-shadow:none; }
         .brand { gap:9px; }
         .brand-title { font-size:15px; }
-        .nav-actions { display:none; }
-        .hub-menu-toggle { width:42px; height:42px; flex-basis:42px; }
-        .sidebar-close { display:grid; place-items:center; position:absolute; top:12px; right:12px; width:36px; height:36px; border:1px solid rgba(16,59,99,.12); border-radius:11px; background:#fff; color:var(--deep); font-size:22px; cursor:pointer; }
         .sidebar-backdrop { position:fixed; inset:0; background:rgba(8,24,38,.35); z-index:9996; }
         .sidebar-backdrop.show { display:block; }
         .hub-main { padding-bottom:78px; }
@@ -2894,9 +2818,9 @@
       }
 
       /* ===== UX restructure additions ===== */
-      .hub-main > .start-here { order:-5; }
+      .hub-main > .start-here { order:-4; }
       .hub-main > .recent-work { order:-3; }
-      .start-here { margin-top:24px; padding:24px; border:1px solid rgba(16,59,99,.09); border-radius:26px; background:linear-gradient(180deg,#ffffff 0%,#f4faff 100%); box-shadow:0 14px 38px rgba(16,59,99,.07); }
+      .start-here { padding:18px 22px 20px; border:1px solid rgba(16,59,99,.09); border-radius:24px; background:linear-gradient(180deg,#ffffff 0%,#f4faff 100%); }
       .start-here h2 { margin:4px 0 6px; }
       .start-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-top:16px; }
       .start-card { text-align:left; border:1px solid rgba(16,59,99,.14); border-radius:18px; padding:18px 16px; background:#fff; cursor:pointer; display:flex; flex-direction:column; gap:6px; transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
@@ -2904,7 +2828,8 @@
       .start-card > small { color:var(--muted); font-size:11px; font-weight:800; letter-spacing:.09em; text-transform:uppercase; }
       .start-card > strong { font-size:17px; color:var(--deep); line-height:1.25; }
       .start-card > span.desc { color:var(--muted); font-size:12.5px; line-height:1.55; }
-      .start-card .card-links { display:none; }
+      .start-card .card-links { margin-top:auto; display:flex; flex-wrap:wrap; gap:6px; padding-top:10px; }
+      .start-card .card-links span { font-size:11px; font-weight:700; color:var(--blue); border:1px solid rgba(6,63,111,.22); border-radius:999px; padding:3px 10px; background:#f4faff; }
       .recent-work { border:1px solid rgba(16,59,99,.09); border-radius:20px; background:#fff; padding:13px 18px; }
       .recent-work-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
       .recent-work-head h3 { margin:2px 0 0; }
@@ -2925,98 +2850,173 @@
       .tool-links > button:hover, .tool-links > a:hover { border-color:rgba(6,63,111,.4); }
       .tool-links small { color:var(--muted); font-size:11.5px; line-height:1.5; font-weight:500; }
       @media (max-width: 900px) { .landing-grid { grid-template-columns:1fr; } .tab-group-label { display:none; } }
-      .hero { padding:16px 0 8px; grid-template-columns:minmax(0,1fr) minmax(300px,.72fr); gap:18px; align-items:start; }
-      .hero h1 { margin:8px 0 10px; font-size:clamp(34px,4.7vw,56px); line-height:1; letter-spacing:-.05em; }
-      .hero-copy { max-width:680px; font-size:15px; line-height:1.6; }
-      .hero-actions { margin-top:14px; }
-      .hero-note { display:none; }
-      .dashboard { padding:18px; border-radius:24px; box-shadow:0 12px 34px rgba(16,59,99,.08); }
-      .dashboard .stat-grid { display:none; }
-      .dashboard .next-card { margin-top:12px; }
-      .agent-dash { padding:12px; }
-      .agent-dash-grid { grid-template-columns:1fr; }
-      @media (max-width: 980px) { .start-grid { grid-template-columns:repeat(2,1fr); } .hero { grid-template-columns:1fr; } }
-      @media (max-width: 620px) { .start-grid { grid-template-columns:1fr; } .start-here { margin-top:14px; padding:18px; } .hero h1 { font-size:34px; } }
+      @media (max-width: 980px) { .start-grid { grid-template-columns:repeat(2,1fr); } }
+      @media (max-width: 620px) { .start-grid { grid-template-columns:1fr; } .start-here { padding:18px; } }
+
+      /* ===== MASTER BUILD ADDITIONS ===== */
+      .announce-slim { position:relative; display:flex; align-items:center; justify-content:center; gap:12px; min-height:34px; padding:7px 46px; font-size:12.5px; font-weight:700; color:#08263f; background:linear-gradient(90deg,#0d6eb8 0%,#168fea 40%,#cfdae6 100%); }
+      .announce-slim-text { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      .announce-slim-link { color:#062033; text-decoration:underline; font-weight:800; white-space:nowrap; }
+      .announce-slim-link:hover { color:#fff; }
+      .announce-slim-x { position:absolute; right:8px; top:50%; transform:translateY(-50%); width:24px; height:24px; border:none; border-radius:8px; background:rgba(255,255,255,.35); cursor:pointer; font-size:11px; color:#062033; line-height:1; }
+      .announce-slim-x:hover { background:rgba(255,255,255,.6); }
+
+      .nav-center { display:flex; align-items:center; gap:6px; margin-left:26px; }
+      .nav-center > button, .nav-center > a { border:none; background:transparent; padding:8px 13px; border-radius:999px; font-weight:800; font-size:13.5px; color:var(--deep, #10314f); cursor:pointer; text-decoration:none; transition:background .15s ease, transform .15s ease; }
+      .nav-center > button:hover, .nav-center > a:hover { background:rgba(22,143,234,.10); transform:translateY(-1px); color:var(--blue, #168fea); }
+      .hamburger { display:inline-flex; flex-direction:column; justify-content:center; gap:4px; width:42px; height:42px; border-radius:12px; border:1px solid rgba(16,59,99,.14); background:#fff; cursor:pointer; padding:0 10px; box-shadow:var(--shadow-sm, 0 1px 2px rgba(8,24,38,.06)); }
+      .hamburger span { display:block; height:2px; border-radius:2px; background:#10314f; transition:transform .18s ease, opacity .18s ease; }
+      .hamburger.open span:nth-child(1) { transform:translateY(6px) rotate(45deg); }
+      .hamburger.open span:nth-child(2) { opacity:0; }
+      .hamburger.open span:nth-child(3) { transform:translateY(-6px) rotate(-45deg); }
+
+      .nav-search { position:relative; }
+      .nav-search input, .drawer-search input { width:250px; height:40px; border-radius:999px; border:1px solid rgba(16,59,99,.16); background:#f7fbff; padding:0 16px; font-size:13px; outline:none; transition:border .15s ease, box-shadow .15s ease; }
+      .nav-search input:focus, .drawer-search input:focus { border-color:var(--blue, #168fea); box-shadow:0 0 0 3px rgba(22,143,234,.14); background:#fff; }
+      .search-drop { position:absolute; top:calc(100% + 8px); right:0; width:min(430px, 92vw); max-height:min(480px, 62vh); overflow:auto; background:#fff; border:1px solid rgba(16,59,99,.12); border-radius:16px; box-shadow:0 18px 44px rgba(8,24,38,.16); padding:8px; display:none; z-index:9999; text-align:left; }
+      .search-drop.open { display:block; }
+      .drawer-search { position:relative; margin:10px 0 6px; }
+      .drawer-search input { width:100%; }
+      .drawer-search .search-drop { right:auto; left:0; }
+      .search-group { font-size:10.5px; font-weight:900; letter-spacing:.1em; text-transform:uppercase; color:var(--muted, #52708c); padding:8px 10px 4px; }
+      .search-item { display:block; width:100%; text-align:left; border:none; background:transparent; border-radius:11px; padding:9px 10px; cursor:pointer; display:flex; flex-direction:column; gap:2px; }
+      .search-item:hover { background:rgba(22,143,234,.08); }
+      .search-item strong { font-size:13.5px; color:var(--deep, #10314f); }
+      .search-item small { font-size:11.5px; color:var(--muted, #52708c); line-height:1.45; }
+      .search-empty { padding:16px 12px; font-size:13px; color:var(--muted, #52708c); text-align:center; }
+
+      .hero-visual { position:relative; border-radius:26px; min-height:340px; background:linear-gradient(135deg,#0d6eb8 0%, #168fea 46%, #dbe4ee 100%); border:1px solid rgba(255,255,255,.55); box-shadow:0 24px 60px rgba(13,110,184,.28), inset 0 1px 0 rgba(255,255,255,.5); overflow:hidden; }
+      .hero-blob { position:absolute; border-radius:50%; filter:blur(42px); opacity:.55; animation:heroFloat 9s ease-in-out infinite alternate; }
+      .hero-blob-a { width:260px; height:260px; background:rgba(255,255,255,.35); top:-70px; right:-50px; }
+      .hero-blob-b { width:220px; height:220px; background:rgba(6,63,111,.35); bottom:-60px; left:-40px; animation-delay:-4s; }
+      @keyframes heroFloat { from { transform:translateY(0) scale(1); } to { transform:translateY(26px) scale(1.08); } }
+      .hero-visual-glass { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:grid; gap:6px; justify-items:center; text-align:center; padding:26px 30px; border-radius:18px; background:rgba(255,255,255,.16); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,.55); color:#fff; box-shadow:0 14px 34px rgba(6,63,111,.22); }
+      .hero-visual-glass .hero-visual-mark { font-size:26px; }
+      .hero-visual-glass strong { font-size:16.5px; letter-spacing:.02em; }
+      .hero-visual-glass small { font-size:12px; opacity:.9; }
+      #panel-academy .dashboard { max-width:640px; margin:0 0 18px; }
+
+      .footer-compact { border-top:1px solid transparent; border-image:linear-gradient(90deg,#0d6eb8, #168fea 45%, #cfdae6) 1; background:#f7fbff; }
+      .footer-grid { display:grid; grid-template-columns:1.35fr 1fr 1fr 1fr; gap:22px; max-width:1280px; margin:0 auto; padding:26px 22px 10px; }
+      .footer-col strong { display:block; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted, #52708c); margin-bottom:8px; }
+      .footer-col .footer-logo-mini { font-weight:900; font-size:15.5px; color:var(--deep, #10314f); margin-bottom:6px; }
+      .footer-col p { font-size:12.5px; color:var(--muted, #52708c); line-height:1.55; margin:0 0 6px; }
+      .footer-col a, .footer-col button { display:block; background:none; border:none; padding:3px 0; text-align:left; font-size:13px; color:var(--deep, #10314f); text-decoration:none; cursor:pointer; font-weight:600; }
+      .footer-col a:hover, .footer-col button:hover { color:var(--blue, #168fea); text-decoration:underline; }
+      .footer-social-row { display:flex; flex-wrap:wrap; gap:8px; }
+      .footer-social-row a { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:10px; border:1px solid rgba(16,59,99,.14); background:#fff; color:var(--deep, #10314f); }
+      .footer-social-row a:hover { border-color:var(--blue, #168fea); color:var(--blue, #168fea); }
+      .footer-social-row svg { width:17px; height:17px; fill:currentColor; }
+      .footer-bottom-line { display:flex; flex-wrap:wrap; gap:8px 18px; justify-content:center; padding:12px 18px 16px; font-size:12px; color:var(--muted, #52708c); border-top:1px solid rgba(16,59,99,.08); max-width:1280px; margin:0 auto; }
+
+      .back-to-top { position:fixed; right:18px; bottom:24px; width:44px; height:44px; border-radius:14px; border:1px solid rgba(255,255,255,.6); background:linear-gradient(135deg,#0d6eb8,#168fea); color:#fff; font-size:17px; cursor:pointer; box-shadow:0 10px 26px rgba(13,110,184,.35); opacity:0; pointer-events:none; transform:translateY(8px); transition:opacity .2s ease, transform .2s ease; z-index:900; }
+      .back-to-top.show { opacity:1; pointer-events:auto; transform:none; }
+
+      .reveal { opacity:0; transform:translateY(16px); transition:opacity .55s ease, transform .55s ease; }
+      .reveal.in { opacity:1; transform:none; }
+
+      @media (max-width: 980px) { .nav-center { display:none; } }
+      @media (max-width: 760px) { .nav-search { display:none; } .nav .btn.nav-cta { padding:9px 14px; font-size:13px; } }
+      @media (max-width: 900px) { .footer-grid { grid-template-columns:repeat(2,1fr); } }
+      @media (max-width: 560px) { .footer-grid { grid-template-columns:1fr; gap:16px; } .hero-visual { min-height:240px; } .back-to-top { bottom:84px; } }
     </style>
   </head>
   <body>
-    <div class="announce" aria-label="September 2026 ChatGPT update">
-      <div class="announce-track"><span>✦ SEPTEMBER 2026 CHATGPT UPDATE • NEW FEATURES • UPDATED TOOLS • FRESH LESSONS ADDED THROUGHOUT THE GLAM CHATGPT LEARNING HUB • ✦</span></div>
+    <div class="announce-slim" id="announceSlim" role="status">
+      <span class="announce-slim-text">✦ September 2026 ChatGPT Update — new features, updated tools &amp; fresh lessons</span>
+      <a class="announce-slim-link" href="/agent-center?section=intelligence">See what's new</a>
+      <button class="announce-slim-x" type="button" onclick="dismissAnnounce()" aria-label="Dismiss announcement">✕</button>
     </div>
     <header>
       <div class="nav">
-        <div class="nav-leading">
-          <button class="hub-menu-toggle" id="hubMenuToggle" type="button" onclick="toggleHubSidebar()" aria-label="Open navigation" aria-controls="hubSidebar" aria-expanded="true">
-            <span></span><span></span><span></span>
-          </button>
-          <div class="brand">
-            <div class="logo">G</div>
-            <div class="brand-title">GLAM <span>ChatGPT Learning Hub</span></div>
-          </div>
+        <div class="brand">
+          <div class="logo">G</div>
+          <div class="brand-title">GLAM <span>ChatGPT Learning Hub</span></div>
         </div>
+        <nav class="nav-center" aria-label="Main destinations">
+          <button type="button" onclick="goTab('academy')">Learn</button>
+          <button type="button" onclick="goTab('create')">Create</button>
+          <a href="/agent-center">Agents</a>
+          <button type="button" onclick="goTab('mystuff')">My Stuff</button>
+        </nav>
         <div class="nav-actions">
-          <button class="btn secondary" type="button" onclick="openHubTutorial()">
-            How to Use This Hub
-          </button>
-          <button
-            class="icon-btn"
-            id="resetBtn"
-            title="Reset learning progress"
-          >
-            ↺
-          </button>
-          <button class="btn dark" onclick="scrollHubHome()">
-            Start Here
-          </button>
+          <div class="nav-search">
+            <input id="globalSearch" type="search" placeholder="Search lessons, tools, glossary…" autocomplete="off" aria-label="Search the Hub" />
+            <div class="search-drop" id="searchDrop"></div>
+          </div>
+          <button class="btn primary nav-cta" type="button" onclick="startBrandNew()">Start Learning</button>
+          <button class="hamburger" id="hubHamburger" type="button" onclick="toggleHubSidebar()" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
         </div>
       </div>
     </header>
 
     <div class="hub-app-shell">
       <aside class="hub-sidebar" id="hubSidebar" aria-label="Learning Hub navigation">
-        <button class="sidebar-close" type="button" onclick="closeHubSidebar()" aria-label="Close navigation">×</button>
-        <div class="sidebar-title"><strong>Where to?</strong><span>Pick a destination. Extra tools live inside each area, so you only see them when you need them.</span></div>
+        <div class="drawer-search">
+          <input id="drawerSearch" type="search" placeholder="Search the Hub…" autocomplete="off" aria-label="Search the Hub" />
+          <div class="search-drop" id="drawerSearchDrop"></div>
+        </div>
+        <div class="sidebar-title"><strong>Where to?</strong><span>Pick a destination. Extra tools live inside each area.</span></div>
 
         <div class="side-group">
           <div class="side-label">Home</div>
           <button class="side-link" type="button" onclick="scrollHubHome()"><span class="side-icon">⌂</span>Start Here</button>
           <button class="side-link" type="button" onclick="openHubTutorial()"><span class="side-icon">?</span>How to Use This Hub</button>
+          <button class="side-link" type="button" onclick="document.getElementById('resetBtn')?.click()"><span class="side-icon">↺</span>Reset my progress</button>
         </div>
+        <button id="resetBtn" type="button" style="display:none" aria-hidden="true" tabindex="-1"></button>
 
         <div class="side-group">
           <div class="side-label">Learn</div>
           <button class="side-link" data-side-tab="academy" type="button" onclick="goTab('academy')"><span class="side-icon">01</span>Learning Path</button>
           <a class="side-link" href="/agent-center?section=teacher"><span class="side-icon">T</span>ChatGPT Teacher</a>
           <button class="side-link" data-side-tab="practice" type="button" onclick="goTab('practice')"><span class="side-icon">▶</span>Practice Lab</button>
+          <button class="side-link" data-side-tab="scenarios" type="button" onclick="goTab('scenarios')"><span class="side-icon">◇</span>Scenario Coach</button>
           <button class="side-link" data-side-tab="quiz" type="button" onclick="goTab('quiz')"><span class="side-icon">Q</span>Skill Check</button>
+          <button class="side-link" data-side-tab="assessment" type="button" onclick="goTab('assessment')"><span class="side-icon">★</span>Final Assessment</button>
+          <button class="side-link" data-side-tab="certificate" type="button" onclick="goTab('certificate')"><span class="side-icon">✦</span>Certificate</button>
+          <button class="side-link" data-side-tab="glossary" type="button" onclick="goTab('glossary')"><span class="side-icon">A</span>Glossary</button>
         </div>
 
         <div class="side-group">
           <div class="side-label">Create &amp; Build</div>
-          <button class="side-link" data-side-tab="create" type="button" onclick="goTab('create','prompt')"><span class="side-icon">✍</span>Prompt Tools</button>
-          <button class="side-link" data-side-tab="create" type="button" onclick="goTab('create','visual')"><span class="side-icon">B</span>Visual Builders</button>
-          <button class="side-link" data-side-tab="create" type="button" onclick="goTab('create','business')"><span class="side-icon">$</span>Business Tools</button>
-          <button class="side-link" data-side-tab="create" type="button" onclick="goTab('create','projects')"><span class="side-icon">P</span>Projects</button>
+          <button class="side-link" data-side-tab="asklibrary" type="button" onclick="goTab('asklibrary')"><span class="side-icon">☰</span>Prompt Library</button>
+          <button class="side-link" data-side-tab="coach" type="button" onclick="goTab('coach')"><span class="side-icon">✎</span>Prompt Coach</button>
+          <button class="side-link" data-side-tab="clinic" type="button" onclick="goTab('clinic')"><span class="side-icon">✚</span>Prompt Clinic</button>
+          <button class="side-link" data-side-tab="powerwords" type="button" onclick="goTab('powerwords')"><span class="side-icon">⚡</span>Power Words</button>
+          <button class="side-link" data-side-tab="characterlab" type="button" onclick="goTab('characterlab')"><span class="side-icon">☺</span>Character Builder</button>
+          <button class="side-link" data-side-tab="environmentlab" type="button" onclick="goTab('environmentlab')"><span class="side-icon">⛰</span>Background Builder</button>
+          <button class="side-link" data-side-tab="typographylab" type="button" onclick="goTab('typographylab')"><span class="side-icon">Aa</span>Typography Builder</button>
+          <button class="side-link" data-side-tab="business" type="button" onclick="goTab('business')"><span class="side-icon">$</span>Business Lab</button>
+          <button class="side-link" data-side-tab="researchlab" type="button" onclick="goTab('researchlab')"><span class="side-icon">⌕</span>Business Research</button>
+          <button class="side-link" data-side-tab="mystuff" type="button" onclick="goTab('mystuff','projects')"><span class="side-icon">P</span>Projects</button>
+          <button class="side-link" data-side-tab="concierge" type="button" onclick="goTab('concierge')"><span class="side-icon">✦</span>Prompt Concierge</button>
         </div>
 
         <div class="side-group">
           <div class="side-label">Agent Center</div>
-          <a class="side-link" href="/agent-center"><span class="side-icon">AC</span>Agent Center</a>
+          <a class="side-link" href="/agent-center?section=teacher"><span class="side-icon">T</span>ChatGPT Teacher</a>
+          <a class="side-link" href="/agent-center?section=advisor"><span class="side-icon">A</span>ChatGPT Advisor</a>
+          <a class="side-link" href="/agent-center?section=intelligence"><span class="side-icon">I</span>ChatGPT Intelligence</a>
+          <a class="side-link" href="/agent-center?section=agent"><span class="side-icon">M</span>Master Prompt Agent</a>
+          <a class="side-link" href="/agent-center?section=vault"><span class="side-icon">★</span>Master Prompt Vault</a>
         </div>
 
         <div class="side-group">
           <div class="side-label">My Stuff</div>
-          <button class="side-link" data-side-tab="mystuff" type="button" onclick="goTab('mystuff')"><span class="side-icon">M</span>My Projects</button>
+          <button class="side-link" data-side-tab="mystuff" type="button" onclick="goTab('mystuff','projects')"><span class="side-icon">P</span>Projects</button>
           <a class="side-link" href="/agent-center?section=vault"><span class="side-icon">★</span>Master Prompt Vault</a>
           <button class="side-link" data-side-tab="history" type="button" onclick="goTab('history')"><span class="side-icon">H</span>Prompt History</button>
           <button class="side-link" data-side-tab="playbook" type="button" onclick="goTab('playbook')"><span class="side-icon">✓</span>My Playbook</button>
+          <button class="side-link" data-side-tab="mystuff" type="button" onclick="goTab('mystuff')"><span class="side-icon">M</span>Saved resources</button>
+          <a class="side-link" href="/agent-center?section=import"><span class="side-icon">⤓</span>Imports</a>
         </div>
 
         <div class="side-group">
           <div class="side-label">Help</div>
           <button class="side-link" data-side-tab="finder" type="button" onclick="goTab('finder')"><span class="side-icon">↗</span>Which Tool Do I Use?</button>
-          <button class="side-link" data-side-tab="glossary" type="button" onclick="goTab('glossary')"><span class="side-icon">A</span>Glossary</button>
           <button class="side-link" data-side-tab="concierge" type="button" onclick="goTab('concierge')"><span class="side-icon">?</span>Prompt Concierge</button>
+          <button class="side-link" data-side-tab="glossary" type="button" onclick="goTab('glossary')"><span class="side-icon">A</span>Glossary</button>
         </div>
 
         <div class="side-group admin-only-link" id="adminOwnerGroup">
@@ -3034,14 +3034,17 @@
             <span class="spark"></span> ChatGPT without the confusing tech talk
           </div>
           <h1>
-            Pick up <span class="blue">where you left off.</span>
+            Learn ChatGPT <span class="blue">Without the Confusion.</span>
           </h1>
           <p class="hero-copy">
-            Your learning progress and next step are right here. Everything else starts from the four choices above.
+            Start where you are. The Hub will show you what to learn next, what tool to use, and how to practice it.
           </p>
           <div class="hero-actions">
             <button class="btn primary" onclick="startBrandNew()">
               Continue Learning
+            </button>
+            <button class="btn secondary" onclick="scrollToAskHub()">
+              Prompt Concierge
             </button>
           </div>
           <div class="hero-note">
@@ -3049,46 +3052,16 @@
             flag that when it matters.
           </div>
         </div>
-
-        <aside class="dashboard">
-          <div class="dash-head">
-            <div>
-              <div class="kicker">Your dashboard</div>
-              <h3>Learning progress</h3>
-            </div>
-            <span class="level-chip" id="levelChip">Getting Started</span>
+        <div class="hero-visual" aria-hidden="true">
+          <div class="hero-blob hero-blob-a"></div>
+          <div class="hero-blob hero-blob-b"></div>
+          <div class="hero-visual-glass">
+            <span class="hero-visual-mark">✦</span>
+            <strong>Hero image placeholder</strong>
+            <small>Your final hero image will be uploaded here</small>
           </div>
-          <div class="stat-grid">
-            <div class="stat">
-              <strong id="doneCount">0</strong><span>Lessons done</span>
-            </div>
-            <div class="stat">
-              <strong id="totalCount">0</strong><span>Total lessons</span>
-            </div>
-            <div class="stat">
-              <strong id="pctCount">0%</strong><span>Complete</span>
-            </div>
-          </div>
-          <div class="progress-row">
-            <span>Overall progress</span><span id="progressText">0%</span>
-          </div>
-          <div class="progress"><div id="progressFill"></div></div>
-          <div class="next-card">
-            <small>Recommended next</small>
-            <strong id="nextTitle">ChatGPT Basics</strong>
-            <p id="nextDesc">
-              Learn how to talk to ChatGPT like an assistant instead of treating
-              it like Google.
-            </p>
-          </div>
-
-          <div class="agent-dash" aria-label="Agent Center">
-            <small>Agent Center</small>
-            <a class="agent-dash-all" href="/agent-center"><strong>Open Agent Center</strong></a>
-          </div>
-        </aside>
+        </div>
       </section>
-
       <section class="start-here" id="startHere" aria-labelledby="startHereTitle">
         <div class="kicker">Start here</div>
         <h2 id="startHereTitle">What do you want to do today?</h2>
@@ -3206,7 +3179,41 @@
             <h2>Your learning path</h2>
             <p>Pick up where you left off or choose the next step below. Your progress is saved in this browser.</p>
           </div>
-          <div class="beginner-start">
+          <aside class="dashboard">
+          <div class="dash-head">
+            <div>
+              <div class="kicker">Your dashboard</div>
+              <h3>Learning progress</h3>
+            </div>
+            <span class="level-chip" id="levelChip">Getting Started</span>
+          </div>
+          <div class="stat-grid">
+            <div class="stat">
+              <strong id="doneCount">0</strong><span>Lessons done</span>
+            </div>
+            <div class="stat">
+              <strong id="totalCount">0</strong><span>Total lessons</span>
+            </div>
+            <div class="stat">
+              <strong id="pctCount">0%</strong><span>Complete</span>
+            </div>
+          </div>
+          <div class="progress-row">
+            <span>Overall progress</span><span id="progressText">0%</span>
+          </div>
+          <div class="progress"><div id="progressFill"></div></div>
+          <div class="next-card">
+            <small>Recommended next</small>
+            <strong id="nextTitle">ChatGPT Basics</strong>
+            <p id="nextDesc">
+              Learn how to talk to ChatGPT like an assistant instead of treating
+              it like Google.
+            </p>
+          </div>
+
+        </aside>
+
+        <div class="beginner-start">
             <div class="kicker">Choose your starting point</div>
             <h2>Where are you right now?</h2>
             <p>You are not supposed to know where every feature lives yet. Pick the option that sounds most like you and the Hub will move you to the right next step.</p>
@@ -4699,48 +4706,50 @@
         </div>
       </section>
 
-      <footer>
-        <div class="glam-footer-cta">
-          <div>
-            <strong>Ready to keep building?</strong>
-            <span>Shop more tools and resources, or join The Glam Vault for ongoing classes, support, and new drops.</span>
+      <footer class="footer-compact">
+        <div class="footer-grid">
+          <div class="footer-col">
+            <div class="footer-logo-mini">GLAM ChatGPT Learning Hub</div>
+            <p>Learn ChatGPT without the confusion — then use it to create, organize, research, build, and grow.</p>
+            <a href="mailto:glamorousgrammyglowup@gmail.com">glamorousgrammyglowup@gmail.com</a>
+            <a href="https://glamhustlehub.com" target="_blank" rel="noopener">Shop More Apps &amp; Resources →</a>
           </div>
-          <div class="glam-footer-cta-actions">
-            <a class="btn primary" href="https://glamhustlehub.com" target="_blank" rel="noopener">Shop More Apps & Resources</a>
-            <a class="btn secondary" href="https://payhip.com/b/54LoK" target="_blank" rel="noopener">Join The Glam Vault</a>
+          <div class="footer-col">
+            <strong>Navigate</strong>
+            <button type="button" onclick="goTab('academy')">Learn</button>
+            <button type="button" onclick="goTab('create')">Create</button>
+            <a href="/agent-center">Agents</a>
+            <button type="button" onclick="goTab('mystuff')">My Stuff</button>
+          </div>
+          <div class="footer-col">
+            <strong>Connect</strong>
+            <div class="footer-social-row">
+              <a class="glam-footer-link" aria-label="TikTok" title="TikTok" href="https://www.tiktok.com/@promptlikeglam?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.3 3.2c.6 1.8 1.9 3.2 3.7 3.8v3.1c-1.4 0-2.8-.4-3.9-1.1v6.1a5.3 5.3 0 1 1-4.6-5.2v3.2a2.2 2.2 0 1 0 1.5 2.1V3.2h3.3Z"/></svg></a>
+              <a class="glam-footer-link" aria-label="YouTube" title="YouTube" href="https://www.youtube.com/@Glamorousaiprompts" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12c0 2.1-.2 4.2-.5 5.4-.2.9-.9 1.6-1.8 1.8-1.6.4-5 .5-7.7.5s-6.1-.1-7.7-.5c-.9-.2-1.6-.9-1.8-1.8C2.2 16.2 2 14.1 2 12s.2-4.2.5-5.4c.2-.9.9-1.6 1.8-1.8 1.6-.4 5-.5 7.7-.5s6.1.1 7.7.5c.9.2 1.6.9 1.8 1.8.3 1.2.5 3.3.5 5.4Zm-11.8 3.2 5.1-3.2-5.1-3.2v6.4Z"/></svg></a>
+              <a class="glam-footer-link" aria-label="Facebook" title="Facebook" href="https://www.facebook.com/GlamAIForBeginners" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.8 22v-8h2.7l.4-3h-3.1V9.1c0-.9.3-1.5 1.6-1.5H17V4.9c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.4-4 4.1V11H8v3h2.6v8h3.2Z"/></svg></a>
+              <a class="glam-footer-link" aria-label="Instagram" title="Instagram" href="https://www.instagram.com/glam_ai_for_beginners/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2Zm0 2.2A3.6 3.6 0 0 0 4.2 7.8v8.4a3.6 3.6 0 0 0 3.6 3.6h8.4a3.6 3.6 0 0 0 3.6-3.6V7.8a3.6 3.6 0 0 0-3.6-3.6H7.8Zm8.9 1.6a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6ZM12 7.1A4.9 4.9 0 1 1 12 17a4.9 4.9 0 0 1 0-9.8Zm0 2.2a2.7 2.7 0 1 0 0 5.4 2.7 2.7 0 0 0 0-5.4Z"/></svg></a>
+              <a class="glam-footer-link" aria-label="Pinterest" title="Pinterest" href="https://www.pinterest.com/glamaiforbeginners/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.2 2C6.7 2 3 5.7 3 10.4c0 3.5 2 6.4 4.9 7.5-.1-.6-.1-1.6 0-2.3l1-4.3s-.3-.6-.3-1.5c0-1.4.8-2.5 1.9-2.5.9 0 1.3.7 1.3 1.5 0 .9-.6 2.2-.9 3.4-.3 1 .5 1.9 1.5 1.9 1.8 0 3.2-1.9 3.2-4.7 0-2.5-1.8-4.2-4.4-4.2-3 0-4.8 2.3-4.8 4.6 0 .9.4 1.9.8 2.4.1.1.1.2.1.4l-.3 1.2c-.1.4-.5.5-.8.3-1.4-.7-2.2-2.6-2.2-4.2 0-3.4 2.5-6.5 7.2-6.5 3.8 0 6.7 2.7 6.7 6.3 0 3.8-2.4 6.8-5.7 6.8-1.1 0-2.2-.6-2.6-1.3l-.7 2.7c-.3 1-.9 2.3-1.3 3.1 1.2.4 2.5.7 3.8.7 5.5 0 9.4-4 9.4-9.3C21.6 5.9 17.7 2 12.2 2Z"/></svg></a>
+              <a class="glam-footer-link skool-icon" aria-label="The Glam Vault" title="The Glam Vault" href="https://payhip.com/b/54LoK" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.5 8 12 13l7-3.7V15h2V8L12 3Zm-6.5 9v4.3c0 1.9 2.9 3.7 6.5 3.7s6.5-1.8 6.5-3.7V12L12 15.4 5.5 12Z"/></svg></a>
+            </div>
+            <a href="https://payhip.com/b/54LoK" target="_blank" rel="noopener" style="margin-top:8px">Join The Glam Vault</a>
+          </div>
+          <div class="footer-col">
+            <strong>Support</strong>
+            <button type="button" onclick="openHubTutorial()">How to Use This Hub</button>
+            <button type="button" onclick="goTab('finder')">Which Tool Do I Use?</button>
+            <a href="/terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>
+            <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>
           </div>
         </div>
-        <div class="glam-footer-top">
-        <div class="glam-footer-brand">
-<div class="glam-footer-title">GLAM ChatGPT Learning Hub</div>
-          <p class="glam-footer-copy">Learn ChatGPT without the confusion — then use it to create, organize, research, build, and grow.</p>
-          <div class="glam-footer-contact"><span>Business:</span><a class="glam-footer-email" href="mailto:glamorousgrammyglowup@gmail.com">glamorousgrammyglowup@gmail.com</a></div>
-          <div class="glam-footer-actions">
-            <a class="btn primary" href="https://glamhustlehub.com" target="_blank" rel="noopener">Shop More Apps & Resources</a>
-            <a class="btn secondary" href="https://payhip.com/b/54LoK" target="_blank" rel="noopener">Join The Glam Vault</a>
-          </div>
-        </div>
-        <div class="glam-footer-nav">
-          <div class="glam-footer-nav-head"><strong>Connect with Glam</strong><span>Follow • Learn • Shop</span></div>
-          <div class="glam-footer-links">
-            <a class="glam-footer-link" aria-label="TikTok" title="TikTok" href="https://www.tiktok.com/@promptlikeglam?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.3 3.2c.6 1.8 1.9 3.2 3.7 3.8v3.1c-1.4 0-2.8-.4-3.9-1.1v6.1a5.3 5.3 0 1 1-4.6-5.2v3.2a2.2 2.2 0 1 0 1.5 2.1V3.2h3.3Z"/></svg><span>TikTok</span></a>
-            <a class="glam-footer-link" aria-label="YouTube" title="YouTube" href="https://www.youtube.com/@Glamorousaiprompts" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12c0 2.1-.2 4.2-.5 5.4-.2.9-.9 1.6-1.8 1.8-1.6.4-5 .5-7.7.5s-6.1-.1-7.7-.5c-.9-.2-1.6-.9-1.8-1.8C2.2 16.2 2 14.1 2 12s.2-4.2.5-5.4c.2-.9.9-1.6 1.8-1.8 1.6-.4 5-.5 7.7-.5s6.1.1 7.7.5c.9.2 1.6.9 1.8 1.8.3 1.2.5 3.3.5 5.4Zm-11.8 3.2 5.1-3.2-5.1-3.2v6.4Z"/></svg><span>YouTube</span></a>
-            <a class="glam-footer-link" aria-label="Facebook" title="Facebook" href="https://www.facebook.com/GlamAIForBeginners" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.8 22v-8h2.7l.4-3h-3.1V9.1c0-.9.3-1.5 1.6-1.5H17V4.9c-.3 0-1.3-.1-2.4-.1-2.4 0-4 1.4-4 4.1V11H8v3h2.6v8h3.2Z"/></svg><span>Facebook</span></a>
-            <a class="glam-footer-link group-icon" aria-label="Facebook Group" title="Facebook Group" href="https://www.facebook.com/share/g/14d49MXbk9h/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm7 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 20v-1.3C2 15.6 5 13 8.5 13s6.5 2.6 6.5 5.7V20H2Zm13.3 0v-1.1c0-1.6-.6-3-1.7-4.1.7-.5 1.7-.8 2.9-.8 3 0 5.5 2.1 5.5 4.8V20h-6.7Z"/></svg><span>Facebook Group</span></a>
-            <a class="glam-footer-link" aria-label="Instagram" title="Instagram" href="https://www.instagram.com/glam_ai_for_beginners/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2Zm0 2.2A3.6 3.6 0 0 0 4.2 7.8v8.4a3.6 3.6 0 0 0 3.6 3.6h8.4a3.6 3.6 0 0 0 3.6-3.6V7.8a3.6 3.6 0 0 0-3.6-3.6H7.8Zm8.9 1.6a1.3 1.3 0 1 1 0 2.6 1.3 1.3 0 0 1 0-2.6ZM12 7.1A4.9 4.9 0 1 1 12 17a4.9 4.9 0 0 1 0-9.8Zm0 2.2a2.7 2.7 0 1 0 0 5.4 2.7 2.7 0 0 0 0-5.4Z"/></svg><span>Instagram</span></a>
-            <a class="glam-footer-link" aria-label="Pinterest" title="Pinterest" href="https://www.pinterest.com/glamaiforbeginners/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.2 2C6.7 2 3 5.7 3 10.4c0 3.5 2 6.4 4.9 7.5-.1-.6-.1-1.6 0-2.3l1-4.3s-.3-.6-.3-1.5c0-1.4.8-2.5 1.9-2.5.9 0 1.3.7 1.3 1.5 0 .9-.6 2.2-.9 3.4-.3 1 .5 1.9 1.5 1.9 1.8 0 3.2-1.9 3.2-4.7 0-2.5-1.8-4.2-4.4-4.2-3 0-4.8 2.3-4.8 4.6 0 .9.4 1.9.8 2.4.1.1.1.2.1.4l-.3 1.2c-.1.4-.5.5-.8.3-1.4-.7-2.2-2.6-2.2-4.2 0-3.4 2.5-6.5 7.2-6.5 3.8 0 6.7 2.7 6.7 6.3 0 3.8-2.4 6.8-5.7 6.8-1.1 0-2.2-.6-2.6-1.3l-.7 2.7c-.3 1-.9 2.3-1.3 3.1 1.2.4 2.5.7 3.8.7 5.5 0 9.4-4 9.4-9.3C21.6 5.9 17.7 2 12.2 2Z"/></svg><span>Pinterest</span></a>
-            <a class="glam-footer-link skool-icon" aria-label="The Glam Vault" title="The Glam Vault" href="https://payhip.com/b/54LoK" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.5 8 12 13l7-3.7V15h2V8L12 3Zm-6.5 9v4.3c0 1.9 2.9 3.7 6.5 3.7s6.5-1.8 6.5-3.7V12L12 15.4 5.5 12Z"/></svg><span>Skool</span></a>
-          </div>
-        </div>
-        </div>
-        <div class="glam-footer-bottom">
+        <div class="footer-bottom-line">
           <span><strong>We don’t just look GLAM. We live GLAM.</strong></span>
-          <span><a href="/terms.html" target="_blank" rel="noopener">Terms & Conditions</a> • <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a></span>
           <span>© 2026 Glam Hustle Hub. All rights reserved.</span>
         </div>
       </footer>
     </main>
     </div>
+
+    <button class="back-to-top" id="backToTop" type="button" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Back to top">↑</button>
 
     <nav class="mobile-bottom-nav" aria-label="Mobile Learning Hub navigation">
       <button type="button" onclick="scrollHubHome()"><span>⌂</span>Home</button>
@@ -8298,53 +8307,17 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         }
       }
 
-      function syncHubMenuToggle() {
-        const toggle = document.getElementById("hubMenuToggle");
-        const sidebar = document.getElementById("hubSidebar");
-        if (!toggle || !sidebar) return;
-        const desktop = window.innerWidth > 1100;
-        const expanded = desktop
-          ? !document.body.classList.contains("desktop-sidebar-collapsed")
-          : sidebar.classList.contains("open");
-        toggle.setAttribute("aria-expanded", String(expanded));
-        toggle.setAttribute("aria-label", expanded ? "Close navigation" : "Open navigation");
-      }
-
       function toggleHubSidebar() {
         const sidebar = document.getElementById("hubSidebar");
         const backdrop = document.getElementById("sidebarBackdrop");
-        if (window.innerWidth > 1100) {
-          document.body.classList.toggle("desktop-sidebar-collapsed");
-          sidebar?.classList.remove("open");
-          backdrop?.classList.remove("show");
-        } else {
-          sidebar?.classList.toggle("open");
-          backdrop?.classList.toggle("show", sidebar?.classList.contains("open"));
-        }
-        syncHubMenuToggle();
+        sidebar?.classList.toggle("open");
+        backdrop?.classList.toggle("show", sidebar?.classList.contains("open"));
       }
 
       function closeHubSidebar() {
-        if (window.innerWidth <= 1100) {
-          document.getElementById("hubSidebar")?.classList.remove("open");
-          document.getElementById("sidebarBackdrop")?.classList.remove("show");
-        }
-        syncHubMenuToggle();
+        document.getElementById("hubSidebar")?.classList.remove("open");
+        document.getElementById("sidebarBackdrop")?.classList.remove("show");
       }
-
-      window.addEventListener("resize", () => {
-        if (window.innerWidth > 1100) {
-          document.getElementById("hubSidebar")?.classList.remove("open");
-          document.getElementById("sidebarBackdrop")?.classList.remove("show");
-        }
-        syncHubMenuToggle();
-      });
-
-      document.addEventListener("keydown", (event) => {
-        if (event.key === "Escape") closeHubSidebar();
-      });
-
-      syncHubMenuToggle();
 
       function renderRecentWork() {
         const list = document.getElementById("recentWorkList");
@@ -10608,5 +10581,121 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       })();
     </script>
     <script src="/hub-projects.js"></script>
+
+  <script>
+  /* ===== master build: announce dismiss, hamburger sync, back-to-top, reveal, global search ===== */
+  function dismissAnnounce() {
+    try { localStorage.setItem("glamAnnounceDismissed", "1"); } catch (e) {}
+    document.getElementById("announceSlim")?.remove();
+  }
+  try { if (localStorage.getItem("glamAnnounceDismissed")) document.getElementById("announceSlim")?.remove(); } catch (e) {}
+
+  const hubHam = document.getElementById("hubHamburger");
+  function syncHamburger() {
+    const sb = document.getElementById("hubSidebar");
+    const open = !!(sb && sb.classList.contains("open"));
+    hubHam?.classList.toggle("open", open);
+    if (hubHam) hubHam.setAttribute("aria-expanded", String(open));
+  }
+  try { new MutationObserver(syncHamburger).observe(document.getElementById("hubSidebar"), { attributes: true, attributeFilter: ["class"] }); } catch (e) {}
+
+  window.addEventListener("scroll", () => {
+    document.getElementById("backToTop")?.classList.toggle("show", window.scrollY > 600);
+  }, { passive: true });
+
+  const revEls = Array.from(document.querySelectorAll(".hub-main > section"));
+  revEls.forEach((el) => el.classList.add("reveal"));
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } });
+    }, { threshold: 0.08 });
+    revEls.forEach((el) => io.observe(el));
+  }
+  setTimeout(() => revEls.forEach((el) => el.classList.add("in")), 2500);
+
+  let searchIdx = null;
+  let searchHist = null;
+  function ensureIndex() {
+    if (searchIdx) return searchIdx;
+    let tools = [];
+    try { Object.keys(TAB_LOCATION).forEach((k) => tools.push({ tab: k, label: TAB_LOCATION[k][1], group: TAB_LOCATION[k][0] })); } catch (e) {}
+    searchIdx = {
+      tools: tools,
+      lessons: typeof lessons !== "undefined" ? lessons : [],
+      glossary: typeof glossary !== "undefined" ? glossary.map((g) => ({ term: g[0], def: g[1] })) : []
+    };
+    return searchIdx;
+  }
+  function primeHistory() {
+    if (searchHist) return;
+    searchHist = [];
+    try {
+      fetch(PROMPT_HISTORY_ENDPOINT + "?sort=-submitted_at_ms&limit=60&skip=0", { headers: hubProtectedHeaders(), credentials: "include" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((p) => { const arr = p ? (Array.isArray(p) ? p : (p?.data || p?.items || [])) : []; if (Array.isArray(arr)) searchHist = arr; })
+        .catch(() => {});
+    } catch (e) {}
+  }
+  const escS = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  function searchGroups(q) {
+    const idx = ensureIndex();
+    const ql = q.toLowerCase();
+    const out = [];
+    const tools = idx.tools.filter((t) => (t.label + " " + t.group).toLowerCase().includes(ql)).slice(0, 5)
+      .map((t) => ({ html: "<strong>" + escS(t.label) + "</strong><small>" + escS(t.group) + "</small>", act: 'data-act="tab" data-tab="' + escS(t.tab) + '"' }));
+    if (tools.length) out.push({ name: "Tools", items: tools });
+    const lessons = idx.lessons.filter((l) => ((l.title || "") + " " + (l.desc || "") + " " + (l.tags || []).join(" ")).toLowerCase().includes(ql)).slice(0, 5)
+      .map((l) => ({ html: "<strong>" + escS(l.title) + "</strong><small>" + escS(l.level || "") + " lesson</small>", act: 'data-act="lesson" data-lesson="' + escS(l.id) + '"' }));
+    if (lessons.length) out.push({ name: "Lessons", items: lessons });
+    const glos = idx.glossary.filter((g) => (g.term + " " + g.def).toLowerCase().includes(ql)).slice(0, 5)
+      .map((g) => ({ html: "<strong>" + escS(g.term) + "</strong><small>" + escS(String(g.def).slice(0, 70)) + "…</small>", act: 'data-act="glossary" data-q="' + escS(q) + '"' }));
+    if (glos.length) out.push({ name: "Glossary", items: glos });
+    const hist = (searchHist || []).filter((h) => String(h.prompt || "").toLowerCase().includes(ql)).slice(0, 4)
+      .map((h) => ({ html: "<strong>" + escS(String(h.prompt || "").slice(0, 60)) + "</strong><small>Prompt History</small>", act: 'data-act="history" data-q="' + escS(q) + '"' }));
+    if (hist.length) out.push({ name: "Prompt History", items: hist });
+    if (ql.length > 2) out.push({ name: "My Stuff", items: [{ html: "<strong>Search “" + escS(q) + "” in My Stuff</strong><small>Projects, saved prompts, playbook</small>", act: 'data-act="mystuff" data-q="' + escS(q) + '"' }] });
+    return out;
+  }
+  function renderSearch(drop, q) {
+    if (!drop) return;
+    if (!q || q.trim().length < 2) { drop.classList.remove("open"); drop.innerHTML = ""; return; }
+    const groups = searchGroups(q.trim());
+    if (!groups.length) { drop.innerHTML = '<div class="search-empty">No matches. Try a tool name, lesson topic, or word.</div>'; drop.classList.add("open"); return; }
+    drop.innerHTML = groups.map((g) => '<div class="search-group">' + escS(g.name) + "</div>" + g.items.map((it) => '<button class="search-item" type="button" ' + it.act + ">" + it.html + "</button>").join("")).join("");
+    drop.classList.add("open");
+  }
+  function wireSearch(inputId, dropId) {
+    const inp = document.getElementById(inputId);
+    const drop = document.getElementById(dropId);
+    if (!inp || !drop) return;
+    inp.addEventListener("focus", () => { ensureIndex(); primeHistory(); if (inp.value.trim().length >= 2) renderSearch(drop, inp.value); });
+    inp.addEventListener("input", () => renderSearch(drop, inp.value));
+    inp.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { drop.classList.remove("open"); inp.blur(); }
+      if (e.key === "Enter") { e.preventDefault(); const first = drop.querySelector(".search-item"); if (first) first.click(); }
+    });
+    drop.addEventListener("click", (e) => {
+      const btn = e.target.closest(".search-item");
+      if (!btn) return;
+      const q = btn.dataset.q || "";
+      drop.classList.remove("open");
+      inp.value = "";
+      closeHubSidebar();
+      const act = btn.dataset.act;
+      if (act === "tab") goTab(btn.dataset.tab);
+      else if (act === "lesson") { goTab("academy"); setTimeout(() => openLesson(btn.dataset.lesson), 420); }
+      else if (act === "glossary") { goTab("glossary"); setTimeout(() => { const g = document.getElementById("glossarySearch"); if (g) { g.value = q; g.dispatchEvent(new Event("input")); } }, 380); }
+      else if (act === "history") { goTab("history"); setTimeout(() => { const h = document.getElementById("historySearch"); if (h) { h.value = q; h.dispatchEvent(new Event("input")); } }, 380); }
+      else if (act === "mystuff") { goTab("mystuff", "projects"); setTimeout(() => { const p = document.getElementById("projectSearch"); if (p) { p.value = q; p.dispatchEvent(new Event("input")); } }, 380); }
+    });
+  }
+  document.addEventListener("click", (e) => {
+    document.querySelectorAll(".search-drop.open").forEach((d) => { if (!d.parentElement.contains(e.target)) d.classList.remove("open"); });
+  });
+  wireSearch("globalSearch", "searchDrop");
+  wireSearch("drawerSearch", "drawerSearchDrop");
+
+  document.querySelectorAll("#hubSidebar .side-link").forEach((l) => l.addEventListener("click", () => closeHubSidebar()));
+  </script>
   </body>
 </html>
