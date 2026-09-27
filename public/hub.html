@@ -2715,6 +2715,8 @@
       .hub-main > .start-here { order:-4; }
       .hub-main > .recent-work { order:-3; }
       .hub-main > #hub { order:-2; }
+      #hub { display:none; }
+      #hub.hub-open { display:block; }
       .hub-main > .ask-hub { order:-1; }
       .beginner-start { display:none; }
       .mobile-menu-btn { display:none; }
@@ -3108,17 +3110,6 @@
             <span class="card-links"><span>My Projects</span><span>Prompt History</span><span>Vault</span></span>
           </button>
         </div>
-      </section>
-
-      <section class="recent-work" id="recentWork" aria-label="Your recent work">
-        <div class="recent-work-head">
-          <div>
-            <div class="kicker">Recent work</div>
-            <h3>Pick up where you left off</h3>
-          </div>
-          <button class="btn secondary" type="button" onclick="goTab('mystuff')">View All</button>
-        </div>
-        <div class="recent-list" id="recentWorkList"></div>
       </section>
 
       <section id="hub">
@@ -8296,6 +8287,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
       }
 
       function goTab(name, anchor) {
+        document.getElementById("hub")?.classList.add("hub-open");
         document
           .querySelectorAll(".tab")
           .forEach((x) => x.classList.toggle("active", x.dataset.tab === name));
@@ -8389,7 +8381,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
 
       function scrollHubHome() {
         closeHubSidebar();
-        renderRecentWork();
+        document.getElementById("hub")?.classList.remove("hub-open");
         window.scrollTo({ top:0, behavior:"smooth" });
       }
 
