@@ -4,9 +4,7 @@ import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck, Loader2 } from "lucide-react";
-
-const TERMS_VERSION = "2026-09-07";
-const PRIVACY_VERSION = "2026-09-07";
+import { TERMS_VERSION, PRIVACY_VERSION, hasCurrentLegalAcceptance } from '@/lib/legalAcceptance';
 
 function safeDestination(value) {
   if (!value) return "/hub.html";
@@ -26,6 +24,7 @@ export default function LegalConsent() {
   const [params] = useSearchParams();
   const destination = useMemo(() => safeDestination(params.get("returnTo")), [params]);
   const [checked, setChecked] = useState(false);
+  const [document, setDocument] = useState('terms');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -40,10 +39,7 @@ export default function LegalConsent() {
       if (!user) return;
       setLoading(true);
       try {
-        const records = await base44.entities.LegalAcceptance.list("-created_date", 50);
-        const accepted = (records || []).some(
-          (r) => r.terms_version === TERMS_VERSION && r.privacy_version === PRIVACY_VERSION
-        );
+        const accepted = await hasCurrentLegalAcceptance(user.id);
         if (accepted) {
           window.location.replace(destination);
           return;
@@ -98,10 +94,12 @@ export default function LegalConsent() {
           </p>
         </div>
 
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          <a href="/terms.html" target="_blank" rel="noopener noreferrer" className="rounded-2xl border border-slate-200 px-4 py-4 text-center font-bold text-[#103B63] hover:bg-slate-50">Read Terms & Conditions</a>
-          <a href="/privacy.html" target="_blank" rel="noopener noreferrer" className="rounded-2xl border border-slate-200 px-4 py-4 text-center font-bold text-[#103B63] hover:bg-slate-50">Read Privacy Policy</a>
+        <div className="mt-6 flex gap-2" role="tablist" aria-label="Legal documents">
+          <button type="button" role="tab" aria-selected={document === 'terms'} onClick={() => setDocument('terms')} className={`flex-1 rounded-xl border px-3 py-3 text-sm font-bold ${document === 'terms' ? 'border-blue-600 bg-blue-50 text-blue-900' : 'border-slate-200 text-slate-700'}`}>Terms & Conditions</button>
+          <button type="button" role="tab" aria-selected={document === 'privacy'} onClick={() => setDocument('privacy')} className={`flex-1 rounded-xl border px-3 py-3 text-sm font-bold ${document === 'privacy' ? 'border-blue-600 bg-blue-50 text-blue-900' : 'border-slate-200 text-slate-700'}`}>Privacy Policy</button>
         </div>
+        <iframe title={document === 'terms' ? 'Terms and Conditions' : 'Privacy Policy'} src={document === 'terms' ? '/terms.html' : '/privacy.html'} className="mt-3 h-96 w-full rounded-xl border border-slate-200 bg-white" />
+        <p className="mt-2 text-xs text-slate-600">You can also <a href="/terms.html" target="_blank" rel="noopener noreferrer" className="underline">open the terms</a> or <a href="/privacy.html" target="_blank" rel="noopener noreferrer" className="underline">open the privacy policy</a> in a new tab.</p>
 
         <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4">
           <input
