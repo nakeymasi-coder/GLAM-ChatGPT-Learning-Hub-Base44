@@ -2930,7 +2930,16 @@
         .footer-grid { grid-template-columns:1fr; gap:10px; padding:14px 16px 4px; }
         .footer-bottom-line { flex-direction:column; gap:4px; text-align:center; padding:10px 14px 14px; font-size:11.5px; }
       }
-      @media (max-width: 560px) { .footer-grid { grid-template-columns:1fr; gap:16px; } .hero-visual { min-height:190px; border-radius:20px; } .back-to-top { bottom:84px; } }
+      @media (max-width: 700px) {
+        .hero { padding-top: 16px; grid-gap: 18px; }
+        h1 { font-size: clamp(28px, 8.5vw, 34px); }
+        .hero-copy { font-size: 14.5px; }
+        .hero-actions { margin-top: 16px; }
+        .hero-visual { min-height: clamp(170px, 46vw, 250px); border-radius: 20px; }
+        .hero-visual-glass { padding: 18px 20px; }
+        .hero-visual-glass .hero-visual-mark { font-size: 20px; }
+      }
+      @media (max-width: 560px) { .footer-grid { grid-template-columns:1fr; gap:16px; } .hero-visual { min-height:170px; } .hero-actions .btn { width:100%; justify-content:center; } .hero-visual-glass strong { font-size:14.5px; } .hero-visual-glass small { font-size:11px; } .back-to-top { bottom:84px; } }
     </style>
   </head>
   <body>
