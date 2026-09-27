@@ -8298,17 +8298,53 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         }
       }
 
+      function syncHubMenuToggle() {
+        const toggle = document.getElementById("hubMenuToggle");
+        const sidebar = document.getElementById("hubSidebar");
+        if (!toggle || !sidebar) return;
+        const desktop = window.innerWidth > 1100;
+        const expanded = desktop
+          ? !document.body.classList.contains("desktop-sidebar-collapsed")
+          : sidebar.classList.contains("open");
+        toggle.setAttribute("aria-expanded", String(expanded));
+        toggle.setAttribute("aria-label", expanded ? "Close navigation" : "Open navigation");
+      }
+
       function toggleHubSidebar() {
         const sidebar = document.getElementById("hubSidebar");
         const backdrop = document.getElementById("sidebarBackdrop");
-        sidebar?.classList.toggle("open");
-        backdrop?.classList.toggle("show", sidebar?.classList.contains("open"));
+        if (window.innerWidth > 1100) {
+          document.body.classList.toggle("desktop-sidebar-collapsed");
+          sidebar?.classList.remove("open");
+          backdrop?.classList.remove("show");
+        } else {
+          sidebar?.classList.toggle("open");
+          backdrop?.classList.toggle("show", sidebar?.classList.contains("open"));
+        }
+        syncHubMenuToggle();
       }
 
       function closeHubSidebar() {
-        document.getElementById("hubSidebar")?.classList.remove("open");
-        document.getElementById("sidebarBackdrop")?.classList.remove("show");
+        if (window.innerWidth <= 1100) {
+          document.getElementById("hubSidebar")?.classList.remove("open");
+          document.getElementById("sidebarBackdrop")?.classList.remove("show");
+        }
+        syncHubMenuToggle();
       }
+
+      window.addEventListener("resize", () => {
+        if (window.innerWidth > 1100) {
+          document.getElementById("hubSidebar")?.classList.remove("open");
+          document.getElementById("sidebarBackdrop")?.classList.remove("show");
+        }
+        syncHubMenuToggle();
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") closeHubSidebar();
+      });
+
+      syncHubMenuToggle();
 
       function renderRecentWork() {
         const list = document.getElementById("recentWorkList");
