@@ -25,7 +25,8 @@
   "app_user_connector_configs": [],
   "selected_skill_names": [
     "chatgpt-teaching",
-    "chatgpt-update-intelligence"
+    "chatgpt-update-intelligence",
+    "chatgpt-workflow-routing"
   ],
   "selected_workspace_skill_ids": [],
   "model": "automatic",
