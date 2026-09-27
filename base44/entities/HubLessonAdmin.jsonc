@@ -1,4 +1,5 @@
 {
+  "name": "HubLessonAdmin",
   "type": "object",
   "properties": {
     "lesson_id": {
@@ -37,9 +38,25 @@
       }
     },
     "read": {
-      "user_condition": {
-        "role": "admin"
-      }
+      "$or": [
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        },
+        {
+          "$and": [
+            {
+              "user_condition": {
+                "role": "user"
+              }
+            },
+            {
+              "data.active": true
+            }
+          ]
+        }
+      ]
     },
     "update": {
       "user_condition": {
@@ -51,6 +68,5 @@
         "role": "admin"
       }
     }
-  },
-  "name": "HubLessonAdmin"
+  }
 }
