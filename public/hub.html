@@ -8298,8 +8298,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           headers: hubProtectedHeaders(),
           credentials: "include",
         }).then((res) => (res.ok ? res.json() : null)).then((payload) => {
-          if (!payload) return;
-          const page = Array.isArray(payload) ? payload : (payload?.data || payload?.items || []);
+          const page = payload ? (Array.isArray(payload) ? payload : (payload?.data || payload?.items || [])) : [];
           (Array.isArray(page) ? page : []).slice(0, 3).forEach((entry) => {
             const text = String(entry?.prompt || "").trim();
             if (text) {
@@ -8309,7 +8308,11 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           list.innerHTML = chips.length
             ? chips.join("")
             : '<span class="recent-empty">Nothing saved yet — your lessons, projects, and prompts will appear here as you use the Hub.</span>';
-        }).catch(() => {});
+        }).catch(() => {
+          list.innerHTML = chips.length
+            ? chips.join("")
+            : '<span class="recent-empty">Nothing saved yet — your lessons, projects, and prompts will appear here as you use the Hub.</span>';
+        });
       }
 
       function scrollHubHome() {
