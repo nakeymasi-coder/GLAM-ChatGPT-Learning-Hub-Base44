@@ -497,6 +497,83 @@
         font-size: 12px;
         line-height: 1.5;
       }
+      .agent-dash {
+        position: relative;
+        margin-top: 16px;
+        background: linear-gradient(145deg, #071b33 0%, #0c3159 100%);
+        border: 1px solid rgba(22, 143, 234, 0.35);
+        border-radius: 20px;
+        padding: 16px;
+        color: #fff;
+      }
+      .agent-dash small {
+        display: block;
+        font-weight: 950;
+        color: #8fd2ff;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .agent-dash > strong {
+        display: block;
+        margin-top: 4px;
+        font-size: 17px;
+      }
+      .agent-dash > p {
+        margin: 6px 0 12px;
+        color: #d7e9f7;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+      .agent-dash-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+      .agent-dash-grid a {
+        display: block;
+        min-height: 54px;
+        padding: 10px 11px;
+        border-radius: 13px;
+        background: rgba(255,255,255,0.09);
+        border: 1px solid rgba(255,255,255,0.13);
+        color: #fff;
+        text-decoration: none;
+        transition: 0.18s ease;
+      }
+      .agent-dash-grid a:hover,
+      .agent-dash-grid a:focus-visible {
+        background: rgba(255,255,255,0.16);
+        border-color: rgba(143,210,255,0.65);
+        transform: translateY(-1px);
+      }
+      .agent-dash-grid strong {
+        display: block;
+        font-size: 12px;
+      }
+      .agent-dash-grid span {
+        display: block;
+        margin-top: 3px;
+        color: #bad6e9;
+        font-size: 10px;
+        line-height: 1.35;
+      }
+      .agent-dash-all {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 42px;
+        margin-top: 9px;
+        border-radius: 12px;
+        background: #fff;
+        color: #071b33;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 950;
+      }
+      @media (max-width: 480px) {
+        .agent-dash-grid { grid-template-columns: 1fr; }
+      }
 
       .section-head {
         margin: 54px 0 18px;
@@ -2948,6 +3025,19 @@
               Learn how to talk to ChatGPT like an assistant instead of treating
               it like Google.
             </p>
+          </div>
+
+          <div class="agent-dash" aria-label="Agent Center">
+            <small>Agent Center</small>
+            <strong>Your ChatGPT support team</strong>
+            <p>Jump straight into the agent you need without leaving your main Hub dashboard.</p>
+            <div class="agent-dash-grid">
+              <a href="/agent-center?section=teacher"><strong>ChatGPT Teacher</strong><span>Learn features, tools, and workflows.</span></a>
+              <a href="/agent-center?section=advisor"><strong>ChatGPT Advisor</strong><span>Find the right mode, tool, or workflow.</span></a>
+              <a href="/agent-center?section=intelligence"><strong>ChatGPT Intelligence</strong><span>Track important ChatGPT changes.</span></a>
+              <a href="/agent-center?section=agent"><strong>Master Prompt Agent</strong><span>Turn repeated work into reusable prompts.</span></a>
+            </div>
+            <a class="agent-dash-all" href="/agent-center">Open full Agent Center</a>
           </div>
         </aside>
       </section>
