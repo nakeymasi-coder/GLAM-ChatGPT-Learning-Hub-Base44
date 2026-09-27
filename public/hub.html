@@ -2709,6 +2709,8 @@
       .hub-main > #hub { order:-2; }
       #hub { display:none; }
       #hub.hub-open { display:block; }
+      html.view-open .hero { display:none; }
+      html.view-open #startHere { display:none; }
       .hub-main > .ask-hub { order:-1; }
       .beginner-start { display:none; }
       .mobile-menu-btn { display:none; }
@@ -8266,7 +8268,8 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         el.innerHTML = "Home &gt; " + loc[0] + " &gt; <strong>" + loc[1] + "</strong>";
       }
 
-      function goTab(name, anchor) {
+      function showTab(name, anchor) {
+        document.documentElement.classList.add("view-open");
         document.getElementById("hub")?.classList.add("hub-open");
         document
           .querySelectorAll(".tab")
@@ -8294,6 +8297,35 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           }, 380);
         }
       }
+
+      function goTab(name, anchor) {
+        // Every view is its own page: give it its own URL (#/view-name)
+        showTab(name, anchor);
+        const target = "#/" + name;
+        if (location.hash !== target) location.hash = target;
+      }
+
+      function routeFromHash() {
+        const match = /^#\/([a-z0-9]+)/i.exec(location.hash);
+        const target = match && document.getElementById("panel-" + match[1]) ? match[1] : null;
+        const active = document.querySelector(".panel.active")?.id?.replace("panel-", "") || null;
+        if (target && target === active) return; // already on this page
+        if (target) {
+          showTab(target);
+        } else {
+          // Home page: no view panel active
+          document.documentElement.classList.remove("view-open");
+          document.getElementById("hub")?.classList.remove("hub-open");
+          document.getElementById("startHere")?.classList.remove("open");
+          document.getElementById("startHereToggle")?.setAttribute("aria-expanded", "false");
+          document.querySelectorAll(".tab").forEach((x) => x.classList.remove("active"));
+          document.querySelectorAll(".panel").forEach((x) => x.classList.remove("active"));
+          document.querySelectorAll("[data-side-tab]").forEach((x) => x.classList.remove("active"));
+          updateHubLocation("home");
+        }
+      }
+      window.addEventListener("hashchange", routeFromHash);
+      routeFromHash(); // direct load of a #/view URL opens straight onto that page
 
       function toggleHubSidebar() {
         const sidebar = document.getElementById("hubSidebar");
@@ -8361,9 +8393,15 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
 
       function scrollHubHome() {
         closeHubSidebar();
+        document.documentElement.classList.remove("view-open");
         document.getElementById("hub")?.classList.remove("hub-open");
         document.getElementById("startHere")?.classList.remove("open");
         document.getElementById("startHereToggle")?.setAttribute("aria-expanded", "false");
+        document.querySelectorAll(".tab").forEach((x) => x.classList.remove("active"));
+        document.querySelectorAll(".panel").forEach((x) => x.classList.remove("active"));
+        document.querySelectorAll("[data-side-tab]").forEach((x) => x.classList.remove("active"));
+        updateHubLocation("home");
+        if (location.hash !== "#/") location.hash = "#/";
         window.scrollTo({ top:0, behavior:"smooth" });
       }
 
