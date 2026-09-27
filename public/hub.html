@@ -1198,27 +1198,15 @@
 
       footer {
         position: relative;
-        margin-top: 84px;
-        border-radius: 34px 34px 0 0;
-        background: rgba(255,255,255,.44);
+        margin-top: 56px;
+        background: #f7fbff;
         color: var(--ink);
-        padding: 34px 24px 20px;
-        overflow: hidden;
+        padding: 30px 24px 20px;
         display:flex;
         flex-direction:column;
-        border: 1px solid rgba(255,255,255,.72);
-        border-bottom: 0;
-        box-shadow: 0 -18px 55px rgba(16,59,99,.07);
-        backdrop-filter: blur(22px) saturate(135%);
-        -webkit-backdrop-filter: blur(22px) saturate(135%);
+        border-top: 1px solid rgba(16,59,99,.10);
       }
-      footer::before {
-        content:"";
-        position:absolute;
-        inset:0 8% auto 8%;
-        height:1px;
-        background:linear-gradient(90deg,transparent,#168fea 24%,rgba(255,255,255,.95) 50%,#168fea 76%,transparent);
-      }
+
       .glam-footer-cta { order:2; display:flex; justify-content:center; padding:4px 0 18px; background:transparent; color:var(--ink); }
       .glam-footer-cta > div:first-child { display:none; }
       .glam-footer-cta-actions { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
@@ -2908,7 +2896,7 @@
       .hero-visual-glass small { font-size:12px; opacity:.9; }
       #panel-academy .dashboard { max-width:640px; margin:0 0 18px; }
 
-      .footer-compact { border-top:1px solid transparent; border-image:linear-gradient(90deg,#0d6eb8, #168fea 45%, #cfdae6) 1; background:#f7fbff; }
+      .footer-compact { background:#f7fbff; }
       .footer-grid { display:grid; grid-template-columns:1.35fr 1fr 1fr 1fr; gap:22px; max-width:1280px; margin:0 auto; padding:26px 22px 10px; }
       .footer-col strong { display:block; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted, #52708c); margin-bottom:8px; }
       .footer-col .footer-logo-mini { font-weight:900; font-size:15.5px; color:var(--deep, #10314f); margin-bottom:6px; }
@@ -2921,8 +2909,6 @@
       .footer-social-row svg { width:17px; height:17px; fill:currentColor; }
       .footer-bottom-line { display:flex; flex-wrap:wrap; gap:8px 18px; justify-content:center; padding:12px 18px 16px; font-size:12px; color:var(--muted, #52708c); border-top:1px solid rgba(16,59,99,.08); max-width:1280px; margin:0 auto; }
 
-      .back-to-top { position:fixed; right:18px; bottom:24px; width:44px; height:44px; border-radius:14px; border:1px solid rgba(255,255,255,.6); background:linear-gradient(135deg,#0d6eb8,#168fea); color:#fff; font-size:17px; cursor:pointer; box-shadow:0 10px 26px rgba(13,110,184,.35); opacity:0; pointer-events:none; transform:translateY(8px); transition:opacity .2s ease, transform .2s ease; z-index:900; }
-      .back-to-top.show { opacity:1; pointer-events:auto; transform:none; }
 
       .reveal { opacity:0; transform:translateY(16px); transition:opacity .55s ease, transform .55s ease; }
       .reveal.in { opacity:1; transform:none; }
@@ -2937,6 +2923,7 @@
         .footer-bottom-line { flex-direction:column; gap:4px; text-align:center; padding:10px 14px 14px; font-size:11.5px; }
       }
       @media (max-width: 700px) {
+        footer { padding-bottom: 96px; }
         .hero { padding-top: 16px; grid-gap: 18px; }
         h1 { font-size: clamp(28px, 8.5vw, 34px); }
         .hero-copy { font-size: 14.5px; }
@@ -2945,7 +2932,7 @@
         .hero-visual-glass { padding: 18px 20px; }
         .hero-visual-glass .hero-visual-mark { font-size: 20px; }
       }
-      @media (max-width: 560px) { .footer-grid { grid-template-columns:1fr; gap:16px; } .hero-visual { min-height:170px; } .hero-actions .btn { width:100%; justify-content:center; } .hero-visual-glass strong { font-size:14.5px; } .hero-visual-glass small { font-size:11px; } .back-to-top { bottom:84px; } }
+      @media (max-width: 560px) { .footer-grid { grid-template-columns:1fr; gap:16px; } .hero-visual { min-height:170px; } .hero-actions .btn { width:100%; justify-content:center; } .hero-visual-glass strong { font-size:14.5px; } .hero-visual-glass small { font-size:11px; } }
     </style>
   </head>
   <body>
@@ -4761,7 +4748,6 @@
     </main>
     </div>
 
-    <button class="back-to-top" id="backToTop" type="button" onclick="window.scrollTo({top:0, behavior:'smooth'})" aria-label="Back to top">↑</button>
 
     <nav class="mobile-bottom-nav" aria-label="Mobile Learning Hub navigation">
       <button type="button" onclick="scrollHubHome()"><span>⌂</span>Home</button>
