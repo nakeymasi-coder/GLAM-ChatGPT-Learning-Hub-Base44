@@ -2761,12 +2761,18 @@
           line-height:1.15;
           cursor:pointer;
         }
-        .mobile-bottom-nav button span {
-          display:block;
-          margin-bottom:4px;
+        .mobile-bottom-nav button span.mnav-icon {
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          margin:0 auto 4px;
           color:var(--blue);
-          font-size:18px;
           line-height:1;
+        }
+        .mobile-bottom-nav button span.mnav-icon svg {
+          width:21px;
+          height:21px;
+          display:block;
         }
         .mobile-bottom-nav button:active,
         .mobile-bottom-nav button:focus-visible { background:#eef7ff; color:var(--blue); }
@@ -4741,11 +4747,11 @@
 
 
     <nav class="mobile-bottom-nav" aria-label="Mobile Learning Hub navigation">
-      <button type="button" onclick="scrollHubHome()"><span>⌂</span>Home</button>
-      <button type="button" onclick="goTab('academy')"><span>01</span>Learn</button>
-      <button type="button" onclick="goTab('create')"><span>C</span>Create</button>
-      <button type="button" onclick="window.location.href='/agent-center'"><span>AC</span>Agents</button>
-      <button type="button" onclick="goTab('mystuff')"><span>M</span>My Stuff</button>
+      <button type="button" onclick="scrollHubHome()"><span class="mnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h4v-6h2v6h4a1 1 0 0 0 1-1v-9"/></svg></span>Home</button>
+      <button type="button" onclick="goTab('academy')"><span class="mnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5c-1.6-1.2-4-1.8-6.5-1.5a1 1 0 0 0-.9 1v11a1 1 0 0 0 1.1 1c2.2-.2 4.4.2 6.3 1.5"/><path d="M12 6.5c1.6-1.2 4-1.8 6.5-1.5a1 1 0 0 1 .9 1v11a1 1 0 0 1-1.1 1c-2.2-.2-4.4.2-6.3 1.5"/><path d="M12 6.5v13"/></svg></span>Learn</button>
+      <button type="button" onclick="goTab('create')"><span class="mnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c.4 3 2 6.6 5 8-3 1.4-4.6 5-5 8-.4-3-2-6.6-5-8 3-1.4 4.6-5 5-8Z"/><path d="M19 3.4c.2 1.1.8 2.4 1.9 3.1-1.1.4-1.7 1.3-1.9 2.4-.2-1.1-.8-2-1.9-2.4 1.1-.7 1.7-2 1.9-3.1Z"/></svg></span>Create</button>
+      <button type="button" onclick="window.location.href='/agent-center'"><span class="mnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8.5" width="16" height="10.5" rx="3"/><path d="M12 8.5V5.3"/><circle cx="12" cy="4.7" r="1.1" fill="currentColor" stroke="none"/><path d="M9 13v1.6M15 13v1.6"/><path d="M2 12h2M20 12h2"/></svg></span>Agents</button>
+      <button type="button" onclick="goTab('mystuff')"><span class="mnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.2c0-.66.55-1.2 1.2-1.2h4.1c.4 0 .78.2 1 .52l1 1.28c.22.3.58.5.96.5h6.54c.66 0 1.2.54 1.2 1.2v8.3c0 .66-.54 1.2-1.2 1.2H4.7c-.66 0-1.2-.54-1.2-1.2Z"/></svg></span>My Stuff</button>
     </nav>
 
     <div class="modal-bg" id="lessonModal">
