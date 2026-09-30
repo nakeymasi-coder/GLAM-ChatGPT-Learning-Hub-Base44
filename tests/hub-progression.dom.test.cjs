@@ -86,7 +86,7 @@ test("each roadmap stage opens its next incomplete lesson and keeps its tool ent
   assert.equal(f.document.getElementById("lessonModal").classList.contains("open"), false);
 });
 
-test("lesson completion preserves practice text and every builder field", t => {
+test("lesson completion preserves practice text and builder drafts", t => {
   const f = fixture(t);
   const builderFields = [...f.document.querySelectorAll("#panel-characterlab input,#panel-characterlab textarea,#panel-environmentlab input,#panel-environmentlab textarea,#panel-typographylab input,#panel-typographylab textarea")];
   assert.ok(builderFields.length > 5);
@@ -195,11 +195,26 @@ test("invalid or duplicate saved lesson IDs cannot inflate displayed progress", 
   assert.equal(f.evaluate("completed.includes('not-a-lesson')"), false);
 });
 
+test("opening a different lesson starts at its title instead of the previous footer", t => {
+  const f = fixture(t);
+  f.evaluate("openLesson('basics')");
+  const dialog = f.document.querySelector("#lessonModal .modal");
+  dialog.scrollTop = 850;
+  f.evaluate("openLesson('prompting')");
+  assert.equal(dialog.scrollTop, 0);
+  dialog.scrollTop = 600;
+  f.evaluate("toggleComplete('prompting')");
+  assert.equal(dialog.scrollTop, 600, "Marking complete must not reset the current lesson");
+  f.evaluate("continueLearning()");
+  assert.equal(dialog.scrollTop, 0);
+});
+
 test("lesson footer overlay stays above mobile navigation with viewport clearance", () => {
   const css = fs.readFileSync(path.join(root, "public/hub-navigation.css"), "utf8");
   const dialogLayer = Number(css.match(/#lessonModal\s*\{[^}]*z-index:\s*(\d+)/)[1]);
   const navigationLayer = Number(html.match(/\.mobile-bottom-nav\s*\{[^}]*z-index:\s*(\d+)/)[1]);
   const toastLayer = Number(css.match(/#toast\s*\{[^}]*z-index:\s*(\d+)/)[1]);
+  assert.match(css, /\.roadmap-num\s*\{[^}]*background:#086bb5; color:#fff;/);
   assert.ok(dialogLayer > navigationLayer);
   assert.ok(toastLayer > dialogLayer);
   assert.match(css, /#lessonModal\s*\{[^}]*safe-area-inset-bottom/);
