@@ -26,7 +26,7 @@ function fixture({ reduced = false, blocked = false } = {}) {
   return { ...ids, video, classes, document, motion, visibility: () => listeners.get('visibilitychange')(), navigate: () => observer() };
 }
 
-test('hero starts silently, looping markup is preserved, and controls are available', () => {
+test('hero starts silently and makes its controls available', () => {
   const f=fixture();
   assert.equal(f.video.muted,true);
   assert.equal(f.video.defaultMuted,true);
