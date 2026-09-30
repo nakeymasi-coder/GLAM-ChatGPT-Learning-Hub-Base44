@@ -16,8 +16,9 @@
 .learning-dashboard .stat strong { font-size:20px; }
 .learning-dashboard:after { pointer-events:none; }
 .roadmap-card { cursor:default; }
+.roadmap-num { background:#086bb5; color:#fff; }
 .roadmap-progress { margin-top:auto; color:#526477; font-size:11px; line-height:1.5; }
-.roadmap-card .roadmap-action { display:block; margin-top:9px; background:#eef7ff; border:1px solid #c2d9eb; border-radius:10px; padding:10px; min-height:44px; text-align:left; line-height:1.5; cursor:pointer; }
+.roadmap-card .roadmap-action { color:#095b9d; display:block; margin-top:9px; background:#eef7ff; border:1px solid #c2d9eb; border-radius:10px; padding:10px; min-height:44px; text-align:left; line-height:1.5; cursor:pointer; }
 .roadmap-tool { background:transparent; border:0; color:#095b9d; text-align:left; text-decoration:underline; min-height:44px; padding:9px 0 0; font-size:11px; cursor:pointer; }
 .lesson-complete-note { flex-basis:100%; margin:0 0 4px; color:#17683d; line-height:1.6; font-size:14px; }
 @media(max-width:760px) {
