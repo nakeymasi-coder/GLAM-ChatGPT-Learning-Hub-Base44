@@ -1,4 +1,18 @@
 /* Beginner navigation layer: existing tools and routes remain intact. */
+
+/* Restore the chosen hero video without changing the Home choices. */
+.welcome-hero { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr); align-items:center; gap:28px; }
+.welcome-hero-media, .welcome-hero-copy { min-width:0; }
+.welcome-hero-media { width:100%; max-width:680px; margin-inline:auto; }
+.welcome-hero .hero-visual { min-height:0; aspect-ratio:16/9; border-radius:20px; background:#102339; }
+.welcome-hero .hero-video { object-fit:contain; }
+.hero-video-controls { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
+.hero-video-controls[hidden], .hero-video-status[hidden] { display:none; }
+.hero-video-controls button { min-height:44px; padding:9px 15px; border:1px solid #bdcedd; border-radius:999px; background:#fff; color:#103b63; cursor:pointer; font:inherit; font-size:13px; font-weight:750; }
+.hero-video-controls button:hover { background:#eaf5ff; border-color:#168fea; }
+.hero-video-status { margin:10px 0 0; color:#526477; font-size:13px; line-height:1.5; }
+@media(max-width:980px) { .welcome-hero { grid-template-columns:minmax(0,1fr); gap:20px; } }
+
 /* Lesson controls must stay above the fixed mobile navigation. */
 #lessonModal { z-index:10030; padding-bottom:max(18px,env(safe-area-inset-bottom)); }
 #lessonModal .modal { max-height:calc(100dvh - 36px); overscroll-behavior:contain; scroll-padding-bottom:24px; }
