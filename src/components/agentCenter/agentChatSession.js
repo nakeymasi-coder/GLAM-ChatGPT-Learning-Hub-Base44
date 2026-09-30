@@ -41,14 +41,11 @@ export function createAgentChatSession(agents, {agentName, userId, title, onChan
     stop(); patch({loading:true,ready:false,error:''});
     try {
       if (!userId) throw new Error('Please sign in to open your saved conversation.');
+      // SDK 0.8.52 passes q through unchanged; the endpoint expects one JSON query value, not Axios q[field] parameters.
       const list = await agents.listConversations({q:JSON.stringify({agent_name:agentName,created_by_id:userId}),sort:'-updated_date',limit:50});
       if (disposed || currentRevision !== revision) return;
-      if (!Array.isArray(list)) {
-        const shape = list && typeof list === 'object' ? Object.keys(list).filter(key=>/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key)).slice(0,8).join(', ') : typeof list;
-        throw new Error('Saved conversation response format was not recognized (container keys: '+shape+'). No conversation has been changed.');
-      }
+      if (!Array.isArray(list)) throw new Error('Saved conversations could not be read because the response format was not recognized. Reload before starting another conversation.');
       const conversations = list.filter(item=>belongsToAgent(item,agentName,userId));
-      patch({diagnostic:'Saved-chat read: '+agentName+'; returned '+list.length+'; verified '+conversations.length+'; owner field present '+list.filter(item=>typeof item?.created_by_id==='string').length+'.'});
       if (list.length && !conversations.length) throw new Error('Saved conversations were returned, but none could be verified for this agent and signed-in account. No conversation has been changed.');
       patch({conversations});
       const selected = id ? conversations.find(item=>item.id===id) : conversations[0];
