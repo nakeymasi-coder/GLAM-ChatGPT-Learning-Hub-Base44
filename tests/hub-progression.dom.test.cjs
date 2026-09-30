@@ -99,7 +99,7 @@ test("lesson completion preserves practice text and every builder field", t => {
   assert.equal(f.document.getElementById("tryInput-basics"), attempt, "Completion must not rebuild the lesson body");
   assert.equal(attempt.value, "My unfinished practice attempt");
   assert.deepEqual(builderFields.map(field => [field.id, field.value]), before);
-  assert.match(f.document.getElementById("lessonNextBtn").textContent, /Models/);
+  assert.match(f.document.getElementById("lessonNextBtn").textContent, /Instant, Thinking & Pro/);
   assert.equal(f.document.activeElement.id, "lessonNextBtn");
   assert.deepEqual(JSON.parse(f.c.HubStorage.getItem("glamHubCompleted")), ["basics"]);
   f.activate(f.document.getElementById("lessonNextBtn"));
@@ -145,17 +145,45 @@ test("recommendations include lessons outside the roadmap before reaching all-co
 test("recent-work lesson label and action advance together without requesting AI", async t => {
   const f = fixture(t);
   await turn();
+  // The current layout has no recent-work host; exercise this retained helper in isolation.
+  const list = f.document.createElement("div");
+  list.id = "recentWorkList";
+  f.document.body.appendChild(list);
   f.evaluate("renderRecentWork()");
   await turn();
   let chip = f.document.querySelector("#recentWorkList [data-next-lesson]");
   assert.ok(chip);
   f.evaluate("toggleComplete('basics')");
-  assert.match(chip.textContent, /Models/);
+  assert.match(chip.textContent, /Instant, Thinking & Pro/);
   f.activate(chip);
   assert.equal(f.document.getElementById("lessonModal").dataset.lessonId, "models");
   f.evaluate("completed = lessons.map(lesson => lesson.id); updateProgress()");
   assert.equal(f.document.querySelector("#recentWorkList [data-next-lesson]"), null);
   assert.equal(f.requests.some(({url}) => /hubAi|invoke|agent.*conversation|netlify.*(?:coach|ask)/i.test(url)), false);
+});
+
+test("dismissal and Back/Forward navigation cannot reopen a delayed lesson", async t => {
+  const f = fixture(t);
+  f.evaluate("startBeginnerStage(0)");
+  f.document.getElementById("lessonModal").classList.remove("open");
+  f.evaluate("goTab('create')");
+  await new Promise(resolve => setTimeout(resolve, 460));
+  assert.equal(f.document.getElementById("lessonModal").classList.contains("open"), false);
+  assert.equal(f.document.querySelector(".panel.active").id, "panel-create");
+  f.evaluate("continueLearning()");
+  f.c.location.hash = "#/learn";
+  f.evaluate("routeFromHash()");
+  assert.equal(f.document.getElementById("lessonModal").classList.contains("open"), false);
+  assert.equal(f.document.querySelector(".panel.active").id, "panel-learn");
+  f.c.location.hash = "#/academy";
+  f.evaluate("routeFromHash()");
+  assert.equal(f.document.querySelector(".panel.active").id, "panel-academy");
+  f.evaluate("continueLearning(); continueLearning()");
+  assert.equal(f.document.querySelectorAll("#lessonModal.open").length, 1);
+  assert.equal(f.document.getElementById("lessonModal").dataset.lessonId, "basics");
+  f.evaluate("scrollHubHome()");
+  assert.equal(f.document.getElementById("lessonModal").classList.contains("open"), false);
+  assert.equal(f.document.querySelectorAll(".panel.active").length, 0);
 });
 
 test("invalid or duplicate saved lesson IDs cannot inflate displayed progress", t => {
