@@ -15,7 +15,7 @@ test('native panels render, reopen, clear drafts and send with a mocked SDK only
  const calls=[],records=new Map();let counter=0;
  globalThis.__agentTestUser={id:'learner-1'};
  globalThis.__agentTestApi={agents:{
-  async listConversations({q}){calls.push('list');return [...records.values()].filter(r=>r.agent_name===q.agent_name);},
+  async listConversations({q}){calls.push('list');return [...records.values()].filter(r=>r.agent_name===JSON.parse(q).agent_name && r.created_by_id===JSON.parse(q).created_by_id);},
   async getConversation(id){calls.push('get');return records.get(id);},
   async createConversation({agent_name,metadata}){calls.push('create');const r={id:'chat-'+(++counter),agent_name,created_by_id:'learner-1',metadata,created_date:'2026-09-30',messages:[]};records.set(r.id,r);return r;},
   async addMessage(c,message){calls.push('send');records.get(c.id).messages.push({...message,id:'u-'+counter},{role:'assistant',id:'a-'+counter,content:'A mocked answer with **clear steps**.'});},
