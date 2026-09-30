@@ -55,6 +55,7 @@ export default function NativeAgentChat({section,initial=''}) {
         {state.sending&&<p role="status" className="text-sm">Sending your message…</p>}
         {!state.sending&&shown.at(-1)?.role==='user'&&<p role="status" className="text-sm text-muted-foreground">Waiting for the agent's response. You can reload the saved chat if updates pause.</p>}
       </div>
+      {state.diagnostic&&<p role="status" className="text-xs text-muted-foreground">{state.diagnostic}</p>}
       <Failure error={state.error}/>
       <form onSubmit={send} className="space-y-2">
         <label className="block text-sm font-medium">Message {config.title}<textarea className={input+' mt-1'} rows={3} maxLength={4000} value={text} onChange={event=>setText(event.target.value)} disabled={disabled} placeholder="What would you like help with?"/></label>
