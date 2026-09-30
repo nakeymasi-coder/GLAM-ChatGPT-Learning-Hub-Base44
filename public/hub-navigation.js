@@ -117,7 +117,7 @@
       const strong = document.createElement("strong"); strong.textContent = title;
       breadcrumb.append(strong);
     }
-    if (focusHeading) {
+    if (focusHeading && !document.getElementById("lessonModal")?.classList.contains("open")) {
       const heading = active?.querySelector("h2,h3") || document.getElementById("startHereTitle");
       if (heading) { heading.setAttribute("tabindex","-1"); heading.focus({preventScroll:true}); }
     }
@@ -148,6 +148,42 @@
   trigger.setAttribute("aria-controls","hubSidebar");
   new MutationObserver(syncMenu).observe(sidebar,{attributes:true,attributeFilter:["class"]});
   syncMenu();
+
+  // Keep lesson dialogs usable from the new beginner entry points.
+  const lessonModal = document.getElementById("lessonModal");
+  const lessonDialog = lessonModal.querySelector(".modal");
+  const lessonClose = document.getElementById("closeModal");
+  lessonDialog.setAttribute("role","dialog");
+  lessonDialog.setAttribute("aria-modal","true");
+  lessonDialog.setAttribute("aria-label","ChatGPT lesson");
+  lessonClose.setAttribute("aria-label","Close lesson");
+  let lessonWasOpen = false;
+  let lessonReturnFocus = null;
+  function syncLessonDialog() {
+    const open = lessonModal.classList.contains("open");
+    if (open && !lessonWasOpen) {
+      lessonReturnFocus = document.activeElement;
+      const title = lessonDialog.querySelector(".lesson-title");
+      if (title) { title.id = "activeLessonTitle"; lessonDialog.setAttribute("aria-labelledby",title.id); }
+      lessonClose.focus({preventScroll:true});
+    }
+    if (!open && lessonWasOpen) {
+      const returnTarget = lessonReturnFocus?.getClientRects().length ? lessonReturnFocus : document.querySelector(".panel.active h2");
+      if (returnTarget) { returnTarget.setAttribute("tabindex","-1"); returnTarget.focus({preventScroll:true}); }
+    }
+    lessonWasOpen = open;
+  }
+  new MutationObserver(syncLessonDialog).observe(lessonModal,{attributes:true,attributeFilter:["class"]});
+  document.addEventListener("keydown", event => {
+    if (!lessonModal.classList.contains("open")) return;
+    if (event.key === "Escape") { event.preventDefault(); lessonModal.classList.remove("open"); return; }
+    if (event.key !== "Tab") return;
+    const focusable = [...lessonDialog.querySelectorAll('button,a[href],input,textarea,select,[tabindex="0"]')].filter(el=>el.getClientRects().length && !el.disabled);
+    const first=focusable[0], last=focusable[focusable.length-1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  });
+
   document.addEventListener("keydown", event => {
     if (!sidebar.classList.contains("open")) return;
     if (event.key === "Escape") { event.preventDefault(); closeHubSidebar(); return; }
