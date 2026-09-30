@@ -30,6 +30,14 @@ test('real deferred Hub boot waits for account and DOM, never loads legacy value
  assert.ok(document.body.textContent.includes('A saved prompt'));assert.ok(!document.body.textContent.includes('LEGACY PRIVATE CONTENT'));assert.equal(saved.get('glamPlaybook'),'LEGACY PRIVATE CONTENT');
  assert.equal(saved.get('glamHubCompleted'),'["legacy"]');assert.ok(document.getElementById('hubLegacyNote'));assert.equal(document.getElementById('hubLegacyNote').hidden,false);
  assert.equal(requests.some(({url})=>/hubAi|netlify.*(?:coach|ask)/.test(url)),false);
+ const input=document.getElementById('hubImportBackupFile'),consent=document.getElementById('hubImportConfirm'),apply=document.getElementById('hubImportApply');
+ const originalAccount=saved.get(accountKey);
+ const wrong=JSON.stringify({format:'glam-hub-account-backup',version:1,appId:'6a9aedd33cd938f0f47b9ff7',ownerId:'B',data:{glamPlaybookNotes:'B secret'}});
+ Object.defineProperty(input,'files',{configurable:true,value:[{size:wrong.length,text:async()=>wrong}]});await input.onchange();assert.ok(document.getElementById('hubImportStatus').textContent.includes('different account'));assert.equal(apply.disabled,true);assert.ok(!document.getElementById('hubImportPreview').textContent.includes('B secret'));
+ const own=JSON.stringify({format:'glam-hub-account-backup',version:1,appId:'6a9aedd33cd938f0f47b9ff7',ownerId:'A',data:{glamPlaybookNotes:'My imported notes',glamHubCompleted:'[\"files\"]'}});
+ Object.defineProperty(input,'files',{configurable:true,value:[{size:own.length,text:async()=>own}]});await input.onchange();assert.equal(apply.disabled,true);assert.ok(document.getElementById('hubImportPreview').textContent.includes('keep current'));
+ document.getElementById('hubImportCancel').onclick();assert.equal(saved.get(accountKey),originalAccount);
+ Object.defineProperty(input,'files',{configurable:true,value:[{size:own.length,text:async()=>own}]});await input.onchange();consent.checked=true;consent.onchange();assert.equal(apply.disabled,false);apply.onclick();assert.equal(c.HubStorage.getItem('glamPlaybookNotes'),'My imported notes');assert.equal(c.HubStorage.getItem('glamHubCompleted'),'[\"basics\"]');assert.equal(reloads,1);reloads=0;
  saved.set('base44_access_token','B-token');const event=new window.Event('storage');event.key='base44_access_token';window.dispatchEvent(event);
  assert.equal(reloads,1);assert.equal(document.documentElement.style.visibility,'hidden');assert.throws(()=>c.HubStorage.setItem('glamPlaybookNotes','late'),/verified/);
  timers.forEach(clearTimeout);

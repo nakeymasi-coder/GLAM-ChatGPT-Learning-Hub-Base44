@@ -74,3 +74,5 @@ test('all original learner storage calls are scoped; only auth uses raw localSto
  assert.ok(scripts.slice(2).every(m=>m[1].includes('type="application/x-hub-deferred"')));
  const projects=fs.readFileSync(path.join(__dirname,'../public/hub-projects.js'),'utf8');assert.doesNotMatch(projects,/one-time migration|toEntityFields\(legacy/);
 });
+
+test('supplemental library and browser title are clearly distinct from the Academy',()=>{const teacher=fs.readFileSync(path.join(__dirname,'../src/components/agentCenter/Teacher.jsx'),'utf8');assert.ok(teacher.includes('Supplemental agent practice library'));assert.ok(teacher.includes('29-lesson Academy'));assert.ok(teacher.includes('does not change your course progress or certificate'));assert.ok(fs.readFileSync(path.join(__dirname,'../index.html'),'utf8').includes('<title>GLAM ChatGPT Learning Hub</title>'));});
