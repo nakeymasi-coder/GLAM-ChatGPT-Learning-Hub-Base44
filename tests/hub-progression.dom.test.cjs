@@ -195,6 +195,17 @@ test("invalid or duplicate saved lesson IDs cannot inflate displayed progress", 
   assert.equal(f.evaluate("completed.includes('not-a-lesson')"), false);
 });
 
+test("lesson footer overlay stays above mobile navigation with viewport clearance", () => {
+  const css = fs.readFileSync(path.join(root, "public/hub-navigation.css"), "utf8");
+  const dialogLayer = Number(css.match(/#lessonModal\s*\{[^}]*z-index:\s*(\d+)/)[1]);
+  const navigationLayer = Number(html.match(/\.mobile-bottom-nav\s*\{[^}]*z-index:\s*(\d+)/)[1]);
+  const toastLayer = Number(css.match(/#toast\s*\{[^}]*z-index:\s*(\d+)/)[1]);
+  assert.ok(dialogLayer > navigationLayer);
+  assert.ok(toastLayer > dialogLayer);
+  assert.match(css, /#lessonModal\s*\{[^}]*safe-area-inset-bottom/);
+  assert.match(css, /#lessonModal \.modal\s*\{[^}]*max-height:calc\(100dvh - 36px\)/);
+});
+
 test("all content and level groups remain accessible after progression changes", t => {
   const f = fixture(t);
   assert.equal(f.evaluate("lessons.length"), 29);
