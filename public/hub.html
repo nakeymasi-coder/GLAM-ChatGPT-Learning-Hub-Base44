@@ -2934,8 +2934,10 @@
       }
       @media (max-width: 560px) { .footer-grid { grid-template-columns:1fr; gap:16px; } .hero-visual { min-height:170px; } .hero-actions .btn { width:100%; justify-content:center; } }
     </style>
+    <link rel="stylesheet" href="/hub-navigation.css" />
   </head>
   <body>
+    <a class="skip-hub" href="#mainContent">Skip to content</a>
     <div class="announce-slim" id="announceSlim" role="status">
       <span class="announce-slim-text">✦ September 2026 ChatGPT Update — new features, updated tools &amp; fresh lessons</span>
       <a class="announce-slim-link" href="/agent-center?section=intelligence">See what's new</a>
@@ -2948,10 +2950,10 @@
           <div class="brand-title">GLAM <span>ChatGPT Learning Hub</span></div>
         </div>
         <nav class="nav-center" aria-label="Main destinations">
-          <button type="button" onclick="goTab('academy')">Learn</button>
-          <button type="button" onclick="goTab('create')">Create</button>
-          <a href="/agent-center">Agents</a>
-          <button type="button" onclick="goTab('mystuff')">My Stuff</button>
+          <button type="button" data-hub-path="home" onclick="scrollHubHome()">Home</button>
+          <button type="button" data-hub-path="learn" onclick="goTab('learn')">Learn ChatGPT</button>
+          <button type="button" data-hub-path="create" onclick="goTab('create')">Make something</button>
+          <button type="button" data-hub-path="mystuff" onclick="goTab('mystuff')">Saved work</button>
         </nav>
         <div class="nav-actions">
           <div class="nav-search">
@@ -2965,72 +2967,27 @@
 
     <div class="hub-app-shell">
       <aside class="hub-sidebar" id="hubSidebar" aria-label="Learning Hub navigation">
-        <div class="drawer-search">
-          <input id="drawerSearch" type="search" placeholder="Search the Hub…" autocomplete="off" aria-label="Search the Hub" />
-          <div class="search-drop" id="drawerSearchDrop"></div>
-        </div>
-        <div class="sidebar-title"><strong>Where to?</strong><span>Pick a destination. Extra tools live inside each area.</span></div>
-
+        <div class="sidebar-title"><strong>Your Hub</strong><span>One step at a time. Choose where you want to go.</span></div>
+        <button class="side-link" type="button" onclick="closeHubSidebar()" aria-label="Close menu">Close menu ×</button>
         <div class="side-group">
-          <div class="side-label">Home</div>
-          <button class="side-link" type="button" onclick="scrollHubHome()"><span class="side-icon">⌂</span>Start Here</button>
-          <button class="side-link" type="button" onclick="openHubTutorial()"><span class="side-icon">?</span>How to Use This Hub</button>
-          <button class="side-link" type="button" onclick="document.getElementById('resetBtn')?.click()"><span class="side-icon">↺</span>Reset my progress</button>
+          <button class="side-link" data-hub-path="home" type="button" onclick="scrollHubHome()"><span class="side-icon" aria-hidden="true">⌂</span>Home</button>
+          <button class="side-link" data-hub-path="learn" type="button" onclick="goTab('learn')"><span class="side-icon" aria-hidden="true">01</span>Learn ChatGPT</button>
+          <button class="side-link" data-hub-path="create" type="button" onclick="goTab('create')"><span class="side-icon" aria-hidden="true">02</span>Make something</button>
+          <button class="side-link" data-hub-path="mystuff" type="button" onclick="goTab('mystuff')"><span class="side-icon" aria-hidden="true">03</span>Find my saved work</button>
         </div>
-        <button id="resetBtn" type="button" style="display:none" aria-hidden="true" tabindex="-1"></button>
-
-        <div class="side-group">
-          <div class="side-label">Learn</div>
-          <button class="side-link" data-side-tab="academy" type="button" onclick="goTab('academy')"><span class="side-icon">01</span>Learning Path</button>
-          <a class="side-link" href="/agent-center?section=teacher"><span class="side-icon">T</span>ChatGPT Teacher</a>
-          <button class="side-link" data-side-tab="practice" type="button" onclick="goTab('practice')"><span class="side-icon">▶</span>Practice Lab</button>
-          <button class="side-link" data-side-tab="scenarios" type="button" onclick="goTab('scenarios')"><span class="side-icon">◇</span>Scenario Coach</button>
-          <button class="side-link" data-side-tab="quiz" type="button" onclick="goTab('quiz')"><span class="side-icon">Q</span>Skill Check</button>
-          <button class="side-link" data-side-tab="assessment" type="button" onclick="goTab('assessment')"><span class="side-icon">★</span>Final Assessment</button>
-          <button class="side-link" data-side-tab="certificate" type="button" onclick="goTab('certificate')"><span class="side-icon">✦</span>Certificate</button>
-          <button class="side-link" data-side-tab="glossary" type="button" onclick="goTab('glossary')"><span class="side-icon">A</span>Glossary</button>
-        </div>
-
-        <div class="side-group">
-          <div class="side-label">Create &amp; Build</div>
-          <button class="side-link" data-side-tab="asklibrary" type="button" onclick="goTab('asklibrary')"><span class="side-icon">☰</span>Prompt Library</button>
-          <button class="side-link" data-side-tab="coach" type="button" onclick="goTab('coach')"><span class="side-icon">✎</span>Prompt Coach</button>
-          <button class="side-link" data-side-tab="clinic" type="button" onclick="goTab('clinic')"><span class="side-icon">✚</span>Prompt Clinic</button>
-          <button class="side-link" data-side-tab="powerwords" type="button" onclick="goTab('powerwords')"><span class="side-icon">⚡</span>Power Words</button>
-          <button class="side-link" data-side-tab="characterlab" type="button" onclick="goTab('characterlab')"><span class="side-icon">☺</span>Character Builder</button>
-          <button class="side-link" data-side-tab="environmentlab" type="button" onclick="goTab('environmentlab')"><span class="side-icon">⛰</span>Background Builder</button>
-          <button class="side-link" data-side-tab="typographylab" type="button" onclick="goTab('typographylab')"><span class="side-icon">Aa</span>Typography Builder</button>
-          <button class="side-link" data-side-tab="business" type="button" onclick="goTab('business')"><span class="side-icon">$</span>Business Lab</button>
-          <button class="side-link" data-side-tab="researchlab" type="button" onclick="goTab('researchlab')"><span class="side-icon">⌕</span>Business Research</button>
-          <button class="side-link" data-side-tab="mystuff" type="button" onclick="goTab('mystuff','projects')"><span class="side-icon">P</span>Projects</button>
-          <button class="side-link" data-side-tab="concierge" type="button" onclick="goTab('concierge')"><span class="side-icon">✦</span>Prompt Concierge</button>
-        </div>
-
-        <div class="side-group">
-          <div class="side-label">Agent Center</div>
-          <a class="side-link" href="/agent-center?section=teacher"><span class="side-icon">T</span>ChatGPT Teacher</a>
-          <a class="side-link" href="/agent-center?section=advisor"><span class="side-icon">A</span>ChatGPT Advisor</a>
-          <a class="side-link" href="/agent-center?section=intelligence"><span class="side-icon">I</span>ChatGPT Intelligence</a>
-          <a class="side-link" href="/agent-center?section=agent"><span class="side-icon">M</span>Master Prompt Agent</a>
-          <a class="side-link" href="/agent-center?section=vault"><span class="side-icon">★</span>Master Prompt Vault</a>
-        </div>
-
-        <div class="side-group">
-          <div class="side-label">My Stuff</div>
-          <button class="side-link" data-side-tab="mystuff" type="button" onclick="goTab('mystuff','projects')"><span class="side-icon">P</span>Projects</button>
-          <a class="side-link" href="/agent-center?section=vault"><span class="side-icon">★</span>Master Prompt Vault</a>
-          <button class="side-link" data-side-tab="history" type="button" onclick="goTab('history')"><span class="side-icon">H</span>Prompt History</button>
-          <button class="side-link" data-side-tab="playbook" type="button" onclick="goTab('playbook')"><span class="side-icon">✓</span>My Playbook</button>
-          <button class="side-link" data-side-tab="mystuff" type="button" onclick="goTab('mystuff')"><span class="side-icon">M</span>Saved resources</button>
-          <a class="side-link" href="/agent-center?section=import"><span class="side-icon">⤓</span>Imports</a>
-        </div>
-
-        <div class="side-group">
-          <div class="side-label">Help</div>
-          <button class="side-link" data-side-tab="finder" type="button" onclick="goTab('finder')"><span class="side-icon">↗</span>Which Tool Do I Use?</button>
-          <button class="side-link" data-side-tab="concierge" type="button" onclick="goTab('concierge')"><span class="side-icon">?</span>Prompt Concierge</button>
-          <button class="side-link" data-side-tab="glossary" type="button" onclick="goTab('glossary')"><span class="side-icon">A</span>Glossary</button>
-        </div>
+        <details class="side-more">
+          <summary>Help &amp; more tools</summary>
+          <div class="drawer-search">
+            <input id="drawerSearch" type="search" placeholder="Find a lesson or tool…" autocomplete="off" aria-label="Search the Hub" />
+            <div class="search-drop" id="drawerSearchDrop"></div>
+          </div>
+          <button class="side-link" type="button" onclick="openAllHubTools()">Browse all tools</button>
+          <button class="side-link" type="button" onclick="closeHubSidebar(); openHubTutorial()">How to use this Hub</button>
+          <a class="side-link" href="/agent-center">Guided help &amp; advanced tools</a>
+          <button class="side-link" type="button" onclick="goTab('glossary')">Words explained simply</button>
+          <button class="side-link" type="button" onclick="document.getElementById('resetBtn')?.click()">Reset my learning progress</button>
+        </details>
+        <button id="resetBtn" type="button" hidden aria-hidden="true" tabindex="-1"></button>
 
         <div class="side-group admin-only-link" id="adminOwnerGroup">
           <div class="side-label">Admin</div>
@@ -3039,64 +2996,48 @@
       </aside>
       <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeHubSidebar()"></div>
 
-    <main class="hub-main">
+    <main class="hub-main" id="mainContent" tabindex="-1">
 
-      <section class="hero">
-        <div class="hero-visual" aria-hidden="true">
-          <video class="hero-video" autoplay muted loop playsinline preload="metadata">
-            <source src="/hero-video.mp4" type="video/mp4">
-          </video>
-        </div>
-        <div>
-          <div class="eyebrow">
-            <span class="spark"></span> ChatGPT without the confusing tech talk
-          </div>
-          <h1>
-            Learn ChatGPT <span class="blue">Without the Confusion.</span>
-          </h1>
-          <p class="hero-copy">
-            Start where you are. The Hub will show you what to learn next, what tool to use, and how to practice it.
-          </p>
-          <div class="hero-actions">
-            <button class="btn primary pill-cta" type="button" id="startHereToggle" onclick="toggleStartHere()" aria-expanded="false" aria-controls="startHere">
-              <span>What are you learning today?</span>
-            </button>
-          </div>
-          <div class="hero-note">
-            Menu names can vary slightly by plan, device, and rollout. Lessons
-            flag that when it matters.
-          </div>
-        </div>
-      </section>
-      <section class="start-here" id="startHere" aria-labelledby="startHereTitle">
-        <div class="kicker">Start here</div>
-        <h2 id="startHereTitle">What do you want to do today?</h2>
-        <p class="help">Pick the one that sounds like you. Every other tool lives inside these four areas — you never have to hunt for it.</p>
+      <section class="start-here hub-welcome" id="startHere" aria-labelledby="startHereTitle">
+        <div class="kicker">ChatGPT, one simple step at a time</div>
+        <h1 id="startHereTitle" tabindex="-1">What do you want help with today?</h1>
+        <p class="welcome-copy">You don't need the right words or a plan. Start with what you want to do.</p>
         <div class="start-grid">
-          <button class="start-card" type="button" onclick="goTab('academy')">
-            <small>Learn</small>
-            <strong>Learn Something</strong>
-            <span class="desc">Learn a ChatGPT feature or improve your skills, step by step.</span>
-            <span class="card-links"><span>Learning Path</span><span>Skill Check</span><span>Glossary</span></span>
-          </button>
-          <button class="start-card" type="button" onclick="scrollToAskHub()">
-            <small>Get help</small>
-            <strong>Get Help With a Task</strong>
-            <span class="desc">Tell me what you're trying to do and I'll help you choose the right ChatGPT tool or workflow.</span>
-            <span class="card-links"><span>Prompt Concierge</span><span>Which Tool?</span><span>Advisor</span></span>
+          <button class="start-card" type="button" onclick="goTab('learn')">
+            <span class="path-number" aria-hidden="true">01</span>
+            <strong>Learn ChatGPT</strong>
+            <span class="desc">Understand a feature and try it, one small lesson at a time.</span>
+            <span class="path-action">Find my first step <span aria-hidden="true">→</span></span>
           </button>
           <button class="start-card" type="button" onclick="goTab('create')">
-            <small>Create</small>
-            <strong>Create or Build Something</strong>
-            <span class="desc">Create prompts, visuals, business resources, apps, or other projects.</span>
-            <span class="card-links"><span>Prompt Tools</span><span>Visual Builders</span><span>Business</span></span>
+            <span class="path-number" aria-hidden="true">02</span>
+            <strong>Make something</strong>
+            <span class="desc">Find the words for an image, write a prompt, or bring an idea to life.</span>
+            <span class="path-action">Help me make it <span aria-hidden="true">→</span></span>
           </button>
           <button class="start-card" type="button" onclick="goTab('mystuff')">
-            <small>Saved work</small>
-            <strong>Find My Work</strong>
-            <span class="desc">Open saved prompts, projects, history, playbooks, and Master Prompts.</span>
-            <span class="card-links"><span>My Projects</span><span>Prompt History</span><span>Vault</span></span>
+            <span class="path-number" aria-hidden="true">03</span>
+            <strong>Find my saved work</strong>
+            <span class="desc">Return to your Hub projects, prompts, notes, and history.</span>
+            <span class="path-action">Open my saved work <span aria-hidden="true">→</span></span>
           </button>
+        </div>
+        <div class="plain-finder">
+          <h2>Not sure where to start?</h2>
+          <form id="plainHelpForm">
+            <label for="plainHelpInput">Tell us in your own words</label>
+            <div class="plain-input-row">
+              <input id="plainHelpInput" maxlength="600" placeholder="For example: I want my image to look extra glossy" aria-describedby="plainHelpNote" required />
+              <button class="btn primary" type="submit">Show me a starting point</button>
+            </div>
+            <p id="plainHelpNote">This quick finder matches your words to existing lessons and tools. It doesn't use AI or create the finished work.</p>
+          </form>
+          <div class="plain-examples" aria-label="Try an example">
+            <button type="button" data-help-example="I want my image to look extra glossy">“Extra glossy”</button>
+            <button type="button" data-help-example="I am new to ChatGPT">“I'm brand new”</button>
+            <button type="button" data-help-example="Help me write a better prompt">“A better prompt”</button>
+          </div>
+          <div id="plainHelpResult" class="plain-result" role="status" aria-live="polite" hidden></div>
         </div>
       </section>
 
@@ -3109,10 +3050,11 @@
         </div>
 
         <details class="toolbox-details" id="toolboxDetails">
-          <summary>Tool Library — open this only when you need a specific tool</summary>
+          <summary>Browse all lessons &amp; tools</summary>
           <nav class="main-tabs">
             <span class="tab-group-label">Learn</span>
-            <button class="tab active" data-tab="academy">Learning Path</button>
+            <button class="tab" data-tab="learn">Learn ChatGPT</button>
+            <button class="tab active" data-tab="academy">Full learning path</button>
             <button class="tab" data-tab="quiz">Skill Check</button>
             <button class="tab" data-tab="assessment">Final Assessment</button>
             <button class="tab" data-tab="certificate">Certificate</button>
@@ -3167,6 +3109,35 @@
         </div>
         <div class="ask-answer" id="askChatgptAnswer" aria-live="polite"></div>
       </section>
+
+        <section class="panel" id="panel-learn" aria-labelledby="learnHeading">
+          <div class="section-head" style="margin-top:0">
+            <div class="kicker">Learn ChatGPT</div>
+            <h2 id="learnHeading" tabindex="-1">One small step is enough.</h2>
+            <p>Start with the basics, or choose the feature you want to understand. You can always come back.</p>
+          </div>
+          <div class="gentle-start">
+            <div><span class="kicker">A good place to begin</span><h3>Have your first useful conversation</h3><p>Learn what to type, how to ask a follow-up, and what to do when the answer isn't quite right.</p></div>
+            <button class="btn primary" type="button" onclick="openLesson('basics')">Start with the basics</button>
+          </div>
+          <div class="beginner-links">
+            <button type="button" onclick="goTab('academy')"><strong>Continue my learning</strong><span>See my saved progress and full learning path →</span></button>
+            <button type="button" onclick="openLesson('prompting')"><strong>Get better answers</strong><span>Learn how to ask clearly →</span></button>
+            <button type="button" onclick="openLesson('images')"><strong>Make and change images</strong><span>Learn how to describe the picture I want →</span></button>
+          </div>
+          <details class="gentle-details">
+            <summary>Explore a specific ChatGPT feature</summary>
+            <div class="tool-links feature-links">
+              <button type="button" onclick="openLesson('files')"><strong>Files and PDFs</strong><small>Ask questions about something you've uploaded</small></button>
+              <button type="button" onclick="openLesson('voice')"><strong>Talk out loud</strong><small>Learn how voice conversations work</small></button>
+              <button type="button" onclick="openLesson('search')"><strong>Find information online</strong><small>Learn when to use search</small></button>
+              <button type="button" onclick="openLesson('projects')"><strong>Keep related chats together</strong><small>Understand ChatGPT Projects</small></button>
+              <button type="button" onclick="goTab('glossary')"><strong>Explain a word</strong><small>Look up unfamiliar terms in plain language</small></button>
+              <a href="/agent-center?section=teacher"><strong>Get guided learning help</strong><small>Open the existing ChatGPT Teacher</small></a>
+            </div>
+          </details>
+          <p class="help">Feature names and availability can differ by ChatGPT plan, device, and rollout.</p>
+        </section>
 
         <div class="panel active" id="panel-academy">
           <div class="section-head">
@@ -3315,10 +3286,17 @@
 
         <div class="panel" id="panel-create">
           <div class="section-head" style="margin-top:0">
-            <div class="kicker">Create &amp; Build</div>
-            <h2>What are we making today?</h2>
-            <p>Pick the kind of thing you want to make. Each tool below is a full working feature — no need to memorize what anything is called.</p>
+            <div class="kicker">Make something</div>
+            <h2>What would you like to make?</h2>
+            <p>These tools help you prepare words and prompts to use in ChatGPT. Pick one small starting point.</p>
           </div>
+          <div class="beginner-links">
+            <button type="button" onclick="goTab('powerwords')"><strong>Describe the look I want</strong><span>Find simple words for “extra glossy,” soft, realistic, and more →</span></button>
+            <button type="button" onclick="goTab('asklibrary')"><strong>Turn my idea into a prompt</strong><span>Use the prompt builder or start with an example →</span></button>
+            <button type="button" onclick="goTab('coach')"><strong>Improve a prompt I've tried</strong><span>Work on a prompt that isn't giving me what I want →</span></button>
+          </div>
+          <details class="gentle-details">
+            <summary>More ways to make something</summary>
           <div class="landing-grid">
             <div class="landing-box" id="createAnchor-prompt">
               <h4>Prompt Tools</h4>
@@ -3353,6 +3331,8 @@
               </div>
             </div>
           </div>
+
+          </details>
         </div>
 
         <div class="panel" id="panel-asklibrary">
@@ -4075,9 +4055,8 @@
             <div class="kicker">Prompt Language Lab</div>
             <h2 style="font-size: 36px">Words change the output.</h2>
             <p>
-              Build descriptive vocabulary intentionally. Learn what a word
-              changes, combine words into a controlled stack, then turn that
-              stack into a finished prompt formula.
+              Find words for the look you want, see what they mean, and add
+              your favorites to a prompt. Try a simple word like “glossy” below.
             </p>
           </div>
 
@@ -4527,9 +4506,9 @@
 
         <div class="panel" id="panel-mystuff">
           <div class="section-head" style="margin-top:0">
-            <div class="kicker">My Stuff</div>
-            <h2>Everything you've made, in one place.</h2>
-            <p>You never have to remember where something was created to find it again.</p>
+            <div class="kicker">Find my saved work</div>
+            <h2>Pick up where you left off.</h2>
+            <p>Your projects, prompts, and notes saved in this Hub. Chats and files in ChatGPT stay in ChatGPT unless you import them here.</p>
           </div>
           <div class="landing-grid">
             <div class="landing-box">
@@ -4711,10 +4690,9 @@
           </div>
           <div class="footer-col col-links">
             <strong>Navigate</strong>
-            <button type="button" onclick="goTab('academy')">Learn</button>
-            <button type="button" onclick="goTab('create')">Create</button>
-            <a href="/agent-center">Agents</a>
-            <button type="button" onclick="goTab('mystuff')">My Stuff</button>
+            <button type="button" onclick="goTab('learn')">Learn ChatGPT</button>
+            <button type="button" onclick="goTab('create')">Make something</button>
+            <button type="button" onclick="goTab('mystuff')">Find my saved work</button>
           </div>
           <div class="footer-col">
             <strong>Connect</strong>
@@ -4746,11 +4724,10 @@
 
 
     <nav class="mobile-bottom-nav" aria-label="Mobile Learning Hub navigation">
-      <button type="button" onclick="scrollHubHome()"><span class="mnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h4v-6h2v6h4a1 1 0 0 0 1-1v-9"/></svg></span>Home</button>
-      <button type="button" onclick="goTab('academy')"><span class="mnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5c-1.6-1.2-4-1.8-6.5-1.5a1 1 0 0 0-.9 1v11a1 1 0 0 0 1.1 1c2.2-.2 4.4.2 6.3 1.5"/><path d="M12 6.5c1.6-1.2 4-1.8 6.5-1.5a1 1 0 0 1 .9 1v11a1 1 0 0 1-1.1 1c-2.2-.2-4.4.2-6.3 1.5"/><path d="M12 6.5v13"/></svg></span>Learn</button>
-      <button type="button" onclick="goTab('create')"><span class="mnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c.4 3 2 6.6 5 8-3 1.4-4.6 5-5 8-.4-3-2-6.6-5-8 3-1.4 4.6-5 5-8Z"/><path d="M19 3.4c.2 1.1.8 2.4 1.9 3.1-1.1.4-1.7 1.3-1.9 2.4-.2-1.1-.8-2-1.9-2.4 1.1-.7 1.7-2 1.9-3.1Z"/></svg></span>Create</button>
-      <button type="button" onclick="window.location.href='/agent-center'"><span class="mnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8.5" width="16" height="10.5" rx="3"/><path d="M12 8.5V5.3"/><circle cx="12" cy="4.7" r="1.1" fill="currentColor" stroke="none"/><path d="M9 13v1.6M15 13v1.6"/><path d="M2 12h2M20 12h2"/></svg></span>Agents</button>
-      <button type="button" onclick="goTab('mystuff')"><span class="mnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.2c0-.66.55-1.2 1.2-1.2h4.1c.4 0 .78.2 1 .52l1 1.28c.22.3.58.5.96.5h6.54c.66 0 1.2.54 1.2 1.2v8.3c0 .66-.54 1.2-1.2 1.2H4.7c-.66 0-1.2-.54-1.2-1.2Z"/></svg></span>My Stuff</button>
+      <button type="button" data-hub-path="home" onclick="scrollHubHome()"><span class="mnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9a1 1 0 0 0 1 1h4v-6h2v6h4a1 1 0 0 0 1-1v-9"/></svg></span>Home</button>
+      <button type="button" data-hub-path="learn" aria-label="Learn ChatGPT" onclick="goTab('learn')"><span class="mnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5c-1.6-1.2-4-1.8-6.5-1.5a1 1 0 0 0-.9 1v11a1 1 0 0 0 1.1 1c2.2-.2 4.4.2 6.3 1.5"/><path d="M12 6.5c1.6-1.2 4-1.8 6.5-1.5a1 1 0 0 1 .9 1v11a1 1 0 0 1-1.1 1c-2.2-.2-4.4.2-6.3 1.5"/><path d="M12 6.5v13"/></svg></span>Learn</button>
+      <button type="button" data-hub-path="create" aria-label="Make something" onclick="goTab('create')"><span class="mnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c.4 3 2 6.6 5 8-3 1.4-4.6 5-5 8-.4-3-2-6.6-5-8 3-1.4 4.6-5 5-8Z"/><path d="M19 3.4c.2 1.1.8 2.4 1.9 3.1-1.1.4-1.7 1.3-1.9 2.4-.2-1.1-.8-2-1.9-2.4 1.1-.7 1.7-2 1.9-3.1Z"/></svg></span>Make</button>
+      <button type="button" data-hub-path="mystuff" aria-label="Find my saved work" onclick="goTab('mystuff')"><span class="mnav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.2c0-.66.55-1.2 1.2-1.2h4.1c.4 0 .78.2 1 .52l1 1.28c.22.3.58.5.96.5h6.54c.66 0 1.2.54 1.2 1.2v8.3c0 .66-.54 1.2-1.2 1.2H4.7c-.66 0-1.2-.54-1.2-1.2Z"/></svg></span>Saved</button>
     </nav>
 
     <div class="modal-bg" id="lessonModal">
@@ -4767,12 +4744,9 @@
         <h2 id="tutorialTitle">How to use the GLAM ChatGPT Learning Hub</h2>
         <p class="tutorial-intro">You do not need to explore everything at once. Use the Hub in this order and it will always tell you what to do next.</p>
         <div class="tutorial-steps">
-          <div class="tutorial-step"><span>1</span><div><strong>Answer one question</strong><p><b>What do you want to do today?</b> Choose Learn, Get Help, Create, or Find My Work.</p></div></div>
-          <div class="tutorial-step"><span>2</span><div><strong>Follow the 10-step roadmap</strong><p>Work left to right. You do not need to hunt through the Tool Library.</p></div></div>
-          <div class="tutorial-step"><span>3</span><div><strong>Open one lesson</strong><p>Use Learn It → Show Me → Try It → Quiz Me. Then mark the lesson complete.</p></div></div>
-          <div class="tutorial-step"><span>4</span><div><strong>Use Continue Learning</strong><p>The Hub will point you to the next lesson in the beginner order.</p></div></div>
-          <div class="tutorial-step"><span>5</span><div><strong>Use the Prompt Concierge when you're stuck</strong><p>Tell it what you're trying to do. It will recommend the right feature, prompt, and lesson.</p></div></div>
-          <div class="tutorial-step"><span>6</span><div><strong>Open the Tool Library only when needed</strong><p>Prompt Coach, Business Lab, builders, research tools, glossary, and other labs are support tools—not the main learning path.</p></div></div>
+          <div class="tutorial-step"><span>1</span><div><strong>Choose one path</strong><p>Learn ChatGPT, Make something, or Find my saved work.</p></div></div>
+          <div class="tutorial-step"><span>2</span><div><strong>Try one small step</strong><p>Open a lesson or tool. You don't need to explore everything.</p></div></div>
+          <div class="tutorial-step"><span>3</span><div><strong>Use your own words</strong><p>The quick finder on Home can point you to an existing lesson or tool. Try “I want an extra glossy image.”</p></div></div>
         </div>
         <div class="tutorial-actions">
           <button class="btn primary" type="button" onclick="closeHubTutorial(); startBrandNew();">Start From the Beginning</button>
@@ -8240,6 +8214,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           .replace(/>/g, "&gt;");
       }
       const TAB_LOCATION = {
+        learn: ["Learn ChatGPT", "Choose your next step"],
         academy: ["Learn", "Learning Path"],
         practice: ["Learn", "Practice Lab"],
         scenarios: ["Learn", "Scenario Coach"],
@@ -8258,8 +8233,8 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         typographylab: ["Create & Build", "Typography Builder"],
         business: ["Create & Build", "Business Lab"],
         researchlab: ["Create & Build", "Business Research Lab"],
-        create: ["Create & Build", "Create & Build"],
-        mystuff: ["My Stuff", "My Stuff"],
+        create: ["Make something", "Choose a starting point"],
+        mystuff: ["Saved work", "My Hub work"],
         history: ["My Stuff", "Prompt History"],
         playbook: ["My Stuff", "My Playbook"],
         finder: ["Help", "Which Tool Do I Use?"],
@@ -8288,7 +8263,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           .querySelectorAll("[data-side-tab]")
           .forEach((x) => x.classList.toggle("active", x.dataset.sideTab === name));
         const tools = document.getElementById("toolboxDetails");
-        if (tools && name !== "academy") tools.open = true;
+        if (tools) tools.open = false;
         if (name === "history") loadPromptHistory();
         updateHubLocation(name);
         closeHubSidebar();
@@ -10626,6 +10601,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       })();
     </script>
     <script src="/hub-projects.js"></script>
+    <script src="/hub-navigation.js"></script>
 
   <script>
   /* ===== master build: announce dismiss, hamburger sync, back-to-top, reveal, global search ===== */
