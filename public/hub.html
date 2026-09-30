@@ -3157,7 +3157,8 @@
             <h2>Your learning path</h2>
             <p>Pick up where you left off or choose the next step below. Your progress is saved in this browser.</p>
           </div>
-          <aside class="dashboard">
+          <aside class="dashboard learning-dashboard" aria-label="Your learning progress">
+          <div class="learning-progress">
           <div class="dash-head">
             <div>
               <div class="kicker">Your dashboard</div>
@@ -3180,13 +3181,15 @@
             <span>Overall progress</span><span id="progressText">0%</span>
           </div>
           <div class="progress"><div id="progressFill"></div></div>
+          </div>
           <div class="next-card">
-            <small>Recommended next</small>
+            <small id="nextLabel">Recommended next</small>
             <strong id="nextTitle">ChatGPT Basics</strong>
             <p id="nextDesc">
               Learn how to talk to ChatGPT like an assistant instead of treating
               it like Google.
             </p>
+            <button class="btn primary" type="button" id="nextLessonBtn" onclick="continueLearning()">Start this lesson</button>
           </div>
 
         </aside>
@@ -8333,6 +8336,16 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         document.getElementById("sidebarBackdrop")?.classList.remove("show");
       }
 
+      function updateRecentLearningLink() {
+        const chip = document.querySelector("#recentWorkList [data-next-lesson]");
+        if (!chip) return;
+        const next = getNextBeginnerLesson();
+        if (!next) { chip.remove(); return; }
+        const label = document.createElement("small");
+        label.textContent = "Next lesson";
+        chip.replaceChildren(label, document.createTextNode(" " + next.title));
+      }
+
       function renderRecentWork() {
         const list = document.getElementById("recentWorkList");
         if (!list) return;
@@ -8343,7 +8356,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         try {
           const next = getNextBeginnerLesson();
           if (next && next.id && next.title) {
-            chips.push('<button class="recent-chip" type="button" onclick="startBrandNew()"><small>Lesson</small> ' + esc(next.title) + '</button>');
+            chips.push('<button class="recent-chip" data-next-lesson type="button" onclick="continueLearning()"><small>Next lesson</small> ' + esc(next.title) + '</button>');
           }
         } catch (e) {}
         try {
@@ -8378,10 +8391,12 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           list.innerHTML = chips.length
             ? chips.join("")
             : '<span class="recent-empty">Nothing saved yet — your lessons, projects, and prompts will appear here as you use the Hub.</span>';
+          updateRecentLearningLink();
         }).catch(() => {
           list.innerHTML = chips.length
             ? chips.join("")
             : '<span class="recent-empty">Nothing saved yet — your lessons, projects, and prompts will appear here as you use the Hub.</span>';
+          updateRecentLearningLink();
         });
       }
 
@@ -8440,17 +8455,38 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
 
       function startBrandNew() {
         goTab("academy");
-        setTimeout(() => openLesson("basics"), 420);
+        openLesson("basics");
+      }
+
+      function nextLessonInStage(stage) {
+        return stage.lessonIds
+          .map(id => lessons.find(lesson => lesson.id === id))
+          .find(lesson => lesson && !completed.includes(lesson.id)) || null;
       }
 
       function startBeginnerStage(index) {
         const stage = beginnerStages[index];
         if (!stage) return;
-        if (stage.lesson) {
+        const next = nextLessonInStage(stage);
+        const lessonId = next?.id || stage.lesson;
+        if (lessonId) {
           goTab("academy");
-          setTimeout(() => openLesson(stage.lesson), 280);
+          openLesson(lessonId);
         } else if (stage.tab) {
+          document.getElementById("lessonModal").classList.remove("open");
           goTab(stage.tab);
+        }
+      }
+
+      function continueLearning() {
+        const next = getNextBeginnerLesson();
+        if (next) {
+          goTab("academy");
+          openLesson(next.id);
+          document.getElementById("closeModal").focus({ preventScroll: true });
+        } else {
+          document.getElementById("lessonModal").classList.remove("open");
+          goTab("assessment");
         }
       }
 
@@ -8460,13 +8496,17 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         el.innerHTML = beginnerStages.map((stage,index) => {
           const trackable = stage.lessonIds.length > 0;
           const done = trackable && stage.lessonIds.every(id => completed.includes(id));
-          const progress = trackable ? `${stage.lessonIds.filter(id => completed.includes(id)).length}/${stage.lessonIds.length} lessons` : "Open stage";
-          return `<article class="roadmap-card ${done ? "done" : ""}" onclick="startBeginnerStage(${index})" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();startBeginnerStage(${index})}">
+          const progress = trackable ? `${stage.lessonIds.filter(id => completed.includes(id)).length}/${stage.lessonIds.length} lessons complete` : "Practice at your own pace";
+          const next = nextLessonInStage(stage);
+          const action = next ? `Next: ${next.title}` : done ? "Review stage" : "Open stage";
+          return `<article class="roadmap-card ${done ? "done" : ""}">
             <div class="roadmap-num">${stage.n}</div>
             ${done ? '<span class="roadmap-status">✓ DONE</span>' : ''}
             <h4>${stage.title}</h4>
             <p>${stage.desc}</p>
-            <span class="roadmap-action">${done ? "Review stage" : progress + " →"}</span>
+            <span class="roadmap-progress">${progress}</span>
+            <button class="roadmap-action" type="button" onclick="startBeginnerStage(${index})">${action} →</button>
+            ${stage.tab && trackable && next ? `<button class="roadmap-tool" type="button" onclick="goTab('${stage.tab}')">Open ${TAB_LOCATION[stage.tab][1]}</button>` : ""}
           </article>`;
         }).join("");
       }
@@ -8477,7 +8517,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           if (!orderedIds.includes(id)) orderedIds.push(id);
         }));
         const nextId = orderedIds.find(id => !completed.includes(id));
-        return lessons.find(l => l.id === nextId) || lessons.find(l => !completed.includes(l.id)) || lessons[0];
+        return lessons.find(l => l.id === nextId) || lessons.find(l => !completed.includes(l.id)) || null;
       }
       document
         .querySelectorAll(".tab")
@@ -8559,9 +8599,12 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         const title = document.getElementById("continueLessonTitle");
         const desc = document.getElementById("continueLessonDesc");
         const btn = document.getElementById("continueLearningBtn");
-        if (title) title.textContent = next.title;
-        if (desc) desc.textContent = next.desc;
-        if (btn) btn.onclick = () => openLesson(next.id);
+        if (title) title.textContent = next ? next.title : "All 29 lessons complete";
+        if (desc) desc.textContent = next ? next.desc : "You can review any lesson or continue to the final assessment.";
+        if (btn) {
+          btn.textContent = next ? "Continue Lesson" : "Open final assessment";
+          btn.onclick = continueLearning;
+        }
       }
       document.querySelectorAll(".track-btn").forEach((btn) =>
         btn.addEventListener("click", () => {
@@ -8592,7 +8635,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         }),
       );
       function updateProgress() {
-        const done = completed.length,
+        const done = lessons.filter(lesson => completed.includes(lesson.id)).length,
           total = lessons.length,
           pct = Math.round((done / total) * 100);
         document.getElementById("doneCount").textContent = done;
@@ -8614,37 +8657,54 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         const next = getNextBeginnerLesson();
         document.getElementById("nextTitle").textContent = next
           ? next.title
-          : "You finished the academy!";
+          : "All 29 lessons complete";
+        document.getElementById("nextLabel").textContent = next ? "Recommended next" : "Lessons complete";
         document.getElementById("nextDesc").textContent = next
           ? next.desc
-          : "Use the Practice Lab and Business Lab to keep applying what you learned.";
+          : "Ready when you are: take the final assessment, or review any lesson below.";
+        document.getElementById("nextLessonBtn").textContent = next
+          ? (done ? "Continue with this lesson" : "Start this lesson")
+          : "Open final assessment";
+        updateRecentLearningLink();
       }
       function toggleComplete(id) {
+        if (!lessons.some(lesson => lesson.id === id)) return;
         completed = completed.includes(id)
           ? completed.filter((x) => x !== id)
           : [...completed, id];
         HubStorage.setItem("glamHubCompleted", JSON.stringify(completed));
         renderLessons(document.getElementById("lessonSearch").value);
-        chooseCharacterDefaults();
-      buildCharacterPrompt();
-      chooseEnvironment();
-      buildEnvironment();
-      chooseTypography();
-      buildTypography();
-      updateProgress();
+        updateProgress();
         const modal = document.getElementById("lessonModal");
-        if (modal.classList.contains("open")) openLesson(id);
+        if (modal.classList.contains("open") && modal.dataset.lessonId === id) {
+          renderLessonFooter(id);
+          document.getElementById(completed.includes(id) ? "lessonNextBtn" : "lessonCompleteBtn")?.focus({ preventScroll: true });
+        }
         toast(
           completed.includes(id)
             ? "Lesson complete."
             : "Lesson marked incomplete.",
         );
       }
+      function renderLessonFooter(id) {
+        const footer = document.getElementById("lessonFooter");
+        if (!footer) return;
+        const done = completed.includes(id);
+        const next = getNextBeginnerLesson();
+        footer.innerHTML = `
+     ${done ? `<p class="lesson-complete-note" role="status">✓ Lesson complete${next ? ". Your next recommended lesson is " + next.title + "." : ". You have completed all 29 lessons."}</p>
+     <button class="btn primary" type="button" id="lessonNextBtn" onclick="continueLearning()">${next ? "Next lesson: " + next.title : "Open final assessment"}</button>` : ""}
+     <button class="btn ${done ? "secondary" : "primary"}" type="button" id="lessonCompleteBtn" onclick="toggleComplete('${id}')">${done ? "Mark Incomplete" : "Mark Lesson Complete"}</button>
+     <button class="btn secondary" type="button" onclick="document.getElementById('lessonModal').classList.remove('open')">Back to learning</button>`;
+      }
+
       function openLesson(id) {
         const l = lessons.find((x) => x.id === id);
+        if (!l) return;
+        document.getElementById("lessonModal").dataset.lessonId = id;
         document.getElementById("modalContent").innerHTML = `
    <span class="chip">${l.path} • ${l.level}</span>
-   <h2 class="lesson-title">${l.title}</h2>
+   <h2 class="lesson-title" id="activeLessonTitle">${l.title}</h2>
    <p class="lesson-desc">${l.desc}</p>
    ${l.note ? `<div class="device-note"><strong>Heads up:</strong> ${l.note}</div>` : ""}
    <div class="lesson-modes">
@@ -8655,12 +8715,10 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
      <button class="mode-btn" onclick="renderLessonMode('${l.id}','stuck',this)">I'm Stuck</button>
    </div>
    <div id="lessonModeStage"></div>
-   <div class="lesson-footer">
-     <button class="btn primary" onclick="toggleComplete('${l.id}')">${completed.includes(l.id) ? "Mark Incomplete" : "Mark Lesson Complete"}</button>
-     <button class="btn secondary" onclick="document.getElementById('lessonModal').classList.remove('open')">Back to learning</button>
-   </div>`;
+   <div class="lesson-footer" id="lessonFooter"></div>`;
         document.getElementById("lessonModal").classList.add("open");
         renderLessonMode(id, "learn");
+        renderLessonFooter(id);
       }
       function renderLessonMode(id, mode, btn) {
         const l = lessons.find((x) => x.id === id),
