@@ -43,7 +43,12 @@ export function createAgentChatSession(agents, {agentName, userId, title, onChan
       if (!userId) throw new Error('Please sign in to open your saved conversation.');
       const list = await agents.listConversations({q:{agent_name:agentName,created_by_id:userId},sort:'-updated_date',limit:50});
       if (disposed || currentRevision !== revision) return;
-      const conversations = (Array.isArray(list)?list:[]).filter(item=>belongsToAgent(item,agentName,userId));
+      if (!Array.isArray(list)) {
+        const shape = list && typeof list === 'object' ? Object.keys(list).filter(key=>/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(key)).slice(0,8).join(', ') : typeof list;
+        throw new Error('Saved conversation response format was not recognized (container keys: '+shape+'). No conversation has been changed.');
+      }
+      const conversations = list.filter(item=>belongsToAgent(item,agentName,userId));
+      if (list.length && !conversations.length) throw new Error('Saved conversations were returned, but none could be verified for this agent and signed-in account. No conversation has been changed.');
       patch({conversations});
       const selected = id ? conversations.find(item=>item.id===id) : conversations[0];
       if (id && !selected) throw new Error('That conversation is unavailable. Reload your saved conversations.');
