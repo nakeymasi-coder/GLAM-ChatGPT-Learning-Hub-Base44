@@ -1,6 +1,6 @@
 import {useEffect,useState} from 'react';
 import {base44} from '@/api/base44Client';
-import {Panel,Empty,Failure,input,primary} from './ui';
+import {Panel,Empty,Failure,input} from './ui';
 import TemplateChat from './TemplateChat';
 import TemplateCatalog from './TemplateCatalog';
 import TemplateConfigurator from './TemplateConfigurator';
