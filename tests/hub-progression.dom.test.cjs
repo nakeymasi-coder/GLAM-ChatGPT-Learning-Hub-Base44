@@ -9,6 +9,7 @@ const html = fs.readFileSync(path.join(root, "public/hub.html"), "utf8");
 const turn = () => new Promise(resolve => setImmediate(resolve));
 
 function fixture(t, { saved = new Map(), complete = [] } = {}) {
+  saved.set("base44_access_token", "mock-session");
   const { window } = parseHTML(html), document = window.document;
   document.querySelectorAll("select").forEach(select => {
     if (!select.querySelector("option[selected]")) select.querySelector("option")?.setAttribute("selected", "");
