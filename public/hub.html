@@ -8266,6 +8266,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
       }
 
       function showTab(name, anchor) {
+        document.getElementById("lessonModal")?.classList.remove("open");
         document.documentElement.classList.add("view-open");
         document.getElementById("hub")?.classList.add("hub-open");
         document
@@ -8307,6 +8308,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         const target = match && document.getElementById("panel-" + match[1]) ? match[1] : null;
         const active = document.querySelector(".panel.active")?.id?.replace("panel-", "") || null;
         if (target && target === active) return; // already on this page
+        document.getElementById("lessonModal")?.classList.remove("open");
         if (target) {
           showTab(target);
         } else {
@@ -8401,6 +8403,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
       }
 
       function scrollHubHome() {
+        document.getElementById("lessonModal")?.classList.remove("open");
         closeHubSidebar();
         document.documentElement.classList.remove("view-open");
         document.getElementById("hub")?.classList.remove("hub-open");
