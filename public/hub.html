@@ -8,18 +8,22 @@
       name="description"
       content="An interactive beginner-friendly academy for learning ChatGPT features, prompts, workflows, research, files, images, projects, tasks, apps, memory, and business use."
     />
+    <script src="/hub-storage.js"></script>
     <script>
       (async function protectHub(){
         document.documentElement.style.visibility = 'hidden';
         const APP_ID = '6a9aedd33cd938f0f47b9ff7';
         const TERMS_VERSION = '2026-09-07';
         const PRIVACY_VERSION = '2026-09-07';
+        let verified = false;
         try {
           const token = localStorage.getItem('base44_access_token') || localStorage.getItem('token');
           if (!token) throw new Error('auth_required');
           const headers = { Authorization: `Bearer ${token}` };
           const response = await fetch(`/api/apps/${APP_ID}/entities/User/me`, { headers, credentials:'include' });
           if (!response.ok) throw new Error('auth_required');
+          const user = await response.json();
+          if (!user || typeof user.id !== 'string' || !user.id) throw new Error('auth_required');
 
           const legalResponse = await fetch(`/api/apps/${APP_ID}/entities/LegalAcceptance?sort=-created_date&limit=50`, { headers, credentials:'include' });
           if (!legalResponse.ok) throw new Error('legal_check_failed');
@@ -34,9 +38,17 @@
             window.location.replace('/legal-consent?returnTo=%2Fhub.html');
             return;
           }
+          verified = true;
+          HubStorage.activate(user.id, token);
+          HubStorage.isStarted = true;
+          await HubStorage.boot();
+          HubStorage.mountBackupControls(user);
           document.documentElement.style.visibility = 'visible';
         } catch (error) {
-          window.location.replace('/login?returnTo=%2Fhub.html');
+          if (verified && window.HubStorage) {
+            if (document.readyState === 'loading') await new Promise(resolve => document.addEventListener('DOMContentLoaded', resolve, {once:true}));
+            HubStorage.showStartupError(error);
+          } else window.location.replace('/login?returnTo=%2Fhub.html');
         }
       })();
     </script>
@@ -4505,6 +4517,7 @@
         </div>
 
         <div class="panel" id="panel-mystuff">
+          <details id="hubAccountBackups" class="box" style="margin-bottom:16px"><summary>Browser saves and backups</summary></details>
           <div class="section-head" style="margin-top:0">
             <div class="kicker">Find my saved work</div>
             <h2>Pick up where you left off.</h2>
@@ -4756,7 +4769,7 @@
     </div>
     <div class="toast" id="toast"></div>
 
-    <script>
+    <script type="application/x-hub-deferred" data-hub-deferred>
       const lessons = [
         {
           id: "basics",
@@ -6570,7 +6583,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         ],
       ];
 
-      let playbook = JSON.parse(localStorage.getItem("glamPlaybook") || "[]");
+      let playbook = JSON.parse(HubStorage.getItem("glamPlaybook") || "[]");
 
       const powerWordData = {
         "Rendering & Quality": {
@@ -8189,7 +8202,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
       ];
 
       let completed = JSON.parse(
-        localStorage.getItem("glamHubCompleted") || "[]",
+        HubStorage.getItem("glamHubCompleted") || "[]",
       );
       let currentTrack = "all";
       let quizAnswers = {};
@@ -8333,13 +8346,13 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           }
         } catch (e) {}
         try {
-          const draft = JSON.parse(localStorage.getItem("glamConciergeProject") || "null");
+          const draft = JSON.parse(HubStorage.getItem("glamConciergeProject") || "null");
           if (draft && draft.name && String(draft.name).trim()) {
             chips.push('<button class="recent-chip" type="button" onclick="scrollToAskHub()"><small>Project draft</small> ' + esc(draft.name) + '</button>');
           }
         } catch (e) {}
         try {
-          const saved = JSON.parse(localStorage.getItem("glamSavedProjects") || "[]") || [];
+          const saved = JSON.parse(HubStorage.getItem("glamSavedProjects") || "[]") || [];
           saved
             .slice()
             .sort((a, b) => (b.updated_at_ms || 0) - (a.updated_at_ms || 0))
@@ -8411,7 +8424,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         modal.classList.remove("open");
         modal.setAttribute("aria-hidden", "true");
         document.body.style.overflow = "";
-        localStorage.setItem("glamHubTutorialSeen", "1");
+        HubStorage.setItem("glamHubTutorialSeen", "1");
       }
 
       document.addEventListener("keydown", (event) => {
@@ -8609,7 +8622,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         completed = completed.includes(id)
           ? completed.filter((x) => x !== id)
           : [...completed, id];
-        localStorage.setItem("glamHubCompleted", JSON.stringify(completed));
+        HubStorage.setItem("glamHubCompleted", JSON.stringify(completed));
         renderLessons(document.getElementById("lessonSearch").value);
         chooseCharacterDefaults();
       buildCharacterPrompt();
@@ -8679,7 +8692,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           stage.innerHTML = `<div class="mode-stage"><h3>Try It Yourself</h3><p class="help">Write how you would use ${l.title} for something real.</p>
    <textarea id="tryInput-${id}" placeholder="I would use this when... / My request would be..."></textarea>
    <button class="btn primary" style="margin-top:10px" onclick="checkPractice('${id}')">Coach My Attempt</button>
-   <div class="usage-note">AI Coach reads this exact attempt and responds to what you wrote. Do not enter passwords, API keys, or sensitive private information. Up to 20 coaching sessions per day on this browser.</div>
+   <div class="usage-note">AI Coach reads this exact attempt and responds to what you wrote. Do not enter passwords, API keys, or sensitive private information. Up to 20 coaching sessions per day for your account on this browser.</div>
    <div class="feedback" id="tryFeedback-${id}"></div></div>`;
         }
         if (mode === "quiz") {
@@ -8733,7 +8746,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         // Local daily guardrail. This is a user-friendly budget control, not server-grade abuse protection.
         const today = new Date().toISOString().slice(0, 10);
         const usage = JSON.parse(
-          localStorage.getItem("glamAICoachUsage") || "{}",
+          HubStorage.getItem("glamAICoachUsage") || "{}",
         );
         const used = usage.date === today ? usage.count || 0 : 0;
         const DAILY_LIMIT = 20;
@@ -8769,7 +8782,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
 
           usage.date = today;
           usage.count = used + 1;
-          localStorage.setItem("glamAICoachUsage", JSON.stringify(usage));
+          HubStorage.setItem("glamAICoachUsage", JSON.stringify(usage));
           renderAICoaching(box, data, DAILY_LIMIT - (used + 1), id, input);
           await savePromptHistory({
             prompt: input,
@@ -8859,7 +8872,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
       };
       document.getElementById("resetBtn").onclick = () => {
         completed = [];
-        localStorage.removeItem("glamHubCompleted");
+        HubStorage.removeItem("glamHubCompleted");
         renderLessons(document.getElementById("lessonSearch").value);
         updateProgress();
         toast("Learning progress reset.");
@@ -9019,10 +9032,10 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         const w = biz.find((x) => x.id === id);
         if (!w) return;
         const saved = JSON.parse(
-          localStorage.getItem("glamActiveWorkflow") || "null",
+          HubStorage.getItem("glamActiveWorkflow") || "null",
         );
         const state = saved && saved.id === id ? saved : { id, done: [] };
-        localStorage.setItem("glamActiveWorkflow", JSON.stringify(state));
+        HubStorage.setItem("glamActiveWorkflow", JSON.stringify(state));
         renderActiveWorkflow();
         document
           .getElementById("activeWorkflowHolder")
@@ -9030,20 +9043,20 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
       }
       function toggleWorkflowTask(index) {
         const state = JSON.parse(
-          localStorage.getItem("glamActiveWorkflow") || "null",
+          HubStorage.getItem("glamActiveWorkflow") || "null",
         );
         if (!state) return;
         state.done = state.done.includes(index)
           ? state.done.filter((x) => x !== index)
           : [...state.done, index];
-        localStorage.setItem("glamActiveWorkflow", JSON.stringify(state));
+        HubStorage.setItem("glamActiveWorkflow", JSON.stringify(state));
         renderActiveWorkflow();
       }
       function renderActiveWorkflow() {
         const holder = document.getElementById("activeWorkflowHolder");
         if (!holder) return;
         const state = JSON.parse(
-          localStorage.getItem("glamActiveWorkflow") || "null",
+          HubStorage.getItem("glamActiveWorkflow") || "null",
         );
         if (!state) {
           holder.innerHTML = "";
@@ -9287,7 +9300,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           }
         };
         const nextPlaybook = [item, ...playbook];
-        localStorage.setItem("glamPlaybook", JSON.stringify(nextPlaybook));
+        HubStorage.setItem("glamPlaybook", JSON.stringify(nextPlaybook));
         playbook = nextPlaybook;
         return { item, duplicate: false };
       }
@@ -9306,7 +9319,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       function removePlaybook(id) {
         try {
           const nextPlaybook = playbook.filter((x) => x.id !== id);
-          localStorage.setItem("glamPlaybook", JSON.stringify(nextPlaybook));
+          HubStorage.setItem("glamPlaybook", JSON.stringify(nextPlaybook));
           playbook = nextPlaybook;
           renderPlaybook();
           refreshPlaybookSaveButtons();
@@ -9523,7 +9536,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         }
       }
       document.getElementById("saveNotes").onclick = () => {
-        localStorage.setItem(
+        HubStorage.setItem(
           "glamPlaybookNotes",
           document.getElementById("playbookNotes").value,
         );
@@ -9860,13 +9873,13 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           const el = document.getElementById(id);
           if (el) data[id] = el.value;
         });
-        localStorage.setItem("glamResearchSession", JSON.stringify(data));
+        HubStorage.setItem("glamResearchSession", JSON.stringify(data));
         if (!silent) toast("Research session saved.");
       }
 
       function loadResearchSession() {
         try {
-          const data = JSON.parse(localStorage.getItem("glamResearchSession") || "{}");
+          const data = JSON.parse(HubStorage.getItem("glamResearchSession") || "{}");
           Object.entries(data).forEach(([id, value]) => {
             const el = document.getElementById(id);
             if (el && typeof value === "string") el.value = value;
@@ -9887,8 +9900,8 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           el.classList.remove("show");
           el.innerHTML = "";
         });
-        localStorage.removeItem("glamResearchSession");
-        localStorage.removeItem("glamResearchLastPrompt");
+        HubStorage.removeItem("glamResearchSession");
+        HubStorage.removeItem("glamResearchLastPrompt");
         toast("Research Lab cleared.");
       }
 
@@ -9940,7 +9953,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         toast("Chosen product sent to Build My Product Plan.");
       }
 
-      document.addEventListener("DOMContentLoaded", () => {
+      function initializeResearchSession() {
         loadResearchSession();
         const master = document.getElementById("researchAudienceMaster");
         if (master) master.addEventListener("input", (e) => {
@@ -9951,7 +9964,9 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           const el = document.getElementById(id);
           if (el && id !== "researchAudienceMaster") el.addEventListener("change", () => saveResearchSession(true));
         });
-      });
+      }
+      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initializeResearchSession, {once:true});
+      else initializeResearchSession();
 
       const researchPromptTitles = {
         people: "Business Research Lab — Find My People",
@@ -10026,7 +10041,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         out.classList.add("show");
         out.innerHTML = `<div class="output-title">Your ChatGPT prompt</div><pre>${escapeAttr(prompt)}</pre><div class="research-actions"><button class="tiny-btn" onclick="copyText(researchPromptCache['${type}'])">Copy Prompt</button><button class="tiny-btn" onclick="saveResearchPrompt('${type}')">Save to My Playbook</button><a class="tiny-btn" href="https://chatgpt.com/" target="_blank" rel="noopener">Open ChatGPT</a></div>`;
         researchPromptCache[type] = prompt;
-        localStorage.setItem("glamResearchLastPrompt", JSON.stringify({ type, prompt, savedAt: new Date().toISOString() }));
+        HubStorage.setItem("glamResearchLastPrompt", JSON.stringify({ type, prompt, savedAt: new Date().toISOString() }));
       }
 
       const researchPromptCache = {};
@@ -10147,7 +10162,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         );
 
         const saved = JSON.parse(
-          localStorage.getItem("glamFinalAssessment") || "null",
+          HubStorage.getItem("glamFinalAssessment") || "null",
         );
         if (saved) showAssessmentResult(saved.score, saved.correct);
       }
@@ -10164,7 +10179,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         });
 
         const score = Math.round((correct / finalAssessment.length) * 100);
-        localStorage.setItem(
+        HubStorage.setItem(
           "glamFinalAssessment",
           JSON.stringify({
             score,
@@ -10199,7 +10214,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
 
         const lessonPct = Math.round((completed.length / lessons.length) * 100);
         const assess = JSON.parse(
-          localStorage.getItem("glamFinalAssessment") || "null",
+          HubStorage.getItem("glamFinalAssessment") || "null",
         );
         const assessScore = assess ? assess.score : 0;
         const unlocked = lessonPct >= 80 && assessScore >= 80;
@@ -10213,7 +10228,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           return;
         }
 
-        const savedName = localStorage.getItem("glamCertificateName") || "";
+        const savedName = HubStorage.getItem("glamCertificateName") || "";
         gate.innerHTML = `<div class="box">
    <div class="kicker">Certificate unlocked</div>
    <h3>Add your name</h3>
@@ -10229,7 +10244,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
             return;
           }
 
-          localStorage.setItem("glamCertificateName", name);
+          HubStorage.setItem("glamCertificateName", name);
           const date = new Date().toLocaleDateString(undefined, {
             year: "numeric",
             month: "long",
@@ -10452,7 +10467,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       renderSimulator();
       renderAssessment();
       updateProgress();
-      if (!localStorage.getItem("glamHubTutorialSeen")) {
+      if (!HubStorage.getItem("glamHubTutorialSeen")) {
         setTimeout(openHubTutorial, 650);
       }
     
@@ -10583,7 +10598,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       });
 
     </script>
-    <script>
+    <script type="application/x-hub-deferred" data-hub-deferred>
       (async function revealAdminDashboardLink(){
         try {
           const token = localStorage.getItem('base44_access_token') || localStorage.getItem('token');
@@ -10600,16 +10615,16 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         }
       })();
     </script>
-    <script src="/hub-projects.js"></script>
-    <script src="/hub-navigation.js"></script>
+    <script type="application/x-hub-deferred" data-hub-deferred src="/hub-projects.js"></script>
+    <script type="application/x-hub-deferred" data-hub-deferred src="/hub-navigation.js"></script>
 
-  <script>
+  <script type="application/x-hub-deferred" data-hub-deferred>
   /* ===== master build: announce dismiss, hamburger sync, back-to-top, reveal, global search ===== */
   function dismissAnnounce() {
-    try { localStorage.setItem("glamAnnounceDismissed", "1"); } catch (e) {}
+    try { HubStorage.setItem("glamAnnounceDismissed", "1"); } catch (e) {}
     document.getElementById("announceSlim")?.remove();
   }
-  try { if (localStorage.getItem("glamAnnounceDismissed")) document.getElementById("announceSlim")?.remove(); } catch (e) {}
+  try { if (HubStorage.getItem("glamAnnounceDismissed")) document.getElementById("announceSlim")?.remove(); } catch (e) {}
 
   const hubHam = document.getElementById("hubHamburger");
   function syncHamburger() {

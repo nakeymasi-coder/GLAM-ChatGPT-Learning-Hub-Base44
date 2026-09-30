@@ -5,7 +5,7 @@ const root=path.resolve(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'public/hub.html'),'utf8');
 const {window}=parseHTML(html),document=window.document;
 document.querySelectorAll('select').forEach(select=>{if(!select.querySelector('option[selected]'))select.querySelector('option')?.setAttribute('selected','')});
-const saved=new Map([['glamHubCompleted','["basics"]'],['glamSavedProjects','[]']]);
+const saved=new Map([['base44_access_token','test-session'],['glamHubCompleted','["legacy-only"]']]);
 const localStorage={getItem:k=>saved.get(k)||null,setItem:(k,v)=>saved.set(k,String(v)),removeItem:k=>saved.delete(k)};
 const location={hash:'',replace:()=>{throw Error('auth fixture should not redirect')},href:'http://ui-fixture.test/hub.html'};
 let focused=null;
@@ -24,10 +24,10 @@ sandbox.window=sandbox; sandbox.globalThis=sandbox;
 const c=vm.createContext(sandbox);
 const scripts=[...document.querySelectorAll('script')];
 for(let i=0;i<scripts.length;i++){
- if(i===0)continue; // Auth remains unchanged in production; this DOM fixture contains no account.
+ if(scripts[i].textContent.includes('async function protectHub()'))continue; // Auth is exercised separately with mocked responses.
  const src=scripts[i].getAttribute('src');
  const source=src?fs.readFileSync(path.join(root,'public',src.slice(1)),'utf8'):scripts[i].textContent;
- try{vm.runInContext(source,c,{filename:src||'inline-'+i})}catch(e){console.error('BOOT ERROR',src||i,e);process.exit(1)}
+ try{vm.runInContext(source,c,{filename:src||'inline-'+i});if(src==='/hub-storage.js'){c.HubStorage.activate('test-user','test-session');c.HubStorage.setItem('glamHubCompleted','["basics"]');}}catch(e){console.error('BOOT ERROR',src||i,e);process.exit(1)}
 }
 const evaluate=s=>vm.runInContext(s,c);
 function check(name,fn){fn();console.log('PASS',name)}
@@ -61,7 +61,7 @@ check('menu opens with accessible state',()=>{assert.equal(document.getElementBy
 evaluate('closeHubSidebar()');
 await new Promise(r=>setTimeout(r,0));
 check('closed menu removes keyboard access',()=>{assert.equal(document.getElementById('hubHamburger').getAttribute('aria-expanded'),'false');assert.equal(document.getElementById('hubSidebar').inert,true)});
-check('existing learner progress unchanged',()=>assert.equal(saved.get('glamHubCompleted'),'["basics"]'));
+check('account learner progress and preserved legacy stay separate',()=>{assert.equal(evaluate("HubStorage.getItem('glamHubCompleted')"),'["basics"]');assert.equal(saved.get('glamHubCompleted'),'["legacy-only"]');});
 console.log('DOM checks complete; layout and production APIs not exercised.');
 process.exit(0);
 })().catch(e=>{console.error(e);process.exit(1)});

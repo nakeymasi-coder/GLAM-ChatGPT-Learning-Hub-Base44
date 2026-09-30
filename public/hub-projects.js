@@ -116,15 +116,15 @@
   }
 
   /* ---- localStorage draft + fallback mirror ---- */
-  function loadDraft() { try { project = JSON.parse(localStorage.getItem(ACTIVE_KEY) || "null"); } catch (e) { project = null; } }
+  function loadDraft() { try { project = JSON.parse(HubStorage.getItem(ACTIVE_KEY) || "null"); } catch (e) { project = null; } }
   function persistDraft() {
     try {
-      if (project) localStorage.setItem(ACTIVE_KEY, JSON.stringify(project));
-      else localStorage.removeItem(ACTIVE_KEY);
+      if (project) HubStorage.setItem(ACTIVE_KEY, JSON.stringify(project));
+      else HubStorage.removeItem(ACTIVE_KEY);
     } catch (e) {}
   }
-  function loadMirror() { try { return JSON.parse(localStorage.getItem(SAVED_KEY) || "[]") || []; } catch (e) { return []; } }
-  function persistMirror() { try { localStorage.setItem(SAVED_KEY, JSON.stringify(savedProjects)); } catch (e) {} }
+  function loadMirror() { try { return JSON.parse(HubStorage.getItem(SAVED_KEY) || "[]") || []; } catch (e) { return []; } }
+  function persistMirror() { try { HubStorage.setItem(SAVED_KEY, JSON.stringify(savedProjects)); } catch (e) {} }
 
   function current() { return project; }
 
@@ -138,18 +138,7 @@
       if (!Array.isArray(items)) items = [];
       savedProjects = items.map(normalizeProject);
       persistMirror();
-      // one-time migration of pre-entity localStorage projects
-      if (!savedProjects.length) {
-        var legacy = loadMirror();
-        if (legacy && legacy.length) {
-          for (var i = 0; i < legacy.length; i++) {
-            try { await callHubProjects("create", { fields: toEntityFields(legacy[i]) }); } catch (e) {}
-          }
-          var fresh = await callHubProjects("list");
-          savedProjects = ((fresh && (fresh.data || fresh.items || fresh)) || []).map(normalizeProject);
-          persistMirror();
-        }
-      }
+      // Browser backups never create server records automatically.
     } catch (e) {
       // entity unavailable — fall back to the localStorage mirror so the Playbook still renders
       savedProjects = loadMirror();
@@ -397,7 +386,7 @@
       }
     }
     var notes = document.getElementById("playbookNotes");
-    if (notes) notes.value = localStorage.getItem("glamPlaybookNotes") || "";
+    if (notes) notes.value = HubStorage.getItem("glamPlaybookNotes") || "";
     renderProjects();
   }
 
