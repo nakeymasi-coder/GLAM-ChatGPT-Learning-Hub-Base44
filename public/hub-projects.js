@@ -63,6 +63,7 @@
 
   /* ---- auth + entity API ---- */
   function hubAuthHeaders() {
+    HubStorage.assertCurrent();
     var token = localStorage.getItem("base44_access_token") || localStorage.getItem("token");
     if (!token) throw new Error("Your Hub session expired. Please sign in again.");
     return { "Content-Type": "application/json", Authorization: "Bearer " + token };
