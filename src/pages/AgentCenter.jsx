@@ -3,6 +3,7 @@ import {Link,useSearchParams} from 'react-router-dom';
 import {base44} from '@/api/base44Client';
 import {useAuth} from '@/lib/AuthContext';
 import Dashboard from '@/components/agentCenter/Dashboard';
+import NativeAgentChat, {nativeAgents} from '@/components/agentCenter/NativeAgentChat';
 import Teacher from '@/components/agentCenter/Teacher';
 import Advisor from '@/components/agentCenter/Advisor';
 import Intelligence from '@/components/agentCenter/Intelligence';
@@ -34,6 +35,7 @@ export default function AgentCenter(){
  {navGroups.map(group=><details key={group.label} open={group.ids.includes(active)} className="rounded-xl border border-border bg-card px-4 py-1"><summary className="flex min-h-11 cursor-pointer items-center text-sm font-semibold">{group.label} <span className="ml-auto" aria-hidden="true">⌄</span></summary><div className="space-y-1 pb-3">{group.ids.map(id=><button type="button" key={id} aria-current={active===id?'page':undefined} className={`min-h-11 w-full rounded-lg px-3 py-2 text-left text-sm ${active===id?'bg-primary text-primary-foreground':'text-foreground hover:bg-secondary'}`} onClick={()=>go(id)}>{sectionLabels[id]}</button>)}</div></details>)}
  <details open={active==='settings'} className="rounded-xl border border-border bg-card px-4 py-1"><summary className="flex min-h-11 cursor-pointer items-center text-sm font-semibold">More options <span className="ml-auto" aria-hidden="true">⌄</span></summary><button type="button" className="min-h-11 w-full px-3 py-2 text-left text-sm" aria-current={active==='settings'?'page':undefined} onClick={()=>go('settings')}>Settings</button></details>
  </nav><main className="min-w-0 space-y-4">{loading?<p role="status" className="p-5">Loading Agent Center…</p>:error?<div><Failure error={error}/><button className={`${primary} mt-3`} onClick={load}>Try again</button></div>:<React.Fragment key={`${active}-${key}`}>
+ {nativeAgents[active]&&<NativeAgentChat key={`${active}-${user?.id}`} section={active} initial={typeof seed==='string'?seed:''}/>}
  {active==='dashboard'&&<Dashboard data={shared} go={go}/>}
   {active==='setup'&&<SetupGuide projects={data.projects} setProjects={setField('projects')}/>}
   {active==='history'&&<HistoryExplorer userId={user?.id}/>}
