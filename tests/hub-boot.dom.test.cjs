@@ -4,7 +4,7 @@ const scripts=[...html.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)];
 const auth=scripts.find(m=>m[2].includes('async function protectHub()'))[2];
 const storageSource=fs.readFileSync(path.join(__dirname,'../public/hub-storage.js'),'utf8');
 const turn=()=>new Promise(resolve=>setImmediate(resolve));
-test('real deferred Hub boot waits for account and DOM, never loads legacy values, and freezes on account change',async()=>{
+test('real deferred Hub boot waits for account and DOM, never loads legacy values, and freezes on account change',async(t)=>{
  const {window}=parseHTML(html),document=window.document;let ready='loading';Object.defineProperty(document,'readyState',{get:()=>ready});
  document.querySelectorAll('select').forEach(select=>{if(!select.querySelector('option[selected]'))select.querySelector('option')?.setAttribute('selected','')});
  const accountKey='glamHub:v2:6a9aedd33cd938f0f47b9ff7:A';
@@ -15,9 +15,10 @@ test('real deferred Hub boot waits for account and DOM, never loads legacy value
  let focused=null;Object.defineProperty(document,'activeElement',{get:()=>focused});window.HTMLElement.prototype.focus=function(){focused=this;};window.HTMLElement.prototype.scrollIntoView=function(){};window.HTMLElement.prototype.getClientRects=function(){return [{}];};
  const sandbox={document,localStorage,location,console,URL,URLSearchParams,Blob,Date,Math,JSON,Set,Map,Intl,Promise,Array,
  navigator:{clipboard:{writeText:async()=>{}}},innerWidth:1200,innerHeight:900,scrollY:0,Node:window.Node,MutationObserver:window.MutationObserver,Event:window.Event,CustomEvent:window.CustomEvent,
- setTimeout:(fn,ms)=>{const id=setTimeout(fn,ms);timers.push(id);return id;},clearTimeout,setInterval,clearInterval,requestAnimationFrame:fn=>setTimeout(fn,0),cancelAnimationFrame:clearTimeout,
+ setTimeout:(fn,ms)=>{const id=setTimeout(fn,ms);timers.push(id);id.unref();return id;},clearTimeout,setInterval:()=>0,clearInterval,requestAnimationFrame:fn=>{const id=setTimeout(fn,0);timers.push(id);id.unref();return id;},cancelAnimationFrame:clearTimeout,
  addEventListener:window.addEventListener.bind(window),removeEventListener:window.removeEventListener.bind(window),dispatchEvent:window.dispatchEvent.bind(window),scrollTo:()=>{},confirm:()=>false,
  fetch:async(url,options={})=>{requests.push({url,options});if(String(url).includes('/User/me')){if(first){first=false;await identityGate;}return {ok:true,status:200,json:async()=>({id:'A',email:'a@example.test',role:'user'})};}if(String(url).includes('/LegalAcceptance'))return {ok:true,status:200,json:async()=>[{terms_version:'2026-09-07',privacy_version:'2026-09-07'}]};return {ok:true,status:200,json:async()=>[]};}};
+ t.after(()=>timers.forEach(clearTimeout));
  sandbox.window=sandbox;sandbox.globalThis=sandbox;const c=vm.createContext(sandbox);
  const append=document.body.appendChild.bind(document.body);
  document.body.appendChild=function(node){const result=append(node);if(node.tagName==='SCRIPT'&&!node.hasAttribute('data-hub-deferred')){if(node.src){try{vm.runInContext(fs.readFileSync(path.join(__dirname,'../public',node.src.replace(/^\//,'')),'utf8'),c,{filename:node.src});queueMicrotask(()=>node.onload?.());}catch(error){queueMicrotask(()=>node.onerror?.(error));}}else vm.runInContext(node.textContent,c,{filename:'deferred-inline'});}return result;};

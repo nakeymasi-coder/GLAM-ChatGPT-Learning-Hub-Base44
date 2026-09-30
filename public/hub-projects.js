@@ -370,7 +370,7 @@
   function renderPlaybook() {
     var list = document.getElementById("playbookList");
     if (list) {
-      var playbook = window.playbook || [];
+      var playbook = JSON.parse(HubStorage.getItem("glamPlaybook") || "[]");
       if (!playbook.length) {
         list.innerHTML = '<div class="empty-state">No saved prompts yet. Open a tool and tap <strong>Save to Playbook</strong>.</div>';
       } else {
