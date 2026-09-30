@@ -8722,6 +8722,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         document.getElementById("lessonModal").classList.add("open");
         renderLessonMode(id, "learn");
         renderLessonFooter(id);
+        document.querySelector("#lessonModal .modal").scrollTop = 0;
       }
       function renderLessonMode(id, mode, btn) {
         const l = lessons.find((x) => x.id === id),
