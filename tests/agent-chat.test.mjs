@@ -16,11 +16,11 @@ function fixture(overrides={}) {
     ...overrides
   };
   const session=createAgentChatSession(agents,{agentName,userId,title:'Teacher',onChange:value=>{state=value;}});
-  return {session,calls,rows,get state(){return state;},emit:value=>update(value),get unsubscribed(){return unsubscribed;}};
+  return {session,agents,calls,rows,get state(){return state;},emit:value=>update(value),get unsubscribed(){return unsubscribed;}};
 }
-test('opening restores saved chat with documented query and makes zero AI writes',async()=>{
+test('opening restores saved chat with serialized owner query and makes zero AI writes',async()=>{
  const f=fixture();await f.session.open();assert.equal(f.state.conversation.id,'chat-1');
- assert.deepEqual(f.calls[0][1],{q:{agent_name:agentName,created_by_id:userId},sort:'-updated_date',limit:50});
+ assert.deepEqual(f.calls[0][1],{q:JSON.stringify({agent_name:agentName,created_by_id:userId}),sort:'-updated_date',limit:50});
  assert.equal(f.calls.filter(([name])=>['send','create'].includes(name)).length,0);f.session.dispose();
 });
 test('new chat and cancel/clear draft have no server writes until explicit Send',async()=>{
