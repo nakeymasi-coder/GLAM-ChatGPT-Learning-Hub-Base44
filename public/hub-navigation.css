@@ -1,4 +1,8 @@
 /* Beginner navigation layer: existing tools and routes remain intact. */
+/* Lesson controls must stay above the fixed mobile navigation. */
+#lessonModal { z-index:10030; padding-bottom:max(18px,env(safe-area-inset-bottom)); }
+#lessonModal .modal { max-height:calc(100dvh - 36px); overscroll-behavior:contain; scroll-padding-bottom:24px; }
+#toast { z-index:10040; }
 /* Keep the learner's next action above compact, unchanged progress details. */
 #panel-academy .learning-dashboard { max-width:none; display:grid; grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr); gap:22px; padding:20px; border-radius:24px; }
 .learning-dashboard .next-card { order:-1; margin:0; padding:18px; }
