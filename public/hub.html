@@ -3011,9 +3011,26 @@
     <main class="hub-main" id="mainContent" tabindex="-1">
 
       <section class="start-here hub-welcome" id="startHere" aria-labelledby="startHereTitle">
-        <div class="kicker">ChatGPT, one simple step at a time</div>
-        <h1 id="startHereTitle" tabindex="-1">What do you want help with today?</h1>
-        <p class="welcome-copy">You don't need the right words or a plan. Start with what you want to do.</p>
+        <div class="welcome-hero">
+          <div class="welcome-hero-media">
+            <div class="hero-visual">
+              <video id="hubHeroVideo" class="hero-video" controls muted loop playsinline preload="none" poster="/hero-community-20260930-poster.jpg" width="1280" height="720" aria-label="Welcome to the Learning Hub community lounge">
+                <source src="/hero-community-20260930.mp4" type="video/mp4">
+                Your browser does not support this welcome video.
+              </video>
+            </div>
+            <div id="hubHeroControls" class="hero-video-controls" role="group" aria-label="Welcome video controls" hidden>
+              <button id="hubHeroToggle" type="button" aria-controls="hubHeroVideo" aria-label="Play hero video">Play video</button>
+              <button id="hubHeroSound" type="button" aria-controls="hubHeroVideo" aria-label="Turn video sound on" aria-pressed="false">Sound on</button>
+            </div>
+            <p id="hubHeroStatus" class="hero-video-status" role="status" hidden></p>
+          </div>
+          <div class="welcome-hero-copy">
+            <div class="kicker">ChatGPT, one simple step at a time</div>
+            <h1 id="startHereTitle" tabindex="-1">What do you want help with today?</h1>
+            <p class="welcome-copy">You don't need the right words or a plan. Start with what you want to do.</p>
+          </div>
+        </div>
         <div class="start-grid">
           <button class="start-card" type="button" onclick="goTab('learn')">
             <span class="path-number" aria-hidden="true">01</span>
@@ -10680,6 +10697,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
     </script>
     <script type="application/x-hub-deferred" data-hub-deferred src="/hub-projects.js"></script>
     <script type="application/x-hub-deferred" data-hub-deferred src="/hub-navigation.js"></script>
+    <script type="application/x-hub-deferred" data-hub-deferred src="/hub-hero.js"></script>
 
   <script type="application/x-hub-deferred" data-hub-deferred>
   /* ===== master build: announce dismiss, hamburger sync, back-to-top, reveal, global search ===== */
