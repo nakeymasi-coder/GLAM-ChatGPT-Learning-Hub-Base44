@@ -26,7 +26,7 @@ const scripts=[...document.querySelectorAll('script')];
 for(let i=0;i<scripts.length;i++){
  if(scripts[i].textContent.includes('async function protectHub()'))continue; // Auth is exercised separately with mocked responses.
  const src=scripts[i].getAttribute('src');
- const source=src?fs.readFileSync(path.join(root,'public',src.slice(1)),'utf8'):scripts[i].textContent;
+ const source=src?fs.readFileSync(path.join(root,'public',src.split("?")[0].slice(1)),'utf8'):scripts[i].textContent;
  try{vm.runInContext(source,c,{filename:src||'inline-'+i});if(src==='/hub-storage.js'){c.HubStorage.activate('test-user','test-session');c.HubStorage.setItem('glamHubCompleted','["basics"]');}}catch(e){console.error('BOOT ERROR',src||i,e);process.exit(1)}
 }
 const evaluate=s=>vm.runInContext(s,c);
