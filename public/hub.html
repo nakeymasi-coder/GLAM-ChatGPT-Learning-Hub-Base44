@@ -8325,7 +8325,10 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         const match = /^#\/([a-z0-9]+)/i.exec(location.hash);
         const target = match && document.getElementById("panel-" + match[1]) ? match[1] : null;
         const active = document.querySelector(".panel.active")?.id?.replace("panel-", "") || null;
-        if (target && target === active) return; // already on this page
+        // A preselected panel is not an open page until its layout is restored.
+        const pageIsOpen = document.documentElement.classList.contains("view-open")
+          && document.getElementById("hub")?.classList.contains("hub-open");
+        if (target && target === active && pageIsOpen) return; // already on this page
         document.getElementById("lessonModal")?.classList.remove("open");
         if (target) {
           showTab(target);
