@@ -151,5 +151,5 @@
     root.document?.getElementById('askChatgptClear')?.setAttribute('data-dictation-pause','');
     root.document?.querySelectorAll('[data-ask-starter]').forEach(el=>el.setAttribute('data-dictation-pause',''));
   }
-  root.HubDictation={createController,mount,mountStatic};
+  root.HubDictation={createController,mount,mountStatic,pause:()=>currentController?.cancel()};
 })(typeof window!=='undefined'?window:globalThis);
