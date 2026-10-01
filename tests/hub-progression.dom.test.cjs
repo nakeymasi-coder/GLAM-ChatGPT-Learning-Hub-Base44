@@ -42,7 +42,7 @@ function fixture(t, { saved = new Map(), complete = [], hash = "" } = {}) {
   for (const script of document.querySelectorAll("script")) {
     if (script.textContent.includes("async function protectHub()")) continue;
     const src = script.getAttribute("src");
-    vm.runInContext(src ? fs.readFileSync(path.join(root, "public", src.slice(1)), "utf8") : script.textContent, c);
+    vm.runInContext(src ? fs.readFileSync(path.join(root, "public", src.split("?")[0].slice(1)), "utf8") : script.textContent, c);
     if (src === "/hub-storage.js") {
       c.HubStorage.activate("progress-test-user", "mock-session");
       if (!c.HubStorage.getItem("glamHubCompleted")) c.HubStorage.setItem("glamHubCompleted", JSON.stringify(complete));
