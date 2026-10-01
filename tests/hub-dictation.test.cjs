@@ -48,11 +48,33 @@ test('Stop cancels pending restarts and allows final browser result before endin
  h.result([['last words',true]]);h.instances[0].onend();assert.equal(h.text,'Typed idea. last words');assert.equal(h.state.active,false);assert.equal(h.timers.length,0);
  h.api.start();h.instances.at(-1).onend();h.api.stop();h.tick();assert.equal(h.instances.length,2);
 });
-for(const error of ['not-allowed','service-not-allowed','audio-capture','language-not-supported']){
+for(const error of ['not-allowed','service-not-allowed','audio-capture','language-not-supported','language-unavailable','network','no-speech','unknown-browser-error']){
  test(error+' is not retried and preserves the draft',()=>{
   const h=setup();h.api.start();const r=h.instances[0];r.onerror({error});r.onend?.();h.tick();assert.equal(h.state.phase,'error');assert.equal(h.state.active,false);assert.equal(h.instances.length,1);assert.equal(h.text,'Typed idea.');
  });
 }
+test('network errors reveal their actual code and stop the reconnect loop without losing words',()=>{
+ const h=setup();h.api.start();h.result([['keep my unfinished words',false]]);
+ const r=h.instances[0],lateEnd=r.onend;
+ r.onerror({error:'network'});lateEnd();h.tick();
+ assert.equal(h.text,'Typed idea. keep my unfinished words');
+ assert.match(h.state.message,/could not connect \(network\)/);
+ assert.doesNotMatch(h.state.message,/Microphone access.*denied/);
+ assert.equal(h.state.active,false);assert.equal(r.aborted,true);assert.equal(h.timers.length,0);
+});
+test('service blocking is explained separately from microphone permission',()=>{
+ const h=setup();h.api.start();h.instances[0].onerror({error:'service-not-allowed'});
+ assert.match(h.state.message,/speech recognition service/);assert.match(h.state.message,/separate from microphone permission/);
+});
+test('ending before listening starts does not create a misleading reconnect loop',()=>{
+ const h=setup();h.env.SpeechRecognition.prototype.start=function(){this.started=true;};
+ h.api.start();h.instances[0].onend();h.tick();
+ assert.equal(h.state.active,false);assert.match(h.state.message,/ended before listening started/);assert.equal(h.timers.length,0);
+});
+test('recognition uses the browser locale ahead of a generic document language',()=>{
+ const h=setup();h.env.document.documentElement.lang='en';h.env.navigator.language='en-US';h.api.start();
+ assert.equal(h.instances[0].lang,'en-US');
+});
 test('cancel and disposal abort capture and ignore stale events',()=>{
  const h=setup();h.api.start();h.result([['keep this',false]]);const r=h.instances[0],late=r.onresult;
  h.api.dispose();late({results:[Object.assign([{transcript:'stale'}],{isFinal:true})]});assert.equal(r.aborted,true);assert.equal(h.text,'Typed idea. keep this');assert.equal(h.timers.length,0);
