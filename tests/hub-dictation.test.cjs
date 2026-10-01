@@ -79,6 +79,7 @@ test('DOM control starts only on click, blocks Send while finishing, pauses on h
 });
 test('static wiring is idempotent and typed fallback needs no network or permission',()=>{
  const {window}=parseHTML('<html><body><section class="panel active"><textarea id="askChatgptInput"></textarea><button id="askChatgptBtn"></button><button id="askChatgptClear"></button></section></body></html>');
+ window.SpeechRecognition=undefined;window.webkitSpeechRecognition=undefined;
  const c=vm.createContext({window});vm.runInContext(source,c);window.HubDictation.mountStatic();window.HubDictation.mountStatic();
  assert.equal(window.document.querySelectorAll('.hub-dictation-button').length,1);assert.equal(window.document.querySelector('.hub-dictation-button').disabled,true);
  assert.match(window.document.querySelector('[role="status"]').textContent,/still type/);
