@@ -64,7 +64,7 @@ test("fresh academy deep link opens its page even though academy is preselected 
   assert.equal(f.document.documentElement.classList.contains("view-open"), true);
   assert.equal(f.document.getElementById("hub").classList.contains("hub-open"), true);
   assert.match(f.document.getElementById("hubBreadcrumb").textContent, /Learning Path/);
-  assert.equal(f.requests.some(request => /hubAi|functions\\/(ask|coach)/.test(String(request.url))), false);
+  assert.equal(f.requests.some(request => ["hubAi", "/functions/ask", "/functions/coach"].some(name => String(request.url).includes(name))), false);
 });
 
 test("fresh links restore each existing Hub page and leave dictation idle", t => {
