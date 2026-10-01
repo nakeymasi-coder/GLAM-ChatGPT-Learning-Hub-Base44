@@ -1,5 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 import ReactMarkdown from 'react-markdown';
+import DictationControl from './DictationControl';
 import {base44} from '@/api/base44Client';
 import {useAuth} from '@/lib/AuthContext';
 import {createAgentChatSession,visibleMessage} from './agentChatSession';
@@ -57,7 +58,8 @@ export default function NativeAgentChat({section,initial=''}) {
       </div>
       <Failure error={state.error}/>
       <form onSubmit={send} className="space-y-2">
-        <label className="block text-sm font-medium">Message {config.title}<textarea className={input+' mt-1'} rows={3} maxLength={4000} value={text} onChange={event=>setText(event.target.value)} disabled={disabled} placeholder="What would you like help with?"/></label>
+        <label className="block text-sm font-medium">Message {config.title}<textarea className={input+' mt-1'} rows={3} value={text} onChange={event=>setText(event.target.value)} disabled={disabled} placeholder="What would you like help with?"/></label>
+        <DictationControl value={text} onChange={setText} disabled={disabled} label={config.title}/>
         <div className="flex flex-wrap gap-2"><button className={primary} disabled={disabled||!text.trim()}>{state.sending?'Sending…':'Send'}</button><button type="button" className={secondary} onClick={()=>setText('')} disabled={state.sending||!text}>Clear draft</button></div>
       </form>
       {state.sending&&<p className="text-xs text-muted-foreground">Hiding this panel does not cancel a message that has already been sent.</p>}
