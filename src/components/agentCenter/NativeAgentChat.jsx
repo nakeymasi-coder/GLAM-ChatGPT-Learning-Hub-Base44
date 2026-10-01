@@ -35,17 +35,18 @@ export default function NativeAgentChat({section,initial=''}) {
   }
   const disabled=state.loading||state.sending||!state.ready||state.reloadRequired;
   const shown=state.messages.filter(visibleMessage);
-  function startNew() { if(session.current?.newConversation())setText(''); }
+  function pauseDictation() { /** @type {any} */ (window).HubDictation?.pause(); }
+  function startNew() { pauseDictation(); if(session.current?.newConversation())setText(''); }
   return <Panel title={config.title+' conversation'} action={<button type="button" className={secondary} onClick={()=>setOpen(value=>!value)} aria-expanded={open}>{open?'Hide conversation':'Show conversation'}</button>}>
     <p className="text-sm text-muted-foreground">{config.intro}</p>
     <p className="mt-2 text-xs text-muted-foreground">Your conversation is saved to your signed-in account. Sending a message uses the Hub's AI allowance; opening this panel does not send a message.</p>
     {open&&<div className="mt-4 space-y-3">
       <div className="flex flex-col gap-2 sm:flex-row">
-        <label className="min-w-0 flex-1 text-sm font-medium">Saved conversations<select className={input+' mt-1'} value={state.conversation?.id||''} disabled={state.loading||state.sending} onChange={event=>{if(event.target.value)session.current?.open(event.target.value);else startNew();}}>
+        <label className="min-w-0 flex-1 text-sm font-medium">Saved conversations<select className={input+' mt-1'} value={state.conversation?.id||''} disabled={state.loading||state.sending} onChange={event=>{pauseDictation();if(event.target.value)session.current?.open(event.target.value);else startNew();}}>
           <option value="">New conversation</option>{state.conversations.map(item=><option key={item.id} value={item.id}>{item.metadata?.name||config.title} · {new Date(item.updated_date||item.created_date).toLocaleDateString()}</option>)}
         </select></label>
         <button type="button" className={secondary+' self-end'} onClick={startNew} disabled={state.loading||state.sending}>New conversation</button>
-        <button type="button" className={secondary+' self-end'} onClick={()=>session.current?.open(state.conversation?.id)} disabled={state.loading||state.sending}>Reload saved chat</button>
+        <button type="button" className={secondary+' self-end'} onClick={()=>{pauseDictation();session.current?.open(state.conversation?.id);}} disabled={state.loading||state.sending}>Reload saved chat</button>
       </div>
       <div aria-live="polite" aria-busy={state.loading||state.sending} className="max-h-[55vh] min-h-40 space-y-3 overflow-y-auto rounded-xl border border-border bg-background p-4">
         {state.loading?<p role="status">Opening your saved conversation…</p>:shown.length?shown.map((message,index)=><div key={message.id||index} className={'rounded-xl p-3 text-sm leading-7 '+(message.role==='user'?'ml-4 bg-primary text-primary-foreground':'mr-4 bg-secondary text-secondary-foreground')}>
