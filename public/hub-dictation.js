@@ -100,7 +100,12 @@
     const status=doc.createElement('p');status.className='hub-dictation-status';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
     const interim=doc.createElement('p');interim.className='hub-dictation-interim';interim.hidden=true;
     const note=doc.createElement('p');note.className='hub-dictation-note';note.textContent=privacy;
-    container.classList.add('hub-dictation');container.append(button,status,interim,note);
+    const recovery=doc.createElement('p');recovery.className='hub-dictation-note';recovery.hidden=true;
+    const platform=String(env.navigator?.userAgent||env.navigator?.platform||'');
+    recovery.textContent=/Windows|Win32|Win64/i.test(platform)
+      ? 'Windows fallback: click in the text box, then press Windows + H to use Windows voice typing. Review the words before sending.'
+      : 'Fallback: click in the text box and use your device’s keyboard dictation, or continue typing. Review the words before sending.';
+    container.classList.add('hub-dictation');container.append(button,status,interim,recovery,note);
     let disabled=false;
     const render=state=>{
       button.textContent=state.active?'■ Stop dictation':state.phase==='paused'?'🎙 Resume dictation':'🎙 Start dictation';
@@ -108,6 +113,7 @@
       button.setAttribute('aria-label',(state.active?'Stop':'Start')+' dictation for '+(options.label||'your message'));
       button.disabled=!state.supported||disabled||state.phase==='stopping';
       status.textContent=state.message;interim.textContent=state.interim?'Hearing: '+state.interim:'';interim.hidden=!state.interim;
+      recovery.hidden=!['error','paused','unsupported'].includes(state.phase);
       options.onState?.(state);
     };
     const controller=createController({...options,env,onState:render});
