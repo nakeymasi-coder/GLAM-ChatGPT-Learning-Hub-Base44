@@ -21,7 +21,7 @@ test('real deferred Hub boot waits for account and DOM, never loads legacy value
  t.after(()=>timers.forEach(clearTimeout));
  sandbox.window=sandbox;sandbox.globalThis=sandbox;const c=vm.createContext(sandbox);
  const append=document.body.appendChild.bind(document.body);
- document.body.appendChild=function(node){const result=append(node);if(node.tagName==='SCRIPT'&&!node.hasAttribute('data-hub-deferred')){if(node.src){try{vm.runInContext(fs.readFileSync(path.join(__dirname,'../public',node.src.replace(/^\//,'')),'utf8'),c,{filename:node.src});queueMicrotask(()=>node.onload?.());}catch(error){queueMicrotask(()=>node.onerror?.(error));}}else vm.runInContext(node.textContent,c,{filename:'deferred-inline'});}return result;};
+ document.body.appendChild=function(node){const result=append(node);if(node.tagName==='SCRIPT'&&!node.hasAttribute('data-hub-deferred')){if(node.src){try{vm.runInContext(fs.readFileSync(path.join(__dirname,'../public',node.src.split("?")[0].replace(/^\//,'')),'utf8'),c,{filename:node.src});queueMicrotask(()=>node.onload?.());}catch(error){queueMicrotask(()=>node.onerror?.(error));}}else vm.runInContext(node.textContent,c,{filename:'deferred-inline'});}return result;};
  vm.runInContext(storageSource,c);const boot=vm.runInContext(auth,c);await turn();
  assert.equal(vm.runInContext('typeof lessons',c),'undefined');assert.equal(JSON.stringify([...saved]),before);assert.equal(document.documentElement.style.visibility,'hidden');
  resolveIdentity();await turn();assert.equal(vm.runInContext('typeof lessons',c),'undefined');assert.equal(JSON.stringify([...saved]),before);
