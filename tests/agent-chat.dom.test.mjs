@@ -6,11 +6,16 @@ import {createRequire} from 'node:module';
 import Module from 'node:module';
 import path from 'node:path';
 import React from 'react';
+import fs from 'node:fs';
+import vm from 'node:vm';
 import {act} from 'react-dom/test-utils';
 
 test('native panels render, reopen, clear drafts and send with a mocked SDK only',async()=>{
  const {window}=parseHTML('<html><body><div id="root"></div></body></html>');
  globalThis.window=window;globalThis.document=window.document;globalThis.HTMLElement=window.HTMLElement;globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ const recognition=[];
+ window.SpeechRecognition=class{constructor(){recognition.push(this);}start(){this.onstart?.();}stop(){this.stopped=true;}abort(){this.aborted=true;}};
+ vm.runInThisContext(fs.readFileSync('public/hub-dictation.js','utf8'));
  const {createRoot}=await import('react-dom/client');
  const calls=[],records=new Map();let counter=0;
  globalThis.__agentTestUser={id:'learner-1'};
@@ -41,6 +46,20 @@ test('native panels render, reopen, clear drafts and send with a mocked SDK only
  assert.equal(calls.filter(c=>c==='send').length,1);assert.equal(calls.filter(c=>c==='create').length,1);assert.ok(document.body.textContent.includes('A mocked answer'));assert.equal(document.querySelector('textarea').value,'');
  await act(async()=>root.render(React.createElement(Chat,{key:'visit-again',section:'teacher'})));
  assert.ok(document.body.textContent.includes('A mocked answer'));assert.equal(calls.filter(c=>c==='send').length,1);
+ const mic=()=>document.querySelector('.hub-dictation-button');
+ assert.ok(mic());assert.equal(recognition.length,0);
+ await act(async()=>mic().click());
+ assert.equal(recognition.length,1);
+ await act(async()=>recognition[0].onresult({results:[Object.assign([{transcript:'My spoken idea'}],{isFinal:true})]}));
+ assert.equal(document.querySelector('textarea').value,'My spoken idea');assert.equal(calls.filter(c=>c==='send').length,1);
+ await act(async()=>button('New conversation').click());
+ assert.equal(recognition[0].aborted,true);assert.equal(document.querySelector('textarea').value,'');
+ await act(async()=>mic().click());
+ await act(async()=>button('Hide conversation').click());
+ assert.equal(recognition[1].aborted,true);
+ await act(async()=>button('Show conversation').click());
+ await act(async()=>mic().click());
  await act(async()=>root.unmount());
+ assert.equal(recognition[2].aborted,true);assert.equal(calls.filter(c=>c==='send').length,1);
  delete globalThis.__agentTestApi;delete globalThis.__agentTestUser;
 });
