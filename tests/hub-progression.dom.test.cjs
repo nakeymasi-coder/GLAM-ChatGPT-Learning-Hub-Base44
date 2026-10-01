@@ -8,7 +8,7 @@ const root = path.resolve(__dirname, "..");
 const html = fs.readFileSync(path.join(root, "public/hub.html"), "utf8");
 const turn = () => new Promise(resolve => setImmediate(resolve));
 
-function fixture(t, { saved = new Map(), complete = [] } = {}) {
+function fixture(t, { saved = new Map(), complete = [], hash = "" } = {}) {
   saved.set("base44_access_token", "mock-session");
   const { window } = parseHTML(html), document = window.document;
   document.querySelectorAll("select").forEach(select => {
@@ -25,7 +25,7 @@ function fixture(t, { saved = new Map(), complete = [] } = {}) {
     setItem: (key, value) => saved.set(key, String(value)),
     removeItem: key => saved.delete(key),
   };
-  const location = { hash: "", href: "https://fixture.invalid/hub.html", replace() { throw Error("Unexpected authentication call"); } };
+  const location = { hash, href: "https://fixture.invalid/hub.html" + hash, replace() { throw Error("Unexpected authentication call"); } };
   const c = vm.createContext({
     document, localStorage, location, console, URL, URLSearchParams, Blob, Date, Math, JSON, Set, Map, Intl, Promise, Array,
     navigator: { clipboard: { writeText: async () => {} } },
@@ -57,6 +57,56 @@ function fixture(t, { saved = new Map(), complete = [] } = {}) {
   };
   return { c, document, saved, requests, evaluate, activate, window };
 }
+
+test("fresh academy deep link opens its page even though academy is preselected in HTML", t => {
+  const f = fixture(t, { hash: "#/academy" });
+  assert.equal(f.document.querySelector(".panel.active")?.id, "panel-academy");
+  assert.equal(f.document.documentElement.classList.contains("view-open"), true);
+  assert.equal(f.document.getElementById("hub").classList.contains("hub-open"), true);
+  assert.match(f.document.getElementById("hubBreadcrumb").textContent, /Learning Path/);
+  assert.equal(f.requests.some(request => /hubAi|functions\\/(ask|coach)/.test(String(request.url))), false);
+});
+
+test("fresh links restore each existing Hub page and leave dictation idle", t => {
+  for (const route of ["learn","academy","create","mystuff","powerwords","asklibrary","finder","coach","clinic","practice","scenarios","business","researchlab","glossary","playbook","history","simulator","assessment","certificate","quiz","concierge","characterlab","environmentlab","typographylab"]) {
+    const f = fixture(t, { hash: "#/" + route });
+    assert.equal(f.document.querySelector(".panel.active")?.id, "panel-" + route, route);
+    assert.equal(f.document.documentElement.classList.contains("view-open"), true, route);
+    assert.equal(f.document.getElementById("hub").classList.contains("hub-open"), true, route);
+    assert.equal(f.document.querySelectorAll('.hub-dictation-button[aria-pressed="true"]').length, 0);
+  }
+});
+
+test("Back and Forward routing restores page shells, preserves drafts and keeps same-page lessons open", t => {
+  const f = fixture(t, { hash: "#/academy" });
+  f.document.getElementById("askChatgptInput").value = "Keep this unsent idea";
+  f.c.location.hash = "#/";
+  f.window.dispatchEvent(new f.window.Event("hashchange"));
+  assert.equal(f.document.querySelectorAll(".panel.active").length, 0);
+  assert.equal(f.document.documentElement.classList.contains("view-open"), false);
+  f.c.location.hash = "#/academy";
+  f.window.dispatchEvent(new f.window.Event("hashchange"));
+  assert.equal(f.document.documentElement.classList.contains("view-open"), true);
+  assert.equal(f.document.getElementById("hub").classList.contains("hub-open"), true);
+  f.evaluate("openLesson('basics')");
+  f.window.dispatchEvent(new f.window.Event("hashchange"));
+  assert.equal(f.document.getElementById("lessonModal").classList.contains("open"), true, "A same-page hash event must not dismiss a just-opened lesson");
+  f.document.documentElement.classList.remove("view-open");
+  f.document.getElementById("hub").classList.remove("hub-open");
+  f.evaluate("routeFromHash()");
+  assert.equal(f.document.documentElement.classList.contains("view-open"), true, "Repair a partially restored route");
+  assert.equal(f.document.getElementById("hub").classList.contains("hub-open"), true);
+  assert.equal(f.document.getElementById("askChatgptInput").value, "Keep this unsent idea");
+});
+
+test("empty and unknown deep links open Home without leaving an active hidden page", t => {
+  for (const hash of ["", "#/", "#/missing-page"]) {
+    const f = fixture(t, { hash });
+    assert.equal(f.document.querySelectorAll(".panel.active").length, 0);
+    assert.equal(f.document.documentElement.classList.contains("view-open"), false);
+    assert.equal(f.document.getElementById("hub").classList.contains("hub-open"), false);
+  }
+});
 
 test("recommended lesson is actionable without expanding the full library", t => {
   const f = fixture(t);
