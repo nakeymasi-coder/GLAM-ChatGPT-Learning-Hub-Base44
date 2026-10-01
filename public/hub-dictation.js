@@ -41,13 +41,13 @@
     }
     function begin() {
       if(disposed||disabled||!intent)return;
-      let active;
+      let active, didStart=false;
       try { active=new Recognition(); } catch(_) {fail('Dictation could not start. You can keep typing and try again.');return;}
       recognition=active;seen=new Set();pending='';
-      active.lang=env.document?.documentElement?.lang || env.navigator?.language || 'en-US';
+      active.lang=env.navigator?.language || env.document?.documentElement?.lang || 'en-US';
       active.continuous=true;active.interimResults=true;active.maxAlternatives=1;
       update({phase:'starting',active:true,interim:'',message:'Starting microphone… Allow access in your browser if asked.'});
-      active.onstart=()=>{if(recognition===active&&intent)update({phase:'listening',active:true,message:'Listening… Keep talking. Select Stop dictation when you’re ready to review.'});};
+      active.onstart=()=>{if(recognition===active&&intent){didStart=true;update({phase:'listening',active:true,message:'Listening… Keep talking. Select Stop dictation when you’re ready to review.'});}};
       active.onresult=event=>{
         if(recognition!==active||disposed)return;
         const interim=[];
@@ -62,16 +62,20 @@
       active.onerror=event=>{
         if(recognition!==active||disposed)return;
         const reason=event.error;
-        if(['not-allowed','service-not-allowed'].includes(reason))fail('Microphone access was denied. Check this site’s microphone permission, then select Start dictation. You can always type instead.');
-        else if(reason==='audio-capture')fail('No working microphone was found. Check your microphone and try again, or keep typing.');
-        else if(reason==='language-not-supported')fail('Your browser does not support dictation in this language. You can use keyboard dictation or type instead.');
-        else if(reason==='aborted')cancel();
-        // Network/no-speech errors end the current browser session. onend retries at most three times.
+        if(reason==='not-allowed')fail('Microphone access is blocked (not-allowed). Check this site’s microphone permission, then select Start dictation. Your draft is kept.');
+        else if(reason==='service-not-allowed')fail('Your browser blocked its speech recognition service (service-not-allowed). This is separate from microphone permission. Your draft is kept; try your device’s keyboard dictation.');
+        else if(reason==='network')fail('Your browser’s speech service could not connect (network). Dictation has stopped instead of repeatedly reconnecting. Your draft is kept. Try again, or use your device’s keyboard dictation.');
+        else if(reason==='no-speech')fail('The browser did not detect speech (no-speech). Check the selected microphone, then select Start dictation and speak. Your draft is kept.');
+        else if(reason==='audio-capture')fail('No working microphone was found (audio-capture). Check your microphone and try again, or use keyboard dictation. Your draft is kept.');
+        else if(['language-not-supported','language-unavailable'].includes(reason))fail('Your browser cannot recognize speech in this language ('+reason+'). Use keyboard dictation or type instead. Your draft is kept.');
+        else if(reason==='aborted')cancel('Dictation was interrupted (aborted). Your draft is kept. Select Start dictation to try again.');
+        else fail('Speech recognition stopped ('+String(reason||'unknown-error')+'). Your draft is kept. Select Start dictation to try again, or use keyboard dictation.');
       };
       active.onend=()=>{
         if(recognition!==active||disposed)return;
         flushPending();recognition=null;
-        if(intent)retry();
+        if(intent&&!didStart)fail('Speech recognition ended before listening started. Your browser did not report a reason. Your draft is kept; select Start dictation to retry or use keyboard dictation.');
+        else if(intent)retry();
         else {release();update({phase:'idle',active:false,interim:'',message:'Dictation stopped. Review your words, then send when ready.'});}
       };
       try{active.start();}catch(error){fail(error?.name==='NotAllowedError'?'Microphone access was denied. You can keep typing.':'Your browser could not start dictation. Try again or keep typing.');}
