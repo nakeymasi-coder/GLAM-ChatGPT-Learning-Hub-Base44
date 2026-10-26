@@ -3,6 +3,7 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
 import { hasCurrentLegalAcceptance } from '@/lib/legalAcceptance';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
+import HubPurchaseGate from '@/components/HubPurchaseGate';
 
 const DefaultFallback = () => (
   <div className="fixed inset-0 flex items-center justify-center">
@@ -54,5 +55,5 @@ export default function ProtectedRoute({ fallback = <DefaultFallback />, unauthe
     const returnTo = location.pathname + location.search + location.hash;
     return <Navigate to={`/legal-consent?returnTo=${encodeURIComponent(returnTo)}`} replace />;
   }
-  return <Outlet />;
+  return <HubPurchaseGate key={user.id}><Outlet /></HubPurchaseGate>;
 }
