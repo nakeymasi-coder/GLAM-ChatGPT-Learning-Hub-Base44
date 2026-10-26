@@ -1,7 +1,7 @@
 import { createClientFromRequest } from "npm:@base44/sdk";
 import { hasLegacyAccess, normalizeEmail, PRODUCT_ID, verifyAssertion } from "./policy.mjs";
 const reply = (data:unknown,status=200) => Response.json(data,{status,headers:{"Cache-Control":"no-store"}});
-const trustedOrigins = new Set(["https://glamhustlehub.com","https://project--432e8192-bce2-40dd-b3b1-ac09f8662742.lovable.app"]);
+const trustedOrigins = new Set(["https://glamhustlehub.com","https://www.glamhustlehub.com","https://glam-hustle-hub-staging.lovable.app","https://project--432e8192-bce2-40dd-b3b1-ac09f8662742.lovable.app"]);
 function origin() {
   const value = Deno.env.get("HUB_STORE_ORIGIN") || "";
   if (!trustedOrigins.has(value)) throw new Error("Store connection not configured.");
