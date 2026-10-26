@@ -8,6 +8,16 @@ export default async function agentRoute(req: Request): Promise<Response> {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Sign in required' }, { status: 401 });
+    if (Deno.env.get("HUB_STORE_ACCESS_ENABLED") === "true") {
+      try {
+        const accessResponse = await base44.functions.invoke("hubAccess", { op: "check" });
+        const access = accessResponse?.data ?? accessResponse;
+        if (access?.active !== true) return Response.json({ error: "Open the Hub from your store purchase library to confirm access." }, { status: 403 });
+      } catch {
+        return Response.json({ error: "Purchase access could not be verified." }, { status: 403 });
+      }
+    }
+
     const { message } = await req.json();
     if (typeof message !== 'string' || !message.trim() || message.length > 4000) return Response.json({ error: 'Enter a request (up to 4,000 characters).' }, { status: 400 });
     const { baseURL, token } = base44.asServiceRole.aiGateway.connection({ provider: 'typesafe' });
