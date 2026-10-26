@@ -1,0 +1,66 @@
+{
+  "name": "HubStoreGrant",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "buyer_email": {
+      "type": "string"
+    },
+    "store_subject": {
+      "type": "string"
+    },
+    "grant_credential": {
+      "type": "string"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "live",
+        "test"
+      ]
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "revoked"
+      ]
+    }
+  },
+  "required": [
+    "user_id",
+    "buyer_email",
+    "store_subject",
+    "grant_credential",
+    "mode",
+    "product_id",
+    "status"
+  ],
+  "rls": {
+    "create": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
