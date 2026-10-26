@@ -39,6 +39,16 @@
             window.location.replace('/legal-consent?returnTo=%2Fhub.html');
             return;
           }
+          const accessResponse = await fetch(`/api/apps/${APP_ID}/functions/hubAccess`, {
+            method: 'POST', headers: { ...headers, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ op: 'check' }), credentials: 'include'
+          });
+          const accessPayload = await accessResponse.json().catch(() => null);
+          const access = accessPayload?.data ?? accessPayload;
+          if (!accessResponse.ok || access?.active !== true) {
+            window.location.replace('/access/claim');
+            return;
+          }
           verified = true;
           HubStorage.activate(user.id, token);
           HubStorage.isStarted = true;
