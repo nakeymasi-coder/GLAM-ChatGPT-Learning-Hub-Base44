@@ -26,6 +26,16 @@ export default async function hubAi(req: Request): Promise<Response> {
       );
     }
 
+    if (Deno.env.get("HUB_STORE_ACCESS_ENABLED") === "true") {
+      try {
+        const accessResponse = await base44.functions.invoke("hubAccess", { op: "check" });
+        const access = accessResponse?.data ?? accessResponse;
+        if (access?.active !== true) return Response.json({ error: "Open the Hub from your store purchase library to confirm access." }, { status: 403 });
+      } catch {
+        return Response.json({ error: "Purchase access could not be verified." }, { status: 403 });
+      }
+    }
+
     const body = await req.json();
     const prompt = typeof body?.prompt === "string" ? body.prompt.trim() : "";
 
