@@ -11,6 +11,7 @@ import AppShell from '@/components/layout/AppShell';
 import Home from '@/pages/Home';
 import Admin from '@/pages/Admin';
 import Login from '@/pages/Login';
+import ClaimHubAccess from '@/pages/ClaimHubAccess';
 import Register from '@/pages/Register';
 import ForgotPassword from '@/pages/ForgotPassword';
 import ResetPassword from '@/pages/ResetPassword';
@@ -46,6 +47,7 @@ const AuthenticatedApp = () => {
   // Render the main app
   return (
     <Routes>
+      <Route path="/access/claim" element={<ClaimHubAccess />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
