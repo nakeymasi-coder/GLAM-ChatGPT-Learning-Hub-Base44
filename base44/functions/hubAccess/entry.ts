@@ -7,8 +7,17 @@ function origin() {
   if (!trustedOrigins.has(value)) throw new Error("Store connection not configured.");
   return value;
 }
+// When the store moves to its new host, glamhustlehub.com answers the old addresses with a web page
+// instead of store data. Only then is the same request sent to the new store's address on the SAME
+// trusted domain. While the current store answers with data (including errors), nothing changes.
+const NEW_STORE_PATHS:Record<string,string> = {"/api/public/access/exchange":"/functions/storeAccessExchange","/api/public/access/status":"/functions/storeAccessStatus","/api/public/access/jwks":"/functions/storeAccessJwks"};
+async function storeFetch(path:string, init:()=>RequestInit) {
+  const first = await fetch(origin()+path, init());
+  if ((first.headers.get("content-type")||"").includes("application/json")) return first;
+  return fetch(origin()+NEW_STORE_PATHS[path], init());
+}
 async function storeRequest(path:string, body:unknown, grant?:string) {
-  const response = await fetch(origin()+path, {method:"POST",headers:{"Content-Type":"application/json",...(grant?{Authorization:"Bearer "+grant}:{})},body:JSON.stringify(body),redirect:"error",signal:AbortSignal.timeout(10000)});
+  const response = await storeFetch(path, ()=>({method:"POST",headers:{"Content-Type":"application/json",...(grant?{Authorization:"Bearer "+grant}:{})},body:JSON.stringify(body),redirect:"error",signal:AbortSignal.timeout(10000)}));
   if (!response.ok) throw new Error("Purchase access could not be confirmed. Open a fresh link from your store library.");
   return response.json();
 }
@@ -28,7 +37,7 @@ export default async function hubAccess(req:Request):Promise<Response> {
   try {
     const grants = client.asServiceRole.entities.HubStoreGrant;
     if(op==="claim") {
-      const keyResponse=await fetch(origin()+"/api/public/access/jwks",{redirect:"error",signal:AbortSignal.timeout(10000)});
+      const keyResponse=await storeFetch("/api/public/access/jwks",()=>({redirect:"error",signal:AbortSignal.timeout(10000)}));
       if(!keyResponse.ok) throw new Error("Store connection unavailable.");
       const claims=await verifyAssertion(body.token,await keyResponse.json(),user.email,"live");
       const exchanged=await storeRequest("/api/public/access/exchange",{token:body.token});
