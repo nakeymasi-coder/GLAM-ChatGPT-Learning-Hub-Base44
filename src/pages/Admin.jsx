@@ -176,7 +176,7 @@ function SettingsPanel({ settings, refresh, setNotice }) {
   const defaults = [
     ['business_email','Business Email','glamorousgrammyglowup@gmail.com','Contact'],
     ['shop_url','Shop More URL','https://glamhustlehub.com','Links'],
-    ['vault_url','The Glam Vault URL','https://payhip.com/b/54LoK','Links'],
+    ['vault_url','The Glam Vault URL','https://www.skool.com/the-glam-vault-9512/about','Links'],
     ['tiktok_url','TikTok URL','https://www.tiktok.com/@promptlikeglam','Social'],
     ['youtube_url','YouTube URL','https://www.youtube.com/@Glamorousaiprompts','Social'],
     ['facebook_url','Facebook URL','https://www.facebook.com/GlamAIForBeginners','Social'],
