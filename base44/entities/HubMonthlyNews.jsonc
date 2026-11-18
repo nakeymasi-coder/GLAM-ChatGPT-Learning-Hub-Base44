@@ -1,0 +1,24 @@
+{
+  "name": "HubMonthlyNews",
+  "type": "object",
+  "properties": {
+    "month": { "type": "string", "description": "YYYY-MM the item belongs to" },
+    "ico": { "type": "string" },
+    "title": { "type": "string" },
+    "summary": { "type": "string", "description": "One short line for the home card" },
+    "plain": { "type": "string", "description": "In plain English: what it means for a beginner" },
+    "detail": { "type": "string", "description": "The factual change, with date" },
+    "lesson_id": { "type": "string", "description": "Hub lesson id to open, or empty" },
+    "lesson_change": { "type": "string", "description": "Suggested lesson edit for the owner to review" },
+    "source_url": { "type": "string" },
+    "status": { "type": "string", "enum": ["draft", "approved", "skipped"], "default": "draft" },
+    "sort_order": { "type": "number" }
+  },
+  "required": ["month", "title", "status"],
+  "rls": {
+    "create": { "user_condition": { "role": "admin" } },
+    "read": { "$or": [ { "data.status": "approved" }, { "user_condition": { "role": "admin" } } ] },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}
