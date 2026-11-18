@@ -8834,6 +8834,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
             currentTrack === "all" || l.level === currentTrack;
           return matchesSearch && matchesTrack;
         });
+        list.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
         const statusTitle = document.getElementById("trackResultTitle");
         const statusCount = document.getElementById("trackResultCount");
         if (statusTitle)
@@ -8850,7 +8851,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
               (l) => `
    <article class="lesson-card">
      <div class="done-dot ${completed.includes(l.id) ? "done" : ""}">${completed.includes(l.id) ? "✓" : "○"}</div>
-     <span class="chip">${l.path}</span>
+     <span class="chip">${l.path}</span>${l.featured ? ' <span class="chip rd-pick">⭐ Glam\'s pick</span>' : ""}
      <h3>${l.title}</h3>
      <p>${l.desc}</p>
      <div class="meta"><span>${l.level}</span><span>${l.time}</span></div>
@@ -11105,7 +11106,9 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           const rows = await r.json();
           const list = Array.isArray(rows) ? rows : (rows.items || rows.data || []);
           const hidden = new Set(list.filter(x => x && x.active === false && x.lesson_id).map(x => x.lesson_id));
-          if (!hidden.size) return;
+          const adminById = {};
+          list.forEach(x => { if (x && x.lesson_id) adminById[x.lesson_id] = x; });
+          lessons.forEach(l => { const a = adminById[l.id]; if (!a) return; l.featured = !!a.featured; if (["Beginner", "Intermediate", "Advanced"].includes(a.level)) l.level = a.level; });
           for (let i = lessons.length - 1; i >= 0; i--) if (hidden.has(lessons[i].id)) lessons.splice(i, 1);
           beginnerStages.forEach(st => { st.lessonIds = st.lessonIds.filter(id => !hidden.has(id)); });
           window.__hubHiddenLessons = [...hidden];
@@ -11464,6 +11467,9 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
   #panel-concierge,.ask-hub,.research-hero{background-image:none!important;background-color:#fff!important}
   #progressFill{background:var(--rd-tang)!important;background-image:none!important}
   .rd-stuck{padding:9px 13px;font-size:13px;right:10px;bottom:92px}
+  .chip.rd-pick{background:#fdeadb!important;color:#c24d10!important;border-color:#f6c9a8!important}
+  .panel .tiny-btn{font-size:14px!important}
+  #panel-researchlab input:not([type=checkbox]):not([type=radio]){border:1.5px solid var(--silver);border-radius:14px;padding:12px 14px;width:100%;box-sizing:border-box;font-size:16px;background:#fff;color:var(--rd-char)}
   body:has(input:focus,textarea:focus,select:focus) .rd-stuck{display:none!important}
   @media (min-width:1101px){.rd-stuck{bottom:24px;right:24px}}
 </style>
@@ -11557,8 +11563,21 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
     set("create","Ask Glam", () => scrollToAskHub());
     set("mystuff","My Stuff", () => goTab("mystuff"));
   }
+  function bumpText(){
+    const roots=[document.getElementById("startHere"),...document.querySelectorAll(".panel.active"),document.getElementById("lessonModal"),document.getElementById("rdSheet")].filter(Boolean);
+    roots.forEach(root=>root.querySelectorAll("*").forEach(e=>{
+      if(e.dataset.rdfs||!e.offsetParent) return;
+      if(![...e.childNodes].some(c=>c.nodeType===3&&c.textContent.trim().length>1)) return;
+      const cs=getComputedStyle(e); if(parseFloat(cs.fontSize)>=13) return;
+      const lab=cs.textTransform==="uppercase"||/kicker|label|badge|chip|pill|count|level|diff|status|eyebrow/.test(String(e.className));
+      e.style.setProperty("font-size",(lab?12.5:14)+"px","important"); e.dataset.rdfs="1";
+    }));
+  }
+  let rdBumpT=null; const rdBump=()=>{ clearTimeout(rdBumpT); rdBumpT=setTimeout(bumpText,120); };
+  window.rdBumpText=bumpText;
   function boot(){
     if(typeof lessons==="undefined" || typeof HubStorage==="undefined"){ return setTimeout(boot,200); }
+    try{ new MutationObserver(rdBump).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["class","open"]}); rdBump(); }catch(e){}
     const start = document.getElementById("startHere");
     if(start && !document.getElementById("rdHome")){
       const host = document.createElement("div"); host.id="rdHome"; start.prepend(host);
