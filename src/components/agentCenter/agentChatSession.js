@@ -76,7 +76,7 @@ export function createAgentChatSession(agents, {agentName, userId, title, onChan
     try {
       let conversation = state.conversation;
       if (!conversation) {
-        conversation = await agents.createConversation({agent_name:agentName,metadata:{name:title,description:'Learning Hub guided conversation'}});
+        conversation = await agents.createConversation({agent_name:agentName,metadata:{name:title,description:'Mastery Hub guided conversation'}});
         if (disposed || currentRevision !== revision) return false;
         attach(conversation);
         patch({conversations:[conversation,...state.conversations]});

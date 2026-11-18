@@ -87,7 +87,7 @@ export default function LegalConsent() {
           <ShieldCheck className="h-7 w-7" />
         </div>
         <div className="mt-5 text-center">
-          <div className="text-xs font-black uppercase tracking-[.18em] text-[#168FEA]">GLAM ChatGPT Learning Hub</div>
+          <div className="text-xs font-black uppercase tracking-[.18em] text-[#168FEA]">ChatGPT Mastery Hub</div>
           <h1 className="mt-2 text-3xl font-black">One required step before entering</h1>
           <p className="mt-3 text-sm leading-6 text-slate-600">
             Please review and accept the current Terms & Conditions and Privacy Policy. Access to the Hub is blocked until acceptance is recorded for your account.

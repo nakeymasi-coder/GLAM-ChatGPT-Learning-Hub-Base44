@@ -115,7 +115,7 @@ export default function Admin() {
             {nav.map(([id,label,Icon]) => <button key={id} onClick={()=>setTab(id)} className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-bold transition ${tab===id?'bg-blue-50 text-[#168FEA]':'text-slate-600 hover:bg-slate-50'}`}><Icon size={18}/>{label}</button>)}
           </nav>
           <div className="border-t border-slate-100 p-3">
-            <a href="/hub.html" className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"><ExternalLink size={18}/>Open Learning Hub</a>
+            <a href="/hub.html" className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"><ExternalLink size={18}/>Open Mastery Hub</a>
             <button onClick={()=>logout()} className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold text-slate-600 hover:bg-slate-50"><LogOut size={18}/>Sign out</button>
           </div>
         </aside>
@@ -123,7 +123,7 @@ export default function Admin() {
         <main className="min-w-0 flex-1">
           <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 px-4 py-3 backdrop-blur lg:px-8">
             <div className="flex items-center justify-between gap-3">
-              <div><div className="text-xs font-black uppercase tracking-[.16em] text-[#168FEA]">GLAM ChatGPT Learning Hub</div><h1 className="text-2xl font-black">Admin</h1></div>
+              <div><div className="text-xs font-black uppercase tracking-[.16em] text-[#168FEA]">ChatGPT Mastery Hub</div><h1 className="text-2xl font-black">Admin</h1></div>
               <div className="flex items-center gap-2">
                 <a href="/hub.html" className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-[#103B63]">View Hub</a>
               </div>
@@ -174,7 +174,7 @@ function SearchBox({ value, onChange }) {
 
 function SettingsPanel({ settings, refresh, setNotice }) {
   const defaults = [
-    ['business_email','Business Email','glamorousgrammyglowup@gmail.com','Contact'],
+    ['business_email','Business Email','orders@glamhustlehub.com','Contact'],
     ['shop_url','Shop More URL','https://glamhustlehub.com','Links'],
     ['vault_url','The Glam Vault URL','https://www.skool.com/the-glam-vault-9512/about','Links'],
     ['tiktok_url','TikTok URL','https://www.tiktok.com/@promptlikeglam','Social'],

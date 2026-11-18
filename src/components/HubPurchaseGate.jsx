@@ -11,6 +11,6 @@ export default function HubPurchaseGate({children}) {
     return ()=>{active=false;};
   },[]);
   if(state==="checking")return <main className="p-8 text-center" role="status">Checking your Hub access…</main>;
-  if(state!=="allowed")return <main className="mx-auto max-w-lg p-8"><h1 className="text-2xl font-bold">Connect your Hub purchase</h1><p className="my-4">Open ChatGPT Mastery Hub from your store purchase library using the same email you used at checkout.</p><a className="underline" href="https://glamhustlehub.com/account">Open my purchase library</a><p className="mt-4">Need help? glamorousgrammyglowup@gmail.com</p></main>;
+  if(state!=="allowed")return <main className="mx-auto max-w-lg p-8"><h1 className="text-2xl font-bold">Connect your Hub purchase</h1><p className="my-4">Open ChatGPT Mastery Hub from your store purchase library using the same email you used at checkout.</p><a className="underline" href="https://glamhustlehub.com/account">Open my purchase library</a><p className="mt-4">Need help? orders@glamhustlehub.com</p></main>;
   return children;
 }
