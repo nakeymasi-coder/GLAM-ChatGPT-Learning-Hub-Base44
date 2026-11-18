@@ -11432,11 +11432,32 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
 <button class="rd-stuck" type="button" onclick="goTab('stuck')" aria-label="I'm stuck, get help">🆘 I'm stuck</button>
 <script>
 (function(){
-  const NEWS = [
+  let NEWS = [
     { ico:"🎙️", t:"Voice is changing Dec 11", s:"Advanced and Standard Voice retire. Your Voice lesson is updated.", plain:"If you talk to ChatGPT out loud, it will sound and work a little differently after December 11. Nothing to do yet.", detail:"OpenAI is retiring Advanced and Standard Voice on December 11, 2026 and moving everyone to GPT-Live.", lesson:"voice" },
     { ico:"🖼️", t:"Images 2.6", s:"Better edits that keep details, plus saved reference images.", plain:"Changing one thing in a picture should mess up the rest less often. You can also save reference images to reuse.", detail:"ChatGPT Images 2.6 rolled out in early November 2026.", lesson:"imageedit" },
     { ico:"🔒", t:"Locked chats", s:"Hide private chats behind a PIN.", plain:"You can now lock a private chat so it needs a PIN to open. Handy for business or money stuff.", detail:"Added to ChatGPT in October 2026.", lesson:"safepaste" }
   ];
+  let NEWS_MONTH = "NOV 2026", DRAFTS = [];
+  const APP = "6a9aedd33cd938f0f47b9ff7";
+  const monthLabel = m => { const [y,mo]=String(m||"").split("-"); const n=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][+mo-1]; return n? n+" "+y : m; };
+  async function loadNews(){
+    try{
+      const r = await fetch(`/api/apps/${APP}/entities/HubMonthlyNews?limit=200`, { headers: hubProtectedHeaders(), credentials:"include" });
+      if(!r.ok) return;
+      const rows = await r.json(); const list = Array.isArray(rows) ? rows : (rows.items||rows.data||[]);
+      const ok = list.filter(x=>x.status==="approved");
+      DRAFTS = list.filter(x=>x.status==="draft").sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
+      if(ok.length){ const latest = ok.map(x=>x.month).sort().pop(); NEWS_MONTH = monthLabel(latest);
+        NEWS = ok.filter(x=>x.month===latest).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)).map(x=>({ico:x.ico||"🆕", t:x.title, s:x.summary||"", plain:x.plain||"", detail:x.detail||"", lesson:x.lesson_id||"", src:x.source_url||""})); }
+      renderHome();
+    }catch(e){}
+  }
+  window.rdLoadNews = loadNews;
+  window.rdReview = async function(id, status){
+    try{ const r = await fetch(`/api/apps/${APP}/entities/HubMonthlyNews/${id}`, { method:"PUT", headers: Object.assign({"Content-Type":"application/json"}, hubProtectedHeaders()), credentials:"include", body: JSON.stringify({status}) });
+      if(!r.ok) throw new Error("save failed"); toast(status==="approved" ? "Approved. It's live for buyers." : "Skipped."); await loadNews(); }
+    catch(e){ toast("Couldn't save that. Try again."); }
+  };
   const ORDER = { business:["basics","prompting","custominstructions","checkit","safepaste","projects"], pictures:["basics","prompting","images","imageedit","checkit"], learning:["basics","prompting","checkit","safepaste"], unsure:["basics","safepaste","prompting","checkit"] };
   const $ = s => document.querySelector(s);
   function done(){ try { return JSON.parse(HubStorage.getItem("glamHubCompleted")||"[]"); } catch(e){ return []; } }
@@ -11461,7 +11482,10 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       </div>
       ${nl ? `<div class="rd-next"><div class="k">Your next step</div><h3>${escapeAttr(nl.title)}</h3><p>${escapeAttr(nl.desc||"")} · ${escapeAttr(nl.time||"5 min")}</p><button class="rd-btn" type="button" onclick="openLesson('${nl.id}')">Start lesson →</button><button class="rd-link" type="button" onclick="goTab('learn')">See all lessons</button></div>` :
         `<div class="rd-next"><div class="k">You did it</div><h3>Every lesson is done 🎉</h3><p>Grab your certificate.</p><button class="rd-btn" type="button" onclick="goTab('certificate')">Get my certificate →</button></div>`}
-      <div class="rd-news"><div class="rd-news-h"><b>🆕 New in ChatGPT this month</b><span class="rd-pill">NOV 2026</span></div>
+      ${DRAFTS.length ? `<div class="rd-news" style="border-color:var(--rd-tang)"><div class="rd-news-h"><b>🛠️ Monthly update review</b><span class="rd-pill" style="background:var(--rd-tang)">OWNER ONLY</span></div><p style="margin:0 0 6px;font-size:13.5px;color:#6f655c">${DRAFTS.length} new item${DRAFTS.length>1?"s":""} waiting. Buyers only see what you approve.</p>
+        ${DRAFTS.map(d=>`<div style="border-top:1px dashed var(--silver);padding:12px 0"><b style="display:block;font-size:15.5px">${escapeAttr(d.ico||"🆕")} ${escapeAttr(d.title)}</b><span style="display:block;font-size:13.5px;color:#6f655c;margin:2px 0 6px">${escapeAttr(d.summary||"")}</span>${d.plain?`<span style="display:block;font-size:13.5px;margin-bottom:6px"><b>Plain English:</b> ${escapeAttr(d.plain)}</span>`:""}${d.lesson_change?`<span style="display:block;font-size:13px;background:#fff6e5;border-radius:10px;padding:8px 10px;margin-bottom:8px"><b>Suggested lesson change:</b> ${escapeAttr(d.lesson_change)}</span>`:""}${d.source_url?`<a href="${escapeAttr(d.source_url)}" target="_blank" rel="noopener" style="font-size:12.5px">Source</a>`:""}<div style="display:flex;gap:8px;margin-top:8px"><button class="rd-btn" type="button" style="background:var(--rd-tang);color:#fff;padding:11px" onclick="rdReview('${d.id}','approved')">Approve</button><button class="rd-btn line" type="button" style="padding:11px" onclick="rdReview('${d.id}','skipped')">Skip</button></div></div>`).join("")}
+      </div>` : ""}
+      <div class="rd-news"><div class="rd-news-h"><b>🆕 New in ChatGPT this month</b><span class="rd-pill">${NEWS_MONTH}</span></div>
         ${NEWS.map((n,i)=>`<button class="rd-item" type="button" onclick="rdNews(${i})"><span class="ico">${n.ico}</span><span><b>${n.t}</b><span>${n.s}</span></span></button>`).join("")}
       </div>`;
   }
@@ -11471,7 +11495,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
   window.rdCloseSheet = function(){ $("#rdSheet").classList.remove("on"); };
   function sheet(html){ $("#rdSheetBody").innerHTML = html; $("#rdSheet").classList.add("on"); }
   window.rdNews = function(i){ const n=NEWS[i]; const has = lessons.some(l=>l.id===n.lesson);
-    sheet(`<div style="font-size:34px">${n.ico}</div><h3>${n.t}</h3><p style="color:var(--rd-char);font-size:17px"><b>In plain English:</b> ${n.plain}</p><p>${n.detail}</p>${has?`<button class="rd-btn dark" type="button" onclick="rdCloseSheet();openLesson('${n.lesson}')">Open the lesson →</button>`:""}<p style="text-align:center;font-size:12.5px;margin:10px 0">Source: OpenAI release notes</p><button class="rd-btn line" type="button" onclick="rdCloseSheet()">Close</button>`); };
+    sheet(`<div style="font-size:34px">${n.ico}</div><h3>${n.t}</h3><p style="color:var(--rd-char);font-size:17px"><b>In plain English:</b> ${n.plain}</p><p>${n.detail}</p>${has?`<button class="rd-btn dark" type="button" onclick="rdCloseSheet();openLesson('${n.lesson}')">Open the lesson →</button>`:""}<p style="text-align:center;font-size:12.5px;margin:10px 0">Source: ${n.src?`<a href="${n.src}" target="_blank" rel="noopener">OpenAI release notes</a>`:"OpenAI release notes"}</p><button class="rd-btn line" type="button" onclick="rdCloseSheet()">Close</button>`); };
   const STEPS = [
     { q:"What do you want ChatGPT to help you with most?", sub:"Tap one. You can change it later.", key:"goal", opts:[["business","💼 My business (posts, emails, selling)"],["pictures","🎨 Making pictures and designs"],["learning","📚 Learning and research"],["unsure","🤷🏾‍♀️ I honestly don't know yet"]] },
     { q:"How much have you used ChatGPT?", sub:"No wrong answer. This just sets your pace.", key:"level", opts:[["never","🌱 Never or barely"],["some","🙂 A little"],["lots","🔥 I use it a lot"]] }
@@ -11505,7 +11529,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
     try{ if(HubStorage.getItem("glamBigText")==="1") document.documentElement.classList.add("rd-big"); }catch(e){}
     try{ HubStorage.setItem("glamHubTutorialSeen","1"); }catch(e){}
     setTimeout(()=>{ try{ closeHubTutorial(); }catch(e){} },900);
-    wireNav(); renderHome();
+    wireNav(); renderHome(); loadNews();
     if(!prefs()) setTimeout(()=>rdOnboard(0),1000);
     try{ fetch("/api/apps/6a9aedd33cd938f0f47b9ff7/entities/User/me",{headers:hubProtectedHeaders(),credentials:"include"}).then(r=>r.json()).then(u=>{ const n=(u?.full_name||"").trim().split(/\s+/)[0]; if(n){ window.__rdName=n; renderHome(); } }).catch(()=>{}); }catch(e){}
     const oldToggle = window.toggleComplete; if(typeof oldToggle==="function" && !oldToggle.__rd){ window.toggleComplete = function(){ const r = oldToggle.apply(this, arguments); setTimeout(renderHome,100); return r; }; window.toggleComplete.__rd = true; }
