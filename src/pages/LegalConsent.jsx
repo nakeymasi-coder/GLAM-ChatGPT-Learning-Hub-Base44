@@ -28,6 +28,22 @@ export default function LegalConsent() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [docHtml, setDocHtml] = useState("");
+  useEffect(() => {
+    let on = true;
+    setDocHtml("");
+    fetch(document === 'terms' ? '/terms.html' : '/privacy.html')
+      .then(r => r.text())
+      .then(t => {
+        const d = new DOMParser().parseFromString(t, 'text/html');
+        d.querySelectorAll('script,style,link,meta,iframe,object,embed,form').forEach(n => n.remove());
+        d.querySelectorAll('*').forEach(n => [...n.attributes].forEach(at => { if (/^on/i.test(at.name) || (/^(href|src)$/i.test(at.name) && /^\s*javascript:/i.test(at.value))) n.removeAttribute(at.name); }));
+        const root = d.querySelector('main') || d.body;
+        if (on) setDocHtml(root ? root.innerHTML : '');
+      })
+      .catch(() => { if (on) setDocHtml('<p>We couldn’t show it here. Use the links below to open it in a new tab.</p>'); });
+    return () => { on = false; };
+  }, [document]);
 
   useEffect(() => {
     if (authChecked && !user) navigateToLogin();
@@ -75,51 +91,51 @@ export default function LegalConsent() {
   if (!user || loading) {
     return (
       <div className="min-h-screen grid place-items-center bg-slate-50">
-        <Loader2 className="h-8 w-8 animate-spin text-[#168FEA]" />
+        <Loader2 className="h-8 w-8 animate-spin text-[#e8601c]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f6f9fc] px-4 py-10 text-slate-900">
-      <div className="mx-auto max-w-xl rounded-3xl border border-slate-200 bg-white p-6 shadow-xl sm:p-8">
-        <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[#168FEA] text-white">
+    <div className="min-h-screen bg-[#fbf5ec] px-4 py-10 text-[#211d1a]">
+      <div className="mx-auto max-w-xl rounded-3xl border border-[#e6d9c8] bg-white p-6 shadow-xl sm:p-8">
+        <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[#e8601c] text-white">
           <ShieldCheck className="h-7 w-7" />
         </div>
         <div className="mt-5 text-center">
-          <div className="text-xs font-black uppercase tracking-[.18em] text-[#168FEA]">ChatGPT Mastery Hub</div>
-          <h1 className="mt-2 text-3xl font-black">One required step before entering</h1>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
+          <div className="text-xs font-black uppercase tracking-[.18em] text-[#e8601c]">ChatGPT Mastery Hub</div>
+          <h1 className="mt-2 text-3xl font-black font-serif">One required step before entering</h1>
+          <p className="mt-3 text-sm leading-6 text-[#5c534b]">
             Please review and accept the current Terms & Conditions and Privacy Policy. Access to the Hub is blocked until acceptance is recorded for your account.
           </p>
         </div>
 
         <div className="mt-6 flex gap-2" role="tablist" aria-label="Legal documents">
-          <button type="button" role="tab" aria-selected={document === 'terms'} onClick={() => setDocument('terms')} className={`flex-1 rounded-xl border px-3 py-3 text-sm font-bold ${document === 'terms' ? 'border-blue-600 bg-blue-50 text-blue-900' : 'border-slate-200 text-slate-700'}`}>Terms & Conditions</button>
-          <button type="button" role="tab" aria-selected={document === 'privacy'} onClick={() => setDocument('privacy')} className={`flex-1 rounded-xl border px-3 py-3 text-sm font-bold ${document === 'privacy' ? 'border-blue-600 bg-blue-50 text-blue-900' : 'border-slate-200 text-slate-700'}`}>Privacy Policy</button>
+          <button type="button" role="tab" aria-selected={document === 'terms'} onClick={() => setDocument('terms')} className={`flex-1 rounded-xl border px-3 py-3 text-sm font-bold ${document === 'terms' ? 'border-[#e8601c] bg-[#fdeadb] text-[#9a3a0b]' : 'border-[#e6d9c8] text-[#3d3530]'}`}>Terms & Conditions</button>
+          <button type="button" role="tab" aria-selected={document === 'privacy'} onClick={() => setDocument('privacy')} className={`flex-1 rounded-xl border px-3 py-3 text-sm font-bold ${document === 'privacy' ? 'border-[#e8601c] bg-[#fdeadb] text-[#9a3a0b]' : 'border-[#e6d9c8] text-[#3d3530]'}`}>Privacy Policy</button>
         </div>
-        <iframe title={document === 'terms' ? 'Terms and Conditions' : 'Privacy Policy'} src={document === 'terms' ? '/terms.html' : '/privacy.html'} className="mt-3 h-96 w-full rounded-xl border border-slate-200 bg-white" />
-        <p className="mt-2 text-xs text-slate-600">You can also <a href="/terms.html" target="_blank" rel="noopener noreferrer" className="underline">open the terms</a> or <a href="/privacy.html" target="_blank" rel="noopener noreferrer" className="underline">open the privacy policy</a> in a new tab.</p>
+        <div role="document" aria-label={document === 'terms' ? 'Terms and Conditions' : 'Privacy Policy'} className="mt-3 h-96 w-full overflow-y-auto rounded-xl border border-[#e6d9c8] bg-white p-4 text-sm leading-6 text-[#211d1a] [&_h1]:text-xl [&_h1]:font-black [&_h2]:mt-4 [&_h2]:text-base [&_h2]:font-bold [&_h3]:mt-3 [&_h3]:font-bold [&_p]:mt-2 [&_ul]:mt-2 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:mt-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_a]:underline" dangerouslySetInnerHTML={{ __html: docHtml || '<p>Loading…</p>' }} />
+        <p className="mt-2 text-xs text-[#5c534b]">You can also <a href="/terms.html" target="_blank" rel="noopener noreferrer" className="underline">open the terms</a> or <a href="/privacy.html" target="_blank" rel="noopener noreferrer" className="underline">open the privacy policy</a> in a new tab.</p>
 
-        <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4">
+        <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-2xl border border-[#f6c9a8] bg-[#fdeadb] p-4">
           <input
             type="checkbox"
             checked={checked}
             onChange={(e) => setChecked(e.target.checked)}
             className="mt-1 h-5 w-5"
           />
-          <span className="text-sm leading-6 text-slate-700">
+          <span className="text-sm leading-6 text-[#3d3530]">
             I am at least 18 years old, I have read and agree to the <a className="font-bold underline" href="/terms.html" target="_blank" rel="noopener noreferrer">Terms & Conditions</a>, and I acknowledge the <a className="font-bold underline" href="/privacy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
           </span>
         </label>
 
         {error && <div className="mt-4 rounded-xl bg-rose-50 p-3 text-sm text-rose-700">{error}</div>}
 
-        <Button className="mt-5 h-12 w-full bg-[#168FEA] font-black text-white hover:bg-[#127ac8]" disabled={!checked || saving} onClick={accept}>
+        <Button className="mt-5 h-12 w-full bg-[#e8601c] font-black text-white hover:bg-[#c24d10]" disabled={!checked || saving} onClick={accept}>
           {saving ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving acceptance…</> : "I Agree — Enter the Hub"}
         </Button>
 
-        <p className="mt-4 text-center text-xs leading-5 text-slate-500">
+        <p className="mt-4 text-center text-xs leading-5 text-[#6f655c]">
           Your acceptance is recorded with the policy versions and timestamp so the Hub can verify that you agreed before use.
         </p>
       </div>

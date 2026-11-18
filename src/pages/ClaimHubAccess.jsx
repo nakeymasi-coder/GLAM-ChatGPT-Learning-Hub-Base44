@@ -16,7 +16,7 @@ export default function ClaimHubAccess() {
       try { pending = JSON.parse(sessionStorage.getItem(KEY) || "null"); } catch { /* Invalid local state. */ }
       if (!pending?.token || !Number.isFinite(pending.at) || Date.now()-pending.at > 300000) {
         sessionStorage.removeItem(KEY);
-        if(active) setMessage("This link has expired. Open the Hub again from your store purchase library.");
+        if(active) setMessage("To open the Hub, go to your store purchase library and tap the ChatGPT Mastery Hub. If you clicked a link from there more than 5 minutes ago, just open it again.");
         return;
       }
       try { await base44.auth.me(); } catch {
@@ -36,12 +36,12 @@ export default function ClaimHubAccess() {
     claim();
     return () => { active = false; };
   },[]);
-  return <main className="min-h-screen bg-white text-slate-900 flex items-center justify-center p-6">
-    <section className="w-full max-w-lg rounded-2xl border border-slate-200 p-8 shadow-sm">
-      <p className="text-sm font-semibold text-blue-600">Glam Hustle Hub</p>
-      <h1 className="mt-3 text-2xl font-bold">Your ChatGPT Mastery Hub access</h1>
+  return <main className="min-h-screen bg-[#fbf5ec] text-[#211d1a] flex items-center justify-center p-6">
+    <section className="w-full max-w-lg rounded-2xl border border-[#e6d9c8] p-8 shadow-sm">
+      <p className="text-sm font-semibold text-[#e8601c]">Glam Hustle Hub</p>
+      <h1 className="mt-3 text-2xl font-bold font-serif">Your ChatGPT Mastery Hub access</h1>
       <p className="mt-4" role="status">{message}</p>
-      {login && <a className="mt-6 inline-block rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white" href="/login?returnTo=%2Faccess%2Fclaim">Sign in to connect my purchase</a>}
+      {login && <a className="mt-6 inline-block rounded-xl bg-[#e8601c] px-5 py-3 font-semibold text-white" href="/login?returnTo=%2Faccess%2Fclaim">Sign in to connect my purchase</a>}
       <p className="mt-6"><a className="underline" href="https://glamhustlehub.com/account">Return to my store library</a></p>
     </section>
   </main>;
