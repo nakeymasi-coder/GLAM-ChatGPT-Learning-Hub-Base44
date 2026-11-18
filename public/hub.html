@@ -3110,6 +3110,7 @@
             <button class="tab" data-tab="characterlab">Character Builder</button>
             <button class="tab" data-tab="environmentlab">Background Builder</button>
             <button class="tab" data-tab="typographylab">Typography Builder</button>
+            <button class="tab" data-tab="bizprofile">My Business Profile</button>
             <button class="tab" data-tab="business">Business Lab</button>
             <button class="tab" data-tab="researchlab">Business Research Lab</button>
             <span class="tab-group-label">My Stuff</span>
@@ -3334,6 +3335,7 @@
             <p>These tools help you prepare words and prompts to use in ChatGPT. Pick one small starting point.</p>
           </div>
           <div class="beginner-links">
+            <button type="button" onclick="goTab('bizprofile')"><strong>Make ChatGPT know my business</strong><span>Stop getting answers that sound like everybody else's →</span></button>
             <button type="button" onclick="goTab('powerwords')"><strong>Describe the look I want</strong><span>Find simple words for “extra glossy,” soft, realistic, and more →</span></button>
             <button type="button" onclick="goTab('asklibrary')"><strong>Turn my idea into a prompt</strong><span>Use the prompt builder or start with an example →</span></button>
             <button type="button" onclick="goTab('coach')"><strong>Improve a prompt I've tried</strong><span>Work on a prompt that isn't giving me what I want →</span></button>
@@ -3361,6 +3363,7 @@
             <div class="landing-box" id="createAnchor-business">
               <h4>Business Tools</h4>
               <div class="tool-links">
+                <button type="button" onclick="goTab('bizprofile')"><strong>Make ChatGPT Know My Business</strong><small>Answer a few questions once so every answer fits your business, your customer and how you talk.</small></button>
                 <button type="button" onclick="goTab('business')"><strong>Business Lab</strong><small>Use ChatGPT for your business — offers, listings, content, and planning.</small></button>
                 <button type="button" onclick="goTab('researchlab')"><strong>Business Research Lab</strong><small>Research your market, audience, and competitors the safe way.</small></button>
               </div>
@@ -4090,6 +4093,54 @@
               </div>
             </div>
             <div class="box"><div class="kicker">Your typography assets</div><h3>Ready to layer onto the design</h3><div id="typeResult"><div class="output">Your typography prompt will appear here.</div></div></div>
+          </div>
+        </div>
+
+        <div class="panel" id="panel-bizprofile">
+          <style>
+            #panel-bizprofile .bp-chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 2px}
+            #panel-bizprofile .bp-chips label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line,#d9e2f0);border-radius:999px;padding:8px 12px;font-size:14px;font-weight:700;cursor:pointer;background:#fff}
+            #panel-bizprofile .bp-chips input{accent-color:var(--deep,#0b3a75)}
+            #panel-bizprofile .bp-chips label:has(input:checked){background:var(--deep,#0b3a75);color:#fff;border-color:var(--deep,#0b3a75)}
+            #panel-bizprofile .bp-q{font-weight:800;margin:14px 0 4px}
+            #panel-bizprofile .bp-hint{font-size:13px;opacity:.75;margin:0 0 6px}
+            #panel-bizprofile .bp-count{font-size:12px;font-weight:800;margin:4px 0 0;opacity:.8}
+            #panel-bizprofile .bp-count.over{color:#b4432b;opacity:1}
+            #panel-bizprofile .bp-warn{background:#fff6e5;border:1px solid #f1d39a;border-radius:12px;padding:10px 12px;margin:0 0 12px;font-size:14px}
+            #panel-bizprofile .bp-steps li{margin:6px 0}
+          </style>
+          <div class="section-head" style="margin-top:0">
+            <div class="kicker">Make ChatGPT know my business</div>
+            <h2 style="font-size:36px">Stop getting answers that sound like everybody else's.</h2>
+            <p>Answer a few questions once. You'll get two short blocks to paste into ChatGPT's settings so every chat already knows your business, your customer and how you talk.</p>
+          </div>
+          <div class="coach-grid">
+            <div class="box"><div class="kicker">Step 1</div><h3>Tell me about your business</h3>
+              <div class="stack">
+                <div class="bp-q">What's your business called?</div>
+                <input class="field" id="bpName" placeholder="Example: Glow Up Candle Co." />
+                <div class="bp-q">What do you sell?</div>
+                <input class="field" id="bpSell" placeholder="Example: hand-poured soy candles and gift boxes" />
+                <div class="bp-q">Who buys from you?</div>
+                <p class="bp-hint">Be specific: who they are, what they want, what bugs them.</p>
+                <input class="field" id="bpWho" placeholder="Example: busy moms 35-55 who want a calm, pretty home and buy gifts for friends" />
+                <div class="bp-q">What makes you different?</div>
+                <input class="field" id="bpDiff" placeholder="Example: small batches, scents named after Southern desserts" />
+                <div class="bp-q">How do you talk? (pick any)</div>
+                <div class="bp-chips" id="bpTone"></div>
+                <input class="field" id="bpSay" placeholder="Words or phrases you actually say. Example: “Hey boo,” “let's get it”" />
+                <div class="bp-q">Words ChatGPT should never use</div>
+                <input class="field" id="bpNever" placeholder="Example: elevate, unlock, game-changer, delve" />
+                <div class="bp-q">Where do you sell or post? (pick any)</div>
+                <div class="bp-chips" id="bpWhere"></div>
+                <div class="bp-q">What do you want help with most? (pick any)</div>
+                <div class="bp-chips" id="bpHelp"></div>
+                <div class="bp-q">How should it answer you? (pick any)</div>
+                <div class="bp-chips" id="bpStyle"></div>
+                <div class="card-actions" style="margin-top:14px"><button class="btn secondary" type="button" onclick="bizProfileExample()">Show me an example</button><button class="btn primary" type="button" onclick="buildBizProfile()">Build My Business Profile</button></div>
+              </div>
+            </div>
+            <div class="box"><div class="kicker">Step 2</div><h3>Paste it into ChatGPT</h3><div id="bpResult"><div class="output">Your two blocks will show up here, ready to copy.</div></div></div>
           </div>
         </div>
 
@@ -8288,6 +8339,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         characterlab: ["Create & Build", "Character Builder"],
         environmentlab: ["Create & Build", "Background Builder"],
         typographylab: ["Create & Build", "Typography Builder"],
+        bizprofile: ["Create & Build", "My Business Profile"],
         business: ["Create & Build", "Business Lab"],
         researchlab: ["Create & Build", "Business Research Lab"],
         create: ["Make something", "Choose a starting point"],
@@ -8323,6 +8375,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         const tools = document.getElementById("toolboxDetails");
         if (tools) tools.open = false;
         if (name === "history") loadPromptHistory();
+        if (name === "bizprofile") bpLoad();
         updateHubLocation(name);
         closeHubSidebar();
         document
@@ -9468,6 +9521,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           "panel-clinic": "Prompt Clinic",
           "panel-business": "Business Hub",
           "panel-researchlab": "Business Research Lab",
+          "panel-bizprofile": "My Business Profile",
           "panel-practice": "Practice Lab",
           "panel-simulator": "Prompt Simulator"
         };
@@ -10414,6 +10468,109 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       function buildEnvironment(){const v=id=>document.getElementById(id).value.trim();const subject=v("envSubject")||environmentPresets[document.getElementById("envType").value].subject;const parts=[subject,v("envTime"),v("envWeather"),v("envStyle"),v("envCamera"),v("envLighting"),v("envDepth"),v("envMaterials"),v("envActivity")].filter(Boolean);const guard=mergeAvoid("no unrelated clutter, no warped architecture",v("envAvoid"));const prompt=lockImagePrompt(parts.join(", ")+`, realistic scale, believable contact shadows, accurate reflections, environmental depth, ${guard}.`);const quick=lockImagePrompt([subject,v("envStyle"),v("envLighting"),v("envCamera")].filter(Boolean).join(", ")+".");const stack=[v("envStyle"),v("envCamera"),v("envLighting"),v("envDepth"),v("envMaterials")].filter(Boolean);lastEnvironmentBuild={prompt,quick,stack};document.getElementById("envResult").innerHTML=`<div class="label">Main environment prompt</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('envFull').innerText)">Copy</button><pre id="envFull">${escapeAttr(prompt)}</pre></div><div class="label" style="margin-top:12px">Quick version</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('envQuick').innerText)">Copy</button><pre id="envQuick">${escapeAttr(quick)}</pre></div><div class="label" style="margin-top:12px">Environment stack</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('envStack').innerText)">Copy</button><pre id="envStack">${escapeAttr(stack.join(", "))}</pre></div>`;}
       function chooseTypography(){document.getElementById("typeFamily").value="bold condensed display lettering";document.getElementById("typeCase").value="all caps";document.getElementById("typeShape").value="thick sculpted letterforms";document.getElementById("typeMaterial").value="glossy resin lettering";document.getElementById("typeDepth").value="deep 3D extrusion";document.getElementById("typeEffect").value="clean reflective highlights";document.getElementById("typeLayout").value="centered hero headline";document.getElementById("typeSpacing").value="tight controlled kerning";document.getElementById("typeColor").value="Caribbean sapphire blue, metallic silver, white";document.getElementById("typeAvoid").value="no misspelled text, no warped letters, no hidden wording, no random extra words";toast("Typography options chosen for you.");}
       function buildTypography(){const v=id=>document.getElementById(id).value.trim();const exact=v("typeText")||"YOUR TEXT";const prompt=`Typography reading exactly “${exact}”, ${v("typeCase")}, ${v("typeFamily")}, ${v("typeShape")}, ${v("typeMaterial")}, ${v("typeDepth")}, ${v("typeEffect")}, ${v("typeLayout")}, ${v("typeSpacing")}, ${v("typeColor")||"clean high-contrast color treatment"}, crisp edges, professional legibility, all visible wording fully unobstructed and correctly spelled, ${mergeAvoid("no warped letters or extra text",v("typeAvoid"))}.`;const stack=[v("typeFamily"),v("typeShape"),v("typeMaterial"),v("typeDepth"),v("typeEffect"),v("typeLayout"),v("typeSpacing")].filter(Boolean);const promptLocked=lockImagePrompt(prompt);lastTypographyBuild={prompt:promptLocked,stack};document.getElementById("typeResult").innerHTML=`<div class="label">Typography prompt</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('typeFull').innerText)">Copy</button><pre id="typeFull">${escapeAttr(promptLocked)}</pre></div><div class="label" style="margin-top:12px">Typography stack</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('typeStack').innerText)">Copy</button><pre id="typeStack">${escapeAttr(stack.join(", "))}</pre></div>`;}
+      // ===== Business Profile builder ("Make ChatGPT know my business") =====
+      const BP_OPTIONS = {
+        bpTone: ["Warm and friendly","Funny","Bold and loud","Classy","Straight-talking","Encouraging","Faith-filled","Southern charm","Calm and simple"],
+        bpWhere: ["TikTok","Instagram","Facebook","Pinterest","YouTube","Etsy","Amazon","Shopify","My own website","Email list","In person"],
+        bpHelp: ["Captions and posts","Product descriptions","Emails","Content ideas","Replies to customers","Pricing and offers","Video scripts","Planning my week"],
+        bpStyle: ["Keep it short","Step-by-step","Beginner words, no jargon","Tell me when I'm wrong","Ask me before guessing","Give me 2-3 options","Sound like me, not a robot"]
+      };
+      const BP_FIELDS = ["bpName","bpSell","bpWho","bpDiff","bpSay","bpNever"];
+      function bpRenderChips() {
+        Object.entries(BP_OPTIONS).forEach(([id, opts]) => {
+          const box = document.getElementById(id);
+          if (!box || box.dataset.ready) return;
+          box.innerHTML = opts.map(o => `<label><input type="checkbox" value="${escapeAttr(o)}" onchange="bpSave()"> ${escapeAttr(o)}</label>`).join("");
+          box.dataset.ready = "1";
+        });
+      }
+      function bpPicked(id) { return [...document.querySelectorAll(`#${id} input:checked`)].map(i => i.value); }
+      function bpVal(id) { return (document.getElementById(id)?.value || "").trim(); }
+      function bpSave() {
+        try {
+          const data = {};
+          BP_FIELDS.forEach(f => data[f] = bpVal(f));
+          Object.keys(BP_OPTIONS).forEach(k => data[k] = bpPicked(k));
+          HubStorage.setItem("glamBizProfile", JSON.stringify(data));
+        } catch (e) {}
+      }
+      function bpLoad() {
+        bpRenderChips();
+        try {
+          const data = JSON.parse(HubStorage.getItem("glamBizProfile") || "null");
+          if (!data) return;
+          BP_FIELDS.forEach(f => { const el = document.getElementById(f); if (el && data[f]) el.value = data[f]; });
+          Object.keys(BP_OPTIONS).forEach(k => (data[k] || []).forEach(v => { const i = [...document.querySelectorAll(`#${k} input`)].find(x => x.value === v); if (i) i.checked = true; }));
+        } catch (e) {}
+      }
+      function bizProfileExample() {
+        bpRenderChips();
+        const ex = { bpName:"Glow Up Candle Co.", bpSell:"hand-poured soy candles and gift boxes", bpWho:"busy moms 35-55 who want a calm, pretty home and like buying gifts for their friends", bpDiff:"small batches and scents named after Southern desserts", bpSay:"Hey boo, treat yourself, smells like Sunday dinner", bpNever:"elevate, unlock, game-changer, delve, em dashes" };
+        Object.entries(ex).forEach(([k, v]) => document.getElementById(k).value = v);
+        const pick = { bpTone:["Warm and friendly","Southern charm"], bpWhere:["TikTok","Instagram","Etsy"], bpHelp:["Captions and posts","Product descriptions"], bpStyle:["Keep it short","Tell me when I'm wrong","Sound like me, not a robot"] };
+        Object.keys(BP_OPTIONS).forEach(k => document.querySelectorAll(`#${k} input`).forEach(i => i.checked = (pick[k] || []).includes(i.value)));
+        toast("Example filled in. Swap in your own details.");
+      }
+      function bpCountHtml(text) {
+        const n = text.length, over = n > 1500;
+        return `<div class="bp-count${over ? " over" : ""}">${n.toLocaleString()} characters${over ? " · too long for the free plan (1,500 max). Paid plans allow more." : " · fits every ChatGPT plan"}</div>`;
+      }
+      function buildBizProfile() {
+        bpRenderChips();
+        const name = bpVal("bpName"), sell = bpVal("bpSell"), who = bpVal("bpWho"), diff = bpVal("bpDiff"), say = bpVal("bpSay"), never = bpVal("bpNever");
+        const tone = bpPicked("bpTone"), where = bpPicked("bpWhere"), help = bpPicked("bpHelp"), style = bpPicked("bpStyle");
+        const warns = [];
+        if (!sell) warns.push("Add <b>what you sell</b>. Without it, ChatGPT is guessing.");
+        if (!who) warns.push("Add <b>who buys from you</b>. This is the #1 thing that stops generic answers.");
+        else if (who.split(/\s+/).length < 5) warns.push("<b>Who buys from you</b> is too short. “Women” or “everyone” gets generic answers. Add their age, what they want and what bugs them.");
+        if (!tone.length && !say) warns.push("Pick at least one <b>way you talk</b>, or ChatGPT will sound like a robot.");
+        if (!sell && !who) {
+          document.getElementById("bpResult").innerHTML = `<div class="bp-warn">${warns.join("<br>")}</div>`;
+          toast("Fill in what you sell and who buys first.");
+          return;
+        }
+        const about = [
+          `I run ${name ? name : "a small business"}${sell ? ` and sell ${sell}` : ""}.`,
+          who ? `My customers are ${who}.` : "",
+          diff ? `What makes us different: ${diff}.` : "",
+          where.length ? `I sell and post on ${where.join(", ")}.` : "",
+          help.length ? `I mostly need help with: ${help.join(", ").toLowerCase()}.` : "",
+          "I'm not a tech person, so plain everyday words work best for me."
+        ].filter(Boolean).join(" ");
+        const respond = [
+          tone.length ? `Write in my voice: ${tone.join(", ").toLowerCase()}.` : "Write like a real person talking, not a company.",
+          say ? `Words and phrases I actually use: ${say}.` : "",
+          `Never use these words: ${never ? never + ", " : ""}elevate, unlock, game-changer, delve, seamless.`,
+          style.includes("Keep it short") ? "Keep answers short and get to the point." : "",
+          style.includes("Step-by-step") ? "Give me steps one at a time, numbered." : "",
+          style.includes("Beginner words, no jargon") ? "No jargon. If you must use a tech word, explain it in one line." : "",
+          style.includes("Give me 2-3 options") ? "When I ask for writing, give me 2-3 options to pick from." : "",
+          style.includes("Ask me before guessing") ? "If something important is missing, ask me one question before you guess." : "",
+          "Be honest with me. If my idea won't work or there's a better way, tell me straight and then help. Don't just agree to please me.",
+          "Never make up facts, prices, numbers or reviews. If you're not sure, say so.",
+          "Write for my customers, not for everybody. No filler, no hype."
+        ].filter(Boolean).join(" ");
+        const chatVersion = `Before we start, here's my business so your answers fit me:\n\n${about}\n\nHow I want you to answer:\n${respond}`;
+        lastBizProfile = { about, respond, chatVersion };
+        bpSave();
+        const box = (id, label, text) => `<div class="label" style="margin-top:12px">${label}</div><div class="formula-output"><button class="copy" type="button" onclick="copyText(document.getElementById('${id}').innerText)">Copy</button><pre id="${id}">${escapeAttr(text)}</pre></div>${bpCountHtml(text)}`;
+        document.getElementById("bpResult").innerHTML = `
+          ${warns.length ? `<div class="bp-warn"><b>Straight talk before you paste:</b><br>${warns.join("<br>")}</div>` : ""}
+          ${box("bpAbout", "Box 1 · “What would you like ChatGPT to know about you?”", about)}
+          ${box("bpRespond", "Box 2 · “How would you like ChatGPT to respond?”", respond)}
+          <div class="label" style="margin-top:16px">Where to paste it</div>
+          <ol class="bp-steps">
+            <li>Open ChatGPT and tap your <b>name or profile picture</b>.</li>
+            <li>Tap <b>Settings</b>, then <b>Personalization</b>, then <b>Custom instructions</b>.</li>
+            <li>Paste <b>Box 1</b> into the box that asks what ChatGPT should know about you, and <b>Box 2</b> into the box about how it should respond. If you only see one box, paste both, Box 1 first.</li>
+            <li>Tap <b>Save</b>. Start a new chat and ask for a caption to test it.</li>
+          </ol>
+          <p class="bp-hint">Don't see these words? ChatGPT moves things around. Type “custom instructions” in the Settings search.</p>
+          <details style="margin-top:10px"><summary><b>Rather paste it into one chat instead?</b></summary>${box("bpChat", "Paste this at the top of any chat or Project", chatVersion)}</details>
+          <div class="card-actions" style="margin-top:12px"><button class="tiny-btn" type="button" onclick="saveCustomPlaybookV4('My Business Profile', lastBizProfile.chatVersion, 'Business Profile Builder'); toast('Saved to My Playbook.')">Save to My Playbook</button></div>`;
+        toast("Your business profile is ready.");
+      }
+      let lastBizProfile = null;
       document.getElementById("envChoose").onclick=chooseEnvironment;document.getElementById("envBuild").onclick=buildEnvironment;document.getElementById("typeChoose").onclick=chooseTypography;document.getElementById("typeBuild").onclick=buildTypography;
 
       const characterBuilderPresets = {
