@@ -11404,6 +11404,29 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
   .rd-opt{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid var(--silver);border-radius:16px;padding:15px 16px;font-weight:800;font-size:16px;margin:0 0 10px;cursor:pointer;color:var(--rd-char)}
   .rd-opt:hover{border-color:var(--rd-tang)}
   .mobile-bottom-nav button[data-hub-path].rd-on{color:var(--rd-tang)}
+  /* ---- part 2: inner pages ---- */
+  .panel h2,.panel h3,.section-head h2,#lessonModal h2,#lessonModal h3,.modal h2{font-family:Georgia,"Times New Roman",serif!important;color:var(--rd-char)!important;letter-spacing:0!important}
+  .btn.primary{background:var(--rd-tang)!important;background-image:none!important;color:#fff!important;border-color:var(--rd-tang)!important;box-shadow:0 6px 16px rgba(232,96,28,.22)!important}
+  .btn.secondary{background:#fff!important;color:var(--rd-char)!important;border:1.5px solid var(--silver)!important;box-shadow:none!important}
+  .gentle-start{border-color:var(--silver)!important;background:#fff!important;background-image:none!important}
+  .panel h3,.panel strong,.panel summary{color:var(--rd-char)}
+  .panel button:not(.btn):not(.copy):not(.tiny-btn):not(.mode-btn):not(.rd-btn):not(.rd-opt){color:var(--rd-char)}
+  .panel .box,.panel details.box,.panel section.box,aside.dashboard,.curriculum-banner,.biz-coach{background-image:none!important;background-color:#fff!important;border-color:var(--silver)!important}
+  .roadmap-num{background:var(--rd-tang)!important;color:#fff!important}
+  .roadmap-action{color:var(--rd-tang)!important;border-color:var(--rd-tang)!important}
+  .roadmap-tool{color:var(--rd-char)!important}
+  .tiny-btn{background:#fff!important;color:var(--rd-char)!important;border:1.5px solid var(--silver)!important;border-radius:99px!important}
+  .copy{background:#fff!important;color:var(--rd-char)!important}
+  .hub-location{background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important;margin:0 0 8px!important}
+  .hub-location>span:first-child,#hubBreadcrumb{display:none!important}
+  .loc-link{background:#fff!important;border:1.5px solid var(--silver)!important;border-radius:99px!important;padding:8px 14px!important;color:var(--rd-char)!important;font-weight:800!important;text-decoration:none!important}
+  .loc-link::before{content:"← "}
+  .toolbox-details{background:#fff!important;border-color:var(--silver)!important}
+  #lessonModal .modal{background:var(--rd-cream)!important;border-radius:26px!important}
+  #lessonModal .mode-btn{background:#fff!important;color:var(--rd-char)!important;border:1.5px solid var(--silver)!important;border-radius:99px!important;font-weight:800!important;box-shadow:none!important}
+  #lessonModal .mode-btn.active{background:var(--rd-char)!important;color:#fff!important;border-color:var(--rd-char)!important}
+  .panel a{color:var(--rd-tang)}
+  body:has(#panel-stuck.active) .rd-stuck,body:has(#lessonModal.open) .rd-stuck,body:has(.rd-sheet-bg.on) .rd-stuck{display:none!important}
 </style>
 <div class="rd-sheet-bg" id="rdSheet" onclick="if(event.target===this)rdCloseSheet()"><div class="rd-sheet" id="rdSheetBody"></div></div>
 <button class="rd-stuck" type="button" onclick="goTab('stuck')" aria-label="I'm stuck, get help">🆘 I'm stuck</button>
