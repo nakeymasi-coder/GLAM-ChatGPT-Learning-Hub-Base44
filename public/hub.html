@@ -7708,9 +7708,9 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
       ];
       const finalAssessment = [
         {
-          q: "You need the latest official pricing for a service. What should you use?",
-          a: ["Memory", "Web Search", "Image Creation", "Study Mode"],
-          correct: 1,
+          q: "You want ChatGPT to know how you like answers in every new chat, without retyping it. Best fit?",
+          a: ["Custom Instructions", "Image Creation", "Scheduled Task", "Voice"],
+          correct: 0,
         },
         {
           q: "You have a long PDF and need exact policy details from it. Best first choice?",
@@ -7723,13 +7723,13 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
           correct: 0,
         },
         {
-          q: "You need a multi-source competitor report with citations. Best fit?",
-          a: ["Normal chat only", "Deep Research", "Memory", "Image Editing"],
+          q: "You want to ask something private that won't be saved to your chat history or memory. Best fit?",
+          a: ["Project", "Temporary Chat", "Memory", "Data Analysis"],
           correct: 1,
         },
         {
-          q: "You want ChatGPT to teach you a skill step-by-step and quiz you. Best fit?",
-          a: ["Study Mode", "File Library", "Apps", "Tasks"],
+          q: "ChatGPT gave you a price and a statistic you plan to post publicly. What should you do first?",
+          a: ["Check the key facts with a trusted source", "Post it, it sounded sure", "Ask it to make it longer", "Add more emojis"],
           correct: 0,
         },
         {
@@ -8376,7 +8376,8 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         };
         let catalog = [];
         try { catalog = askHubCatalog(true); } catch (e) {}
-        return `${roles[mode] || roles.prompt_coach}\n\nLESSON CATALOG (JSON): ${JSON.stringify(catalog)}\n\nMEMBER REQUEST:\n${question}`;
+        const plainWords = "PLAIN WORDS RULE: The member is a beginner. bestFeature must be a real ChatGPT feature named exactly as it appears in ChatGPT (for example: a normal chat, Projects, Custom Instructions, Memory, Temporary Chat, Image creation, Voice, Files and PDFs, Data analysis, Search, Deep Research, Tasks). Never invent labels like 'prompt engineering' or 'tone-of-voice alignment'. In answer, whatYouNeed, bestFeature, nextSteps and followUp use everyday words a beginner understands: no marketing or tech jargon such as 'high-conversion', 'leverage', 'optimize' or 'alignment'.";
+        return `${roles[mode] || roles.prompt_coach}\n\n${plainWords}\n\nLESSON CATALOG (JSON): ${JSON.stringify(catalog)}\n\nMEMBER REQUEST:\n${question}`;
       }
       const HUB_COACH_SCHEMA = { type: "object", properties: {
         score: { type: "number" }, headline: { type: "string" }, summary: { type: "string" },
@@ -8983,7 +8984,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
 
       function openLesson(id) {
         const l = lessons.find((x) => x.id === id);
-        if (!l) return;
+        if (!l) { try { toast("That lesson isn't available right now. Try the search or See all lessons."); } catch (e) {} return; }
         document.getElementById("lessonModal").dataset.lessonId = id;
         document.getElementById("modalContent").innerHTML = `
    <span class="chip">${l.path} • ${l.level}</span>
@@ -11446,6 +11447,21 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
   #lessonModal .mode-btn.active{background:var(--rd-char)!important;color:#fff!important;border-color:var(--rd-char)!important}
   .panel a{color:var(--rd-tang)}
   body:has(#panel-stuck.active) .rd-stuck,body:has(#lessonModal.open) .rd-stuck,body:has(.rd-sheet-bg.on) .rd-stuck{display:none!important}
+  /* ---- audit fixes (Nov 18) ---- */
+  :root{--muted:#6f655c;--ink:#211d1a;--blue:#e8601c}
+  .assess-option.selected,.quiz-option.selected,.category-btn.active{background:var(--rd-char)!important;border-color:var(--rd-char)!important}
+  .assess-option.selected,.quiz-option.selected,.category-btn.active,.category-btn.active *{color:#fff!important}
+  .hub-dictation-button{background:var(--rd-char)!important;color:#fff!important;border-color:var(--rd-char)!important}
+  .panel h1:focus,.panel h2:focus,.panel h3:focus,h1[tabindex]:focus,h2[tabindex]:focus,h3[tabindex]:focus{outline:none!important;box-shadow:none!important}
+  .nav-center [aria-current="page"],.mobile-bottom-nav [aria-current="page"]{background:#fdeadb!important;color:var(--rd-tang)!important}
+  .mobile-bottom-nav button:focus-visible{background:#fdeadb!important;color:var(--rd-tang)!important}
+  .hamburger span{background:var(--rd-char)!important}
+  .plain-finder h2{color:var(--rd-char)!important;font-family:Georgia,"Times New Roman",serif!important}
+  #panel-concierge,.ask-hub,.research-hero{background-image:none!important;background-color:#fff!important}
+  #progressFill{background:var(--rd-tang)!important;background-image:none!important}
+  .rd-stuck{padding:9px 13px;font-size:13px;right:10px;bottom:92px}
+  body:has(input:focus,textarea:focus,select:focus) .rd-stuck{display:none!important}
+  @media (min-width:1101px){.rd-stuck{bottom:24px;right:24px}}
 </style>
 <div class="rd-sheet-bg" id="rdSheet" onclick="if(event.target===this)rdCloseSheet()"><div class="rd-sheet" id="rdSheetBody"></div></div>
 <button class="rd-stuck" type="button" onclick="goTab('stuck')" aria-label="I'm stuck, get help">🆘 I'm stuck</button>
@@ -11548,7 +11564,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
     try{ if(HubStorage.getItem("glamBigText")==="1") document.documentElement.classList.add("rd-big"); }catch(e){}
     try{ HubStorage.setItem("glamHubTutorialSeen","1"); }catch(e){}
     setTimeout(()=>{ try{ closeHubTutorial(); }catch(e){} },900);
-    wireNav(); renderHome(); loadNews();
+    renderHome(); loadNews();
     if(!prefs()) setTimeout(()=>rdOnboard(0),1000);
     try{ fetch("/api/apps/6a9aedd33cd938f0f47b9ff7/entities/User/me",{headers:hubProtectedHeaders(),credentials:"include"}).then(r=>r.json()).then(u=>{ const n=(u?.full_name||"").trim().split(/\s+/)[0]; if(n){ window.__rdName=n; renderHome(); } }).catch(()=>{}); }catch(e){}
     const oldToggle = window.toggleComplete; if(typeof oldToggle==="function" && !oldToggle.__rd){ window.toggleComplete = function(){ const r = oldToggle.apply(this, arguments); setTimeout(renderHome,100); return r; }; window.toggleComplete.__rd = true; }
