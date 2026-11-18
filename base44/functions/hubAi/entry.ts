@@ -86,7 +86,8 @@ export default async function hubAi(req: Request): Promise<Response> {
       "MEMBER REQUEST AND TASK:",
     ].join("\n");
     const request = {
-      prompt: HUB_BRAIN + "\n" + prompt,
+      // TEST MODE: new brain only for the owner until Glam approves (then set HUB_BRAIN_ON=true).
+      prompt: (Deno.env.get("HUB_BRAIN_ON") === "true" || user?.role === "admin") ? HUB_BRAIN + "\n" + prompt : prompt,
       ...(body?.response_json_schema
         ? { response_json_schema: body.response_json_schema }
         : {}),
