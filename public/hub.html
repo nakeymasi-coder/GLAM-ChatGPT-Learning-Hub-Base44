@@ -8361,7 +8361,10 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data?.error || "The Mastery Hub AI could not answer right now.");
         const r = data?.result ?? data;
-        return typeof r === "string" ? JSON.parse(r) : r;
+        const out = typeof r === "string" ? JSON.parse(r) : r;
+        const clean = v => typeof v === "string" ? v.replace(/^\s*straight answer:\s*/i, "") : Array.isArray(v) ? v.map(clean) : v;
+        if (out && typeof out === "object") Object.keys(out).forEach(k => { out[k] = clean(out[k]); });
+        return out;
       }
       const HUB_BRAIN_SCHEMA = { type: "object", properties: {
         answer: { type: "string" }, whatYouNeed: { type: "string" }, bestFeature: { type: "string" },
