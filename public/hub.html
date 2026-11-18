@@ -5166,7 +5166,7 @@
           mistake:
             "Saying “make this better” when you actually want one specific thing fixed.",
           prompt:
-            "Edit the image I uploaded. Change only [EXACT CHANGE]. Keep [PROTECTED DETAILS] exactly as they are. Do not redesign or add unrelated elements. Preserve all visible wording except [TEXT CHANGE, IF ANY].",
+            "Edit the image I uploaded. Change only [EXACT CHANGE]. Keep [PROTECTED DETAILS] exactly as they are. Preserve all visible wording except [TEXT CHANGE, IF ANY]. Keep everything else exactly the same: face, body, pose, outfit, hair, background, colors, lighting, text, and framing. Do not add, remove, or redraw anything else. If you cannot change only that one thing, tell me instead of redrawing the image.",
         },
         {
           id: "voice",
@@ -7781,7 +7781,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
             "Upload the image → protect approved details → state the exact edit → check the result for unwanted changes.",
           lesson: "imageedit",
           prompt:
-            "Edit the uploaded image. Change only [CHANGE]. Preserve [APPROVED DETAILS]. Do not redesign or add unrelated elements.",
+            "Edit the uploaded image. Change only [CHANGE]. Preserve [APPROVED DETAILS]. Keep everything else exactly the same: face, body, pose, outfit, hair, background, colors, lighting, text, and framing. Do not add, remove, or redraw anything else. If you cannot change only that one thing, tell me instead of redrawing the image.",
         },
         {
           keys: [
@@ -7848,7 +7848,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         { category:"Prompting", title:"Turn This Repeated Task Into a Reusable Prompt", desc:"Create a reusable template from something you ask ChatGPT to do over and over.", tags:"reusable prompt repeat task template save workflow recurring", prompt:"I repeatedly use ChatGPT for this task: [DESCRIBE TASK OR PASTE EXAMPLE]. Turn it into a reusable prompt template with clear placeholders for the information that changes each time. Keep stable instructions fixed. Include a short version and a more guided version that asks me for missing information before producing the result." },
         { category:"Products", title:"Turn One Idea Into a Product Ecosystem", desc:"Map one useful idea into a free entry point, paid offer, upsell, and larger ecosystem without inventing unrelated products.", tags:"ecosystem funnel lead magnet freebie low ticket upsell product ladder", prompt:"I have this core idea or product: [IDEA]. Build a simple product ecosystem around the same customer problem. Show me a free entry point, low-ticket offer, logical upsell, and larger premium offer. Explain how each step naturally leads to the next. Keep the ecosystem focused instead of adding unrelated products." },
         { category:"Repurpose", title:"Turn This Into Multiple Formats", desc:"Reuse one finished idea across products, apps, prompts, lessons, posts, or other formats.", tags:"repurpose convert pdf app generator prompt course post multiple formats", prompt:"I already have this: [DESCRIBE OR PASTE CONTENT]. Show me the most useful ways to repurpose it for [AUDIENCE/GOAL]. Prioritize formats that reuse the same core work, such as a prompt, generator, app, checklist, lesson, post series, or lead magnet. For each recommendation, tell me what stays the same and what actually needs to be changed." },
-        { category:"Create", title:"Edit My Image Without Changing Anything Else", desc:"Make one targeted visual change while protecting the character, layout, wording, and approved details.", tags:"edit image preserve exact character face body layout wording only change", prompt:"Edit the image I provide. Change only [EXACT CHANGE]. Keep the character identity, face, body type, pose, approved layout, colors, wording, and every unrelated detail exactly as they are unless the requested edit requires otherwise. Do not redesign, restyle, crop away, or replace anything else." },
+        { category:"Create", title:"Edit My Image Without Changing Anything Else", desc:"Make one targeted visual change while protecting the character, layout, wording, and approved details.", tags:"edit image preserve exact character face body layout wording only change", prompt:"Edit the image I provide. Change only [EXACT CHANGE]. Upload the original in this same chat first. Keep everything else exactly the same: face, body, pose, outfit, hair, background, colors, lighting, text, and framing. Do not add, remove, or redraw anything else. If you cannot change only that one thing, tell me instead of redrawing the image." },
         { category:"Sell", title:"Create My Product Visuals", desc:"Plan a coordinated thumbnail, sales cover, mockup, or promotional visual set around one finished product.", tags:"product visuals thumbnail sales cover mockup payhip marketing graphic", prompt:"Create a coordinated visual plan for [PRODUCT]. I need [THUMBNAIL/COVER/MOCKUP/OTHER] in these sizes: [SIZES]. Audience: [AUDIENCE]. Main promise: [PROMISE]. Brand direction: [STYLE/COLORS]. Keep the product message easy to understand at a glance. Give me the exact image prompt for each visual and keep the set cohesive." },
         { category:"Tools", title:"Which Platform Should I Use?", desc:"Compare the simplest realistic options instead of choosing a tool because it sounds more advanced.", tags:"compare tools platform base44 html sites github netlify easiest beginner", prompt:"I want to create [THING]. I am considering [OPTIONS, IF KNOWN]. Compare the simplest realistic ways to build it based on what it needs to do, whether data must be saved, how I will share or sell it, how easy it is to update, and my skill level. Recommend one option and explain why. Prefer the simplest route that fully works." },
         { category:"Publish", title:"Help Me Publish or Deploy This", desc:"Get a finished app or site live with the fewest moving parts and a clear test checklist.", tags:"publish deploy github netlify base44 live website app hosting", prompt:"Help me publish [APP/SITE/TOOL]. It is currently built in [PLATFORM/FILES]. Give me the simplest deployment path. Walk me through one action at a time. Do not change the project itself unless required for deployment. After it is live, give me a short checklist to test links, mobile layout, forms/buttons, and the final public URL." },
@@ -8244,6 +8244,18 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         el.textContent = msg;
         el.classList.add("show");
         setTimeout(() => el.classList.remove("show"), 1700);
+      }
+      // GLAM IMAGE LOCK: added to every image prompt the Hub builds. Items the member asked for are kept.
+      const GLAM_FILLER = [["crowns","crown"],["tiaras","tiara"],["jewelry","jewel|necklace|earring|bracelet|ring"],["extra props","prop"],["floating icons","icon"],["sparkles","sparkle|glitter"],["logos","logo"],["extra text","text|wording|headline|reading exactly"],["frames","frame"],["decorative filler","decor"]];
+      function lockImagePrompt(prompt) {
+        const body = String(prompt || "").trim();
+        if (!body || body.includes("Show ONLY what is listed above")) return body;
+        const asked = body.toLowerCase().replace(/\bno [a-z ,]+?(?=[.;]|$)/g, " ");
+        const banned = GLAM_FILLER.filter(([, k]) => !new RegExp("\\b(" + k + ")", "i").test(asked)).map(([label]) => label);
+        return body + "\n\nShow ONLY what is listed above. Do not add anything that is not described" + (banned.length ? ": no " + banned.join(", ") + "." : ".");
+      }
+      function mergeAvoid(defaults, typed) {
+        return [defaults, typed].map(x => String(x || "").trim()).filter(Boolean).join(", ");
       }
       function copyText(text) {
         navigator.clipboard
@@ -9795,9 +9807,9 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           toast("Fill in at least one formula field.");
           return;
         }
-        const prompt =
+        const prompt = lockImagePrompt(
           parts.join(", ") +
-          ". Keep the composition intentional, preserve the requested subject details, and do not add unrelated clutter.";
+          ". Keep the composition intentional, preserve the requested subject details, and do not add unrelated clutter.");
         document.getElementById("formulaResult").innerHTML =
           `<div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('builtFormulaPrompt').innerText)">Copy</button><pre id="builtFormulaPrompt"></pre></div>`;
         document.getElementById("builtFormulaPrompt").textContent = prompt;
@@ -10399,9 +10411,9 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         studio:{subject:"clean premium studio background",materials:"seamless backdrop, controlled reflective floor, soft gradients",activity:"minimal supporting elements with intentional negative space"}
       };
       function chooseEnvironment(){const k=document.getElementById("envType").value,p=environmentPresets[k]||environmentPresets.luxuryCity;document.getElementById("envSubject").value=p.subject;document.getElementById("envMaterials").value=p.materials;document.getElementById("envActivity").value=p.activity;document.getElementById("envAvoid").value="no empty sterile scene, no warped architecture, no fake HUD graphics, no unrelated clutter";toast("Environment options chosen for you.");}
-      function buildEnvironment(){const v=id=>document.getElementById(id).value.trim();const subject=v("envSubject")||environmentPresets[document.getElementById("envType").value].subject;const parts=[subject,v("envTime"),v("envWeather"),v("envStyle"),v("envCamera"),v("envLighting"),v("envDepth"),v("envMaterials"),v("envActivity")].filter(Boolean);const guard=v("envAvoid")||"no unrelated clutter, no warped architecture";const prompt=parts.join(", ")+`, realistic scale, believable contact shadows, accurate reflections, environmental depth, ${guard}.`;const quick=[subject,v("envStyle"),v("envLighting"),v("envCamera")].filter(Boolean).join(", ")+".";const stack=[v("envStyle"),v("envCamera"),v("envLighting"),v("envDepth"),v("envMaterials")].filter(Boolean);lastEnvironmentBuild={prompt,quick,stack};document.getElementById("envResult").innerHTML=`<div class="label">Main environment prompt</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('envFull').innerText)">Copy</button><pre id="envFull">${escapeAttr(prompt)}</pre></div><div class="label" style="margin-top:12px">Quick version</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('envQuick').innerText)">Copy</button><pre id="envQuick">${escapeAttr(quick)}</pre></div><div class="label" style="margin-top:12px">Environment stack</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('envStack').innerText)">Copy</button><pre id="envStack">${escapeAttr(stack.join(", "))}</pre></div>`;}
+      function buildEnvironment(){const v=id=>document.getElementById(id).value.trim();const subject=v("envSubject")||environmentPresets[document.getElementById("envType").value].subject;const parts=[subject,v("envTime"),v("envWeather"),v("envStyle"),v("envCamera"),v("envLighting"),v("envDepth"),v("envMaterials"),v("envActivity")].filter(Boolean);const guard=mergeAvoid("no unrelated clutter, no warped architecture",v("envAvoid"));const prompt=lockImagePrompt(parts.join(", ")+`, realistic scale, believable contact shadows, accurate reflections, environmental depth, ${guard}.`);const quick=lockImagePrompt([subject,v("envStyle"),v("envLighting"),v("envCamera")].filter(Boolean).join(", ")+".");const stack=[v("envStyle"),v("envCamera"),v("envLighting"),v("envDepth"),v("envMaterials")].filter(Boolean);lastEnvironmentBuild={prompt,quick,stack};document.getElementById("envResult").innerHTML=`<div class="label">Main environment prompt</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('envFull').innerText)">Copy</button><pre id="envFull">${escapeAttr(prompt)}</pre></div><div class="label" style="margin-top:12px">Quick version</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('envQuick').innerText)">Copy</button><pre id="envQuick">${escapeAttr(quick)}</pre></div><div class="label" style="margin-top:12px">Environment stack</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('envStack').innerText)">Copy</button><pre id="envStack">${escapeAttr(stack.join(", "))}</pre></div>`;}
       function chooseTypography(){document.getElementById("typeFamily").value="bold condensed display lettering";document.getElementById("typeCase").value="all caps";document.getElementById("typeShape").value="thick sculpted letterforms";document.getElementById("typeMaterial").value="glossy resin lettering";document.getElementById("typeDepth").value="deep 3D extrusion";document.getElementById("typeEffect").value="clean reflective highlights";document.getElementById("typeLayout").value="centered hero headline";document.getElementById("typeSpacing").value="tight controlled kerning";document.getElementById("typeColor").value="Caribbean sapphire blue, metallic silver, white";document.getElementById("typeAvoid").value="no misspelled text, no warped letters, no hidden wording, no random extra words";toast("Typography options chosen for you.");}
-      function buildTypography(){const v=id=>document.getElementById(id).value.trim();const exact=v("typeText")||"YOUR TEXT";const prompt=`Typography reading exactly “${exact}”, ${v("typeCase")}, ${v("typeFamily")}, ${v("typeShape")}, ${v("typeMaterial")}, ${v("typeDepth")}, ${v("typeEffect")}, ${v("typeLayout")}, ${v("typeSpacing")}, ${v("typeColor")||"clean high-contrast color treatment"}, crisp edges, professional legibility, all visible wording fully unobstructed and correctly spelled, ${v("typeAvoid")||"no warped letters or extra text"}.`;const stack=[v("typeFamily"),v("typeShape"),v("typeMaterial"),v("typeDepth"),v("typeEffect"),v("typeLayout"),v("typeSpacing")].filter(Boolean);lastTypographyBuild={prompt,stack};document.getElementById("typeResult").innerHTML=`<div class="label">Typography prompt</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('typeFull').innerText)">Copy</button><pre id="typeFull">${escapeAttr(prompt)}</pre></div><div class="label" style="margin-top:12px">Typography stack</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('typeStack').innerText)">Copy</button><pre id="typeStack">${escapeAttr(stack.join(", "))}</pre></div>`;}
+      function buildTypography(){const v=id=>document.getElementById(id).value.trim();const exact=v("typeText")||"YOUR TEXT";const prompt=`Typography reading exactly “${exact}”, ${v("typeCase")}, ${v("typeFamily")}, ${v("typeShape")}, ${v("typeMaterial")}, ${v("typeDepth")}, ${v("typeEffect")}, ${v("typeLayout")}, ${v("typeSpacing")}, ${v("typeColor")||"clean high-contrast color treatment"}, crisp edges, professional legibility, all visible wording fully unobstructed and correctly spelled, ${mergeAvoid("no warped letters or extra text",v("typeAvoid"))}.`;const stack=[v("typeFamily"),v("typeShape"),v("typeMaterial"),v("typeDepth"),v("typeEffect"),v("typeLayout"),v("typeSpacing")].filter(Boolean);const promptLocked=lockImagePrompt(prompt);lastTypographyBuild={prompt:promptLocked,stack};document.getElementById("typeResult").innerHTML=`<div class="label">Typography prompt</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('typeFull').innerText)">Copy</button><pre id="typeFull">${escapeAttr(promptLocked)}</pre></div><div class="label" style="margin-top:12px">Typography stack</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('typeStack').innerText)">Copy</button><pre id="typeStack">${escapeAttr(stack.join(", "))}</pre></div>`;}
       document.getElementById("envChoose").onclick=chooseEnvironment;document.getElementById("envBuild").onclick=buildEnvironment;document.getElementById("typeChoose").onclick=chooseTypography;document.getElementById("typeBuild").onclick=buildTypography;
 
       const characterBuilderPresets = {
@@ -10475,7 +10487,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           document.getElementById("charSubject").value = masculine ? "adult man" : feminine ? "adult woman" : "adult character";
         }
         document.getElementById("charExtras").value = "";
-        document.getElementById("charAvoid").value = document.getElementById("charAvoid").value.trim() || "no crowns, no clutter, no fake AI graphics, no random floating icons";
+        document.getElementById("charAvoid").value = document.getElementById("charAvoid").value.trim();
         toast("Fresh character combination chosen for you.");
       }
 
@@ -10510,7 +10522,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         const selections = Object.fromEntries(ids.map(id => [id, val(id)]).filter(([,v]) => v));
         const subject = val("charSubject") || selections.charGender || "adult character";
         const extras = val("charExtras");
-        const avoid = val("charAvoid") || "no crowns, no clutter, no fake AI graphics, no random floating icons";
+        const avoid = mergeAvoid("no crowns, no clutter, no fake AI graphics, no random floating icons", val("charAvoid"));
         const btn = document.getElementById("charBuildBtn");
         const oldText = btn.textContent;
         btn.disabled = true; btn.textContent = "Building with AI…";
@@ -10526,8 +10538,8 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           const data = await res.json();
           const result = data?.result || data;
           const parsed = typeof result === "string" ? JSON.parse(result) : result;
-          const mainPrompt = parsed.mainPrompt || parsed.main_prompt;
-          const quickPrompt = parsed.quickPrompt || parsed.quick_prompt;
+          const mainPrompt = lockImagePrompt(parsed.mainPrompt || parsed.main_prompt);
+          const quickPrompt = lockImagePrompt(parsed.quickPrompt || parsed.quick_prompt);
           const keywordStack = parsed.keywordStack || parsed.keyword_stack;
           const guardrails = parsed.guardrails || avoid;
           const title = parsed.title || `${preset.label} • ${subject}`;
