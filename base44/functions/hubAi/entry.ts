@@ -36,6 +36,21 @@ export default async function hubAi(req: Request): Promise<Response> {
       }
     }
 
+
+    // Daily AI cap per buyer so one account can't run up the owner's credits.
+    const DAILY_AI_LIMIT = 40;
+    if (user.role !== "admin") {
+      const day = new Date().toISOString().slice(0, 10);
+      const email = String(user.email || user.id || "").toLowerCase();
+      const rows = await base44.asServiceRole.entities.HubAiUsage.filter({ user_email: email, day });
+      const row = rows?.[0];
+      const used = Number(row?.count || 0);
+      if (used >= DAILY_AI_LIMIT) {
+        return Response.json({ error: "You've used today's AI help. It resets tomorrow. Every lesson and builder still works without it." }, { status: 429 });
+      }
+      if (row) await base44.asServiceRole.entities.HubAiUsage.update(row.id, { count: used + 1 });
+      else await base44.asServiceRole.entities.HubAiUsage.create({ user_email: email, day, count: 1 });
+    }
     const body = await req.json();
     const prompt = typeof body?.prompt === "string" ? body.prompt.trim() : "";
 
@@ -70,7 +85,7 @@ export default async function hubAi(req: Request): Promise<Response> {
         error:
           error instanceof Error
             ? error.message
-            : "The Learning Hub AI could not answer right now.",
+            : "The Mastery Hub AI could not answer right now.",
       },
       { status: 500 },
     );

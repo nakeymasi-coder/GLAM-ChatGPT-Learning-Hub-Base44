@@ -1,0 +1,15 @@
+{
+  "type": "object",
+  "properties": {
+    "user_email": { "type": "string" },
+    "day": { "type": "string" },
+    "count": { "type": "number" }
+  },
+  "required": ["user_email", "day"],
+  "rls": {
+    "create": { "user_condition": { "role": "admin" } },
+    "read": { "user_condition": { "role": "admin" } },
+    "update": { "user_condition": { "role": "admin" } },
+    "delete": { "user_condition": { "role": "admin" } }
+  }
+}
