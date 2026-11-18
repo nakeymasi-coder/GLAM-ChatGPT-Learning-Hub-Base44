@@ -10538,9 +10538,9 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           "I'm not a tech person, so plain everyday words work best for me."
         ].filter(Boolean).join(" ");
         const respond = [
-          tone.length ? `Write in my voice: ${tone.join(", ").toLowerCase()}.` : "Write like a real person talking, not a company.",
+          tone.length ? `Write in my voice: ${tone.join(", ")}.` : "Write like a real person talking, not a company.",
           say ? `Words and phrases I actually use: ${say}.` : "",
-          `Never use these words: ${never ? never + ", " : ""}elevate, unlock, game-changer, delve, seamless.`,
+          `Never use these words: ${[...new Map((never + ",elevate,unlock,game-changer,delve,seamless").split(",").map(w => w.trim()).filter(Boolean).map(w => [w.toLowerCase(), w])).values()].join(", ")}.`,
           style.includes("Keep it short") ? "Keep answers short and get to the point." : "",
           style.includes("Step-by-step") ? "Give me steps one at a time, numbered." : "",
           style.includes("Beginner words, no jargon") ? "No jargon. If you must use a tech word, explain it in one line." : "",
