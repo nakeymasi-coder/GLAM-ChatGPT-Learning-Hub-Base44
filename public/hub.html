@@ -8872,7 +8872,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         const title = document.getElementById("continueLessonTitle");
         const desc = document.getElementById("continueLessonDesc");
         const btn = document.getElementById("continueLearningBtn");
-        if (title) title.textContent = next ? next.title : "All 29 lessons complete";
+        if (title) title.textContent = next ? next.title : ("All " + lessons.length + " lessons complete");
         if (desc) desc.textContent = next ? next.desc : "You can review any lesson or continue to the final assessment.";
         if (btn) {
           btn.textContent = next ? "Continue Lesson" : "Open final assessment";
@@ -8930,7 +8930,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         const next = getNextBeginnerLesson();
         document.getElementById("nextTitle").textContent = next
           ? next.title
-          : "All 29 lessons complete";
+          : ("All " + lessons.length + " lessons complete");
         document.getElementById("nextLabel").textContent = next ? "Recommended next" : "Lessons complete";
         document.getElementById("nextDesc").textContent = next
           ? next.desc
@@ -10531,7 +10531,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         const gate = document.getElementById("certificateGate");
         if (!gate) return;
 
-        const lessonPct = Math.round((completed.length / lessons.length) * 100);
+        const lessonPct = Math.round((lessons.filter(l => completed.includes(l.id)).length / lessons.length) * 100);
         const assess = JSON.parse(
           HubStorage.getItem("glamFinalAssessment") || "null",
         );
@@ -11092,6 +11092,25 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       if (!HubStorage.getItem("glamHubTutorialSeen")) {
         setTimeout(openHubTutorial, 650);
       }
+
+      // Admin "Hide lesson" switch: HubLessonAdmin.active === false hides that lesson everywhere in the Hub.
+      (async () => {
+        try {
+          const r = await fetch("/api/apps/6a9aedd33cd938f0f47b9ff7/entities/HubLessonAdmin?limit=500", { headers: hubProtectedHeaders(), credentials: "include" });
+          if (!r.ok) return;
+          const rows = await r.json();
+          const list = Array.isArray(rows) ? rows : (rows.items || rows.data || []);
+          const hidden = new Set(list.filter(x => x && x.active === false && x.lesson_id).map(x => x.lesson_id));
+          if (!hidden.size) return;
+          for (let i = lessons.length - 1; i >= 0; i--) if (hidden.has(lessons[i].id)) lessons.splice(i, 1);
+          beginnerStages.forEach(st => { st.lessonIds = st.lessonIds.filter(id => !hidden.has(id)); });
+          window.__hubHiddenLessons = [...hidden];
+          try { renderPaths(); } catch (e) {}
+          try { renderLessons(document.getElementById("lessonSearch")?.value || ""); } catch (e) {}
+          try { updateProgress(); } catch (e) {}
+          try { window.rdRender && window.rdRender(); } catch (e) {}
+        } catch (e) {}
+      })();
     
 
       // Ask ChatGPT — real-time Mastery Hub guide
@@ -11460,7 +11479,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
   };
   const ORDER = { business:["basics","prompting","custominstructions","checkit","safepaste","projects"], pictures:["basics","prompting","images","imageedit","checkit"], learning:["basics","prompting","checkit","safepaste"], unsure:["basics","safepaste","prompting","checkit"] };
   const $ = s => document.querySelector(s);
-  function done(){ try { return JSON.parse(HubStorage.getItem("glamHubCompleted")||"[]"); } catch(e){ return []; } }
+  function done(){ try { const ids = lessons.map(l=>l.id); return JSON.parse(HubStorage.getItem("glamHubCompleted")||"[]").filter(id=>ids.includes(id)); } catch(e){ return []; } }
   function prefs(){ try { return JSON.parse(HubStorage.getItem("glamOnboardV2")||"null"); } catch(e){ return null; } }
   function nextLesson(){
     const d = done(), p = prefs(), ids = lessons.map(l=>l.id);
