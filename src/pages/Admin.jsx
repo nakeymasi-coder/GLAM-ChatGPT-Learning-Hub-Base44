@@ -128,7 +128,7 @@ export default function Admin() {
                 <a href="/hub.html" className="rounded-full border border-[#e6d9c8] bg-white px-4 py-2 text-sm font-bold text-[#211d1a]">View Hub</a>
               </div>
             </div>
-            <div className="mt-3 flex gap-2 overflow-x-auto pb-1 lg:hidden">
+            <div className="mt-3 flex gap-2 overflow-x-auto pb-1 lg:hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {nav.map(([id,label,Icon]) => <button key={id} onClick={()=>setTab(id)} className={`flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-xs font-bold ${tab===id?'bg-[#e8601c] text-white':'bg-[#f6efe4] text-[#3d3530]'}`}><Icon size={14}/>{label}</button>)}
             </div>
           </header>
