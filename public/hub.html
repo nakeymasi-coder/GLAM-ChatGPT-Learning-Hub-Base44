@@ -3118,6 +3118,7 @@
             <button class="tab" data-tab="playbook">My Playbook</button>
             <button class="tab" data-tab="history">Prompt History</button>
             <span class="tab-group-label">Help</span>
+            <button class="tab" data-tab="stuck">I'm Stuck</button>
             <button class="tab" data-tab="finder">Which Tool Do I Use?</button>
             <button class="tab" data-tab="glossary">Glossary</button>
             <button class="tab" data-tab="concierge">Prompt Concierge</button>
@@ -3148,6 +3149,7 @@
             </div>
           </div>
         </div>
+        <div id="askStuckNote"></div>
         <div class="ask-answer" id="askChatgptAnswer" aria-live="polite"></div>
       </section>
 
@@ -3338,6 +3340,7 @@
             <button type="button" onclick="goTab('bizprofile')"><strong>Make ChatGPT know my business</strong><span>Stop getting answers that sound like everybody else's →</span></button>
             <button type="button" onclick="goTab('powerwords')"><strong>Describe the look I want</strong><span>Find simple words for “extra glossy,” soft, realistic, and more →</span></button>
             <button type="button" onclick="goTab('asklibrary')"><strong>Turn my idea into a prompt</strong><span>Use the prompt builder or start with an example →</span></button>
+            <button type="button" onclick="goTab('stuck')"><strong>It keeps getting it wrong</strong><span>Find out why and exactly what to send instead →</span></button>
             <button type="button" onclick="goTab('coach')"><strong>Improve a prompt I've tried</strong><span>Work on a prompt that isn't giving me what I want →</span></button>
           </div>
           <details class="gentle-details">
@@ -3347,6 +3350,7 @@
               <h4>Prompt Tools</h4>
               <div class="tool-links">
                 <button type="button" onclick="goTab('asklibrary')"><strong>Prompt Library</strong><small>Ready-made prompts plus a guided builder — start when you know the result you want, not the exact words.</small></button>
+                <button type="button" onclick="goTab('stuck')"><strong>Why Isn't This Working?</strong><small>Stuck sending the same thing over and over? Find out why and what to send instead.</small></button>
                 <button type="button" onclick="goTab('coach')"><strong>Prompt Coach</strong><small>Paste a prompt and get coached on how to make it stronger.</small></button>
                 <button type="button" onclick="goTab('clinic')"><strong>Prompt Clinic</strong><small>A deeper fix-it session for prompts that keep disappointing you.</small></button>
                 <button type="button" onclick="goTab('powerwords')"><strong>Power Words Lab</strong><small>Find the exact words that get ChatGPT to do what you mean.</small></button>
@@ -4141,6 +4145,41 @@
               </div>
             </div>
             <div class="box"><div class="kicker">Step 2</div><h3>Paste it into ChatGPT</h3><div id="bpResult"><div class="output">Your two blocks will show up here, ready to copy.</div></div></div>
+          </div>
+        </div>
+
+        <div class="panel" id="panel-stuck">
+          <style>
+            #panel-stuck .sh-chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 2px}
+            #panel-stuck .sh-chips label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--silver,#cfd8e1);border-radius:999px;padding:9px 13px;font-size:14px;font-weight:700;cursor:pointer;background:#fff}
+            #panel-stuck .sh-chips input{position:absolute;opacity:0;pointer-events:none}
+            #panel-stuck .sh-chips label:has(input:checked){background:var(--deep,#103b63);color:#fff;border-color:var(--deep,#103b63)}
+            #panel-stuck .sh-q{font-weight:800;margin:14px 0 4px}
+            #panel-stuck .sh-hint{font-size:13px;opacity:.75;margin:0 0 6px}
+            #panel-stuck .sh-why{background:#fff6e5;border:1px solid #f1d39a;border-radius:12px;padding:12px 14px;margin:0 0 12px;font-size:15px}
+            #panel-stuck .sh-steps li{margin:6px 0}
+            #panel-stuck textarea{width:100%;min-height:92px}
+          </style>
+          <div class="section-head" style="margin-top:0">
+            <div class="kicker">Why isn't this working?</div>
+            <h2 style="font-size:36px">Stuck asking the same thing over and over?</h2>
+            <p>Sending it again usually gets you the same thing. Tell me what went wrong and I'll show you why it happened and exactly what to send instead.</p>
+          </div>
+          <div class="coach-grid">
+            <div class="box"><div class="kicker">Step 1</div><h3>What happened?</h3>
+              <div class="stack">
+                <div class="sh-q">What did you ask ChatGPT?</div>
+                <p class="sh-hint">Paste your words exactly, even if they're messy.</p>
+                <textarea class="field" id="shAsk" placeholder="Example: write me a caption for my candle sale"></textarea>
+                <div class="sh-q">What went wrong? (pick one)</div>
+                <div class="sh-chips" id="shProblem"></div>
+                <div class="sh-q">What did it give you? (optional)</div>
+                <textarea class="field" id="shGot" placeholder="Paste a little of what it said, if you want."></textarea>
+                <div class="card-actions" style="margin-top:14px"><button class="btn primary" type="button" onclick="buildStuckFix()">Show Me the Fix</button><button class="btn secondary" type="button" id="shAiBtn" onclick="askBrainStuck()">Ask the Honest Brain</button></div>
+                <p class="sh-hint" style="margin-top:8px">“Show Me the Fix” is instant. “Ask the Honest Brain” reads your exact words and uses one of today's AI helps.</p>
+              </div>
+            </div>
+            <div class="box"><div class="kicker">Step 2</div><h3>Here's the fix</h3><div id="shResult"><div class="output">Your fix will show up here.</div></div></div>
           </div>
         </div>
 
@@ -8346,6 +8385,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         mystuff: ["Saved work", "My Hub work"],
         history: ["My Stuff", "Prompt History"],
         playbook: ["My Stuff", "My Playbook"],
+        stuck: ["Help", "Why Isn't This Working?"],
         finder: ["Help", "Which Tool Do I Use?"],
       };
 
@@ -8376,6 +8416,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         if (tools) tools.open = false;
         if (name === "history") loadPromptHistory();
         if (name === "bizprofile") bpLoad();
+        if (name === "stuck") shRenderChips();
         updateHubLocation(name);
         closeHubSidebar();
         document
@@ -9522,6 +9563,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           "panel-business": "Business Hub",
           "panel-researchlab": "Business Research Lab",
           "panel-bizprofile": "My Business Profile",
+          "panel-stuck": "Why Isn't This Working?",
           "panel-practice": "Practice Lab",
           "panel-simulator": "Prompt Simulator"
         };
@@ -10468,6 +10510,118 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       function buildEnvironment(){const v=id=>document.getElementById(id).value.trim();const subject=v("envSubject")||environmentPresets[document.getElementById("envType").value].subject;const parts=[subject,v("envTime"),v("envWeather"),v("envStyle"),v("envCamera"),v("envLighting"),v("envDepth"),v("envMaterials"),v("envActivity")].filter(Boolean);const guard=mergeAvoid("no unrelated clutter, no warped architecture",v("envAvoid"));const prompt=lockImagePrompt(parts.join(", ")+`, realistic scale, believable contact shadows, accurate reflections, environmental depth, ${guard}.`);const quick=lockImagePrompt([subject,v("envStyle"),v("envLighting"),v("envCamera")].filter(Boolean).join(", ")+".");const stack=[v("envStyle"),v("envCamera"),v("envLighting"),v("envDepth"),v("envMaterials")].filter(Boolean);lastEnvironmentBuild={prompt,quick,stack};document.getElementById("envResult").innerHTML=`<div class="label">Main environment prompt</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('envFull').innerText)">Copy</button><pre id="envFull">${escapeAttr(prompt)}</pre></div><div class="label" style="margin-top:12px">Quick version</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('envQuick').innerText)">Copy</button><pre id="envQuick">${escapeAttr(quick)}</pre></div><div class="label" style="margin-top:12px">Environment stack</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('envStack').innerText)">Copy</button><pre id="envStack">${escapeAttr(stack.join(", "))}</pre></div>`;}
       function chooseTypography(){document.getElementById("typeFamily").value="bold condensed display lettering";document.getElementById("typeCase").value="all caps";document.getElementById("typeShape").value="thick sculpted letterforms";document.getElementById("typeMaterial").value="glossy resin lettering";document.getElementById("typeDepth").value="deep 3D extrusion";document.getElementById("typeEffect").value="clean reflective highlights";document.getElementById("typeLayout").value="centered hero headline";document.getElementById("typeSpacing").value="tight controlled kerning";document.getElementById("typeColor").value="Caribbean sapphire blue, metallic silver, white";document.getElementById("typeAvoid").value="no misspelled text, no warped letters, no hidden wording, no random extra words";toast("Typography options chosen for you.");}
       function buildTypography(){const v=id=>document.getElementById(id).value.trim();const exact=v("typeText")||"YOUR TEXT";const prompt=`Typography reading exactly “${exact}”, ${v("typeCase")}, ${v("typeFamily")}, ${v("typeShape")}, ${v("typeMaterial")}, ${v("typeDepth")}, ${v("typeEffect")}, ${v("typeLayout")}, ${v("typeSpacing")}, ${v("typeColor")||"clean high-contrast color treatment"}, crisp edges, professional legibility, all visible wording fully unobstructed and correctly spelled, ${mergeAvoid("no warped letters or extra text",v("typeAvoid"))}.`;const stack=[v("typeFamily"),v("typeShape"),v("typeMaterial"),v("typeDepth"),v("typeEffect"),v("typeLayout"),v("typeSpacing")].filter(Boolean);const promptLocked=lockImagePrompt(prompt);lastTypographyBuild={prompt:promptLocked,stack};document.getElementById("typeResult").innerHTML=`<div class="label">Typography prompt</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('typeFull').innerText)">Copy</button><pre id="typeFull">${escapeAttr(promptLocked)}</pre></div><div class="label" style="margin-top:12px">Typography stack</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('typeStack').innerText)">Copy</button><pre id="typeStack">${escapeAttr(stack.join(", "))}</pre></div>`;}
+      // ===== "Why isn't this working?" stuck helper =====
+      const STUCK_PROBLEMS = {
+        ignored: { label: "It ignored what I said",
+          why: "Your most important instruction got buried, or you asked for too many things at once. ChatGPT pays the most attention to what comes first.",
+          steps: ["Put your must-haves at the very top as a short numbered list.", "Ask for one thing per message.", "Make it repeat your must-haves back before it starts."],
+          fix: "Before you start, repeat my must-haves back to me in one line each, then do the task. If you can't do one of them, tell me instead of skipping it.\nMy must-haves:\n1. [MUST-HAVE]\n2. [MUST-HAVE]" },
+        madeup: { label: "It made stuff up",
+          why: "When ChatGPT doesn't know something, it fills the gap with something that sounds right. It's not lying on purpose; it's guessing confidently.",
+          steps: ["Give it the facts yourself (prices, dates, names, links).", "Tell it to say NOT SURE instead of guessing.", "Check every name, number and link yourself before you post or send it."],
+          fix: "Only use facts I give you, or facts you can link a real source for. If you're not sure about something, write NOT SURE instead of guessing. Never make up prices, numbers, names, reviews or links." },
+        generic: { label: "Too generic / sounds like a robot",
+          why: "It doesn't know your business, your customer or how you talk, so it writes for everybody, which means nobody.",
+          steps: ["Set up My Business Profile once so every chat knows you.", "Say exactly who it's for and how you talk.", "Ban the robot words."],
+          fix: "This is for [WHO IT'S FOR: age, what they want, what bugs them]. Write it the way I talk: [HOW YOU TALK]. Keep it short and real. Don't use these words: elevate, unlock, game-changer, delve, seamless. No filler, no hype.",
+          link: ["bizprofile", "Set up My Business Profile"] },
+        image: { label: "It changed my whole picture",
+          why: "When you ask for an edit, ChatGPT often redraws the whole image instead of changing one spot, especially when the original isn't in the same chat.",
+          steps: ["Upload the original image in the same chat.", "Ask for ONE change per message.", "If it keeps drifting, start a new chat, upload the original again, and use the fix below."],
+          fix: "Edit the image I uploaded. Change ONLY [THE ONE THING]. Keep everything else exactly the same: face, body, pose, outfit, hair, background, colors, lighting, text, and framing. Do not add, remove, or redraw anything else. If you can't change only that one thing, tell me instead of redrawing the image." },
+        forgot: { label: "It forgot what I told it",
+          why: "Long chats get too full. ChatGPT starts losing the early parts, so it drifts or forgets what you decided.",
+          steps: ["In the old chat, ask it to sum up everything you decided.", "Start a fresh chat.", "Paste that summary first, then keep going."],
+          fix: "Sum up everything we decided in this chat in short bullet points: what I'm making, who it's for, the style, and every rule I gave you. I'll paste it into a new chat so nothing gets lost." },
+        format: { label: "Wrong length or wrong format",
+          why: "If you don't say how long or what shape you want, ChatGPT picks for you, and it usually picks long.",
+          steps: ["Say the exact length (words, characters, or lines).", "Say how many options you want.", "Say what NOT to include (hashtags, emojis, headings)."],
+          fix: "Give me exactly [NUMBER] options. Each one under [LENGTH, for example 150 characters]. Format: [FORMAT, for example one short paragraph]. Don't include [THINGS TO LEAVE OUT, for example hashtags or emojis]." },
+        refuses: { label: "It won't do it / lectures me",
+          why: "It usually refuses when a request names a real person, a celebrity, a brand, or asks to copy someone's style. That's a rule it can't break, so re-asking won't change it.",
+          steps: ["Describe the look or feeling instead of naming the person or brand.", "Say what it's for, in one plain sentence.", "Make it your own original version."],
+          fix: "Create an original version with this feel: [DESCRIBE THE LOOK, COLORS, MOOD AND STYLE WITHOUT NAMING ANY REAL PERSON, BRAND OR CHARACTER]. It's for [WHAT IT'S FOR]." },
+        limit: { label: "It froze / says I hit a limit",
+          why: "This isn't your prompt. You either used up your messages for now, or ChatGPT is having a hiccup. Changing your words won't fix it.",
+          steps: ["Wait until the limit resets (ChatGPT tells you when).", "Refresh the page or close and reopen the app.", "If one chat is super long and slow, start a new chat."],
+          fix: "" },
+        dontknow: { label: "I don't even know what to ask",
+          why: "That's normal. You don't need the perfect words. Let ChatGPT interview you instead.",
+          steps: ["Copy the prompt below.", "Fill in what you're trying to do in plain words.", "Answer its questions one at a time."],
+          fix: "I want to [WHAT YOU'RE TRYING TO DO, IN PLAIN WORDS], but I don't know how to ask for it. Ask me up to 5 short questions, one at a time, to figure out what I need. Wait for my answer before the next question. Then write the prompt for me." }
+      };
+      function shRenderChips() {
+        const box = document.getElementById("shProblem");
+        if (!box || box.dataset.ready) return;
+        box.innerHTML = Object.entries(STUCK_PROBLEMS).map(([k, p]) => `<label><input type="radio" name="shProblem" value="${k}"> ${escapeAttr(p.label)}</label>`).join("");
+        box.dataset.ready = "1";
+      }
+      function openStuckHelper(ask, problem) {
+        goTab("stuck");
+        shRenderChips();
+        if (ask) document.getElementById("shAsk").value = ask;
+        if (problem) { const r = document.querySelector(`#shProblem input[value="${problem}"]`); if (r) r.checked = true; }
+      }
+      function buildStuckFix() {
+        shRenderChips();
+        const ask = (document.getElementById("shAsk").value || "").trim();
+        const key = document.querySelector("#shProblem input:checked")?.value;
+        const out = document.getElementById("shResult");
+        if (!key) { out.innerHTML = `<div class="sh-why">Pick <b>what went wrong</b> first. That tells me which fix you need.</div>`; toast("Pick what went wrong first."); return; }
+        const p = STUCK_PROBLEMS[key];
+        let fixed = "";
+        if (p.fix) fixed = key === "forgot" || key === "dontknow" ? p.fix : ((ask ? ask + "\n\n" : "") + p.fix);
+        if (key === "image") fixed = p.fix;
+        out.innerHTML = `
+          <div class="sh-why"><b>Why it happened:</b> ${escapeAttr(p.why)}</div>
+          <div class="label">Do this</div>
+          <ol class="sh-steps">${p.steps.map(s => `<li>${escapeAttr(s)}</li>`).join("")}</ol>
+          ${fixed ? `<div class="label" style="margin-top:12px">Send this instead</div><p class="sh-hint">Swap anything in [BRACKETS] for your own details.</p><div class="formula-output"><button class="copy" type="button" onclick="copyText(document.getElementById('shFixed').innerText)">Copy</button><pre id="shFixed">${escapeAttr(fixed)}</pre></div>` : `<p class="sh-hint" style="margin-top:12px">No new prompt needed for this one. It's not your words.</p>`}
+          ${p.link ? `<div class="card-actions" style="margin-top:12px"><button class="tiny-btn" type="button" onclick="goTab('${p.link[0]}')">${escapeAttr(p.link[1])} →</button></div>` : ""}
+          <p class="sh-hint" style="margin-top:12px">Tip: if it still misses after this, start a brand-new chat and send the fixed version there.</p>`;
+        toast("Here's your fix.");
+      }
+      async function askBrainStuck() {
+        shRenderChips();
+        const ask = (document.getElementById("shAsk").value || "").trim();
+        const got = (document.getElementById("shGot").value || "").trim();
+        const key = document.querySelector("#shProblem input:checked")?.value;
+        const out = document.getElementById("shResult");
+        if (!ask) { toast("Paste what you asked first."); document.getElementById("shAsk").focus(); return; }
+        const btn = document.getElementById("shAiBtn"); const old = btn.textContent; btn.disabled = true; btn.textContent = "Thinking…";
+        out.innerHTML = `<div class="output">Reading your exact words…</div>`;
+        const schema = { type: "object", properties: { why: { type: "string" }, steps: { type: "array", items: { type: "string" } }, fixedPrompt: { type: "string" } }, required: ["why", "steps", "fixedPrompt"] };
+        const prompt = `A beginner is stuck: they keep asking ChatGPT the same thing and not getting what they want. Diagnose the real reason in plain words (1-2 sentences, no jargon), give 2-4 short steps, and write a fixed version of their prompt that keeps their own words and meaning. If the problem is not their prompt (limits, outages, a hard rule like real people or brands), say so plainly and give no fake fix.\nWhat they asked: """${ask}"""\nWhat went wrong (their pick): ${key ? STUCK_PROBLEMS[key].label : "not chosen"}\nWhat ChatGPT gave them: """${got || "not shared"}"""`;
+        try {
+          const res = await fetch(ASK_HUB_ENDPOINT, { method: "POST", headers: hubProtectedHeaders(), credentials: "include", body: JSON.stringify({ prompt, response_json_schema: schema }) });
+          if (hubHandleAuthFailure(res)) return;
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data?.error || `AI request failed (${res.status})`);
+          const r = data?.result || data; const parsed = typeof r === "string" ? JSON.parse(r) : r;
+          out.innerHTML = `
+            <div class="sh-why"><b>Straight answer:</b> ${escapeAttr(parsed.why || "")}</div>
+            <div class="label">Do this</div><ol class="sh-steps">${(parsed.steps || []).map(s => `<li>${escapeAttr(s)}</li>`).join("")}</ol>
+            ${parsed.fixedPrompt ? `<div class="label" style="margin-top:12px">Send this instead</div><div class="formula-output"><button class="copy" type="button" onclick="copyText(document.getElementById('shFixed').innerText)">Copy</button><pre id="shFixed">${escapeAttr(parsed.fixedPrompt)}</pre></div>` : ""}`;
+        } catch (e) {
+          out.innerHTML = `<div class="sh-why">${escapeAttr(e.message || "The AI couldn't answer right now.")} Tap <b>Show Me the Fix</b> instead. It works without AI.</div>`;
+        } finally { btn.disabled = false; btn.textContent = old; }
+      }
+      // Notice when someone keeps sending the same request.
+      function stuckNormalize(t) { return String(t || "").toLowerCase().replace(/[^a-z0-9 ]+/g, " ").split(/\s+/).filter(w => w.length > 2); }
+      function stuckSimilar(a, b) { const A = new Set(a), B = new Set(b); if (!A.size || !B.size) return false; let n = 0; A.forEach(w => { if (B.has(w)) n++; }); return n / Math.max(A.size, B.size) >= 0.7; }
+      function stuckCheckRepeat(question) {
+        let list = [];
+        try { list = JSON.parse(sessionStorage.getItem("glamStuckAsks") || "[]"); } catch (e) {}
+        const words = stuckNormalize(question);
+        const repeats = list.filter(w => stuckSimilar(w, words)).length + 1;
+        list.push(words); list = list.slice(-10);
+        try { sessionStorage.setItem("glamStuckAsks", JSON.stringify(list)); } catch (e) {}
+        return repeats >= 3;
+      }
+      function stuckBannerHtml(question) {
+        window.__lastStuckAsk = question;
+        return `<div class="sh-banner" style="background:#fff6e5;border:1px solid #f1d39a;border-radius:12px;padding:12px 14px;margin:0 0 12px;font-size:15px"><b>Looks like you're stuck.</b> You've asked this a few times now. Sending it again usually gets the same result. <button class="tiny-btn" type="button" style="margin-top:8px" onclick="openStuckHelper(window.__lastStuckAsk)">Find out why →</button></div>`;
+      }
       // ===== Business Profile builder ("Make ChatGPT know my business") =====
       const BP_OPTIONS = {
         bpTone: ["Warm and friendly","Funny","Bold and loud","Classy","Straight-talking","Encouraging","Faith-filled","Southern charm","Calm and simple"],
@@ -10822,6 +10976,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         const status=document.getElementById("askChatgptStatus");
         const question=input.value.trim();
         if(!question){ input.focus(); status.textContent="Tell me what you're trying to do first."; return; }
+        try { document.getElementById("askStuckNote").innerHTML = stuckCheckRepeat(question) ? stuckBannerHtml(question) : ""; } catch (e) {}
 
         button.disabled=true; button.textContent="Asking AI…";
         status.textContent="Working on your question…";
