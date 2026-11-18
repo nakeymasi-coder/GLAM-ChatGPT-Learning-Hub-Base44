@@ -1,29 +1,28 @@
 {
   "name": "HubLessonAdmin",
-  "type": "object",
   "properties": {
-    "lesson_id": {
+    "active": {
+      "type": "boolean"
+    },
+    "category": {
       "type": "string"
     },
-    "title": {
+    "featured": {
+      "type": "boolean"
+    },
+    "lesson_id": {
       "type": "string"
     },
     "level": {
       "type": "string"
     },
-    "category": {
+    "notes": {
       "type": "string"
-    },
-    "active": {
-      "type": "boolean"
-    },
-    "featured": {
-      "type": "boolean"
     },
     "sort_order": {
       "type": "number"
     },
-    "notes": {
+    "title": {
       "type": "string"
     }
   },
@@ -37,6 +36,11 @@
         "role": "admin"
       }
     },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
     "read": {
       "$or": [
         {
@@ -45,16 +49,9 @@
           }
         },
         {
-          "$and": [
-            {
-              "user_condition": {
-                "role": "user"
-              }
-            },
-            {
-              "data.active": true
-            }
-          ]
+          "user_condition": {
+            "role": "user"
+          }
         }
       ]
     },
@@ -62,11 +59,7 @@
       "user_condition": {
         "role": "admin"
       }
-    },
-    "delete": {
-      "user_condition": {
-        "role": "admin"
-      }
     }
-  }
+  },
+  "type": "object"
 }
