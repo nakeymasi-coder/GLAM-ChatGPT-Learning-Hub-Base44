@@ -8548,8 +8548,8 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         const tools = document.getElementById("toolboxDetails");
         if (tools) tools.open = false;
         if (name === "history") loadPromptHistory();
-        if (name === "bizprofile") bpLoad();
-        if (name === "stuck") shRenderChips();
+        if (name === "bizprofile") setTimeout(() => { try { bpLoad(); } catch (e) {} }, 0);
+        if (name === "stuck") setTimeout(() => { try { shRenderChips(); } catch (e) {} }, 0);
         updateHubLocation(name);
         closeHubSidebar();
         document
