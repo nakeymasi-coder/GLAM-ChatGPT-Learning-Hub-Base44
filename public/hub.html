@@ -8387,7 +8387,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         required: ["score", "headline", "summary", "strengths", "interpretation", "missing", "coachingTips", "improvedPrompt", "whyBetter", "nextChallenge"] };
       async function hubCoachAttempt(attempt, l) {
         const lesson = l ? { id: l.id, title: l.title, description: l.desc, use: l.use, commonMistake: l.mistake, lessonSteps: l.steps, examplePrompt: l.prompt } : {};
-        const prompt = `You are the Mastery Hub AI Coach for beginners. Grade the member's EXACT attempt for this lesson. Score 0-100 honestly: a vague one-liner scores under 40, a clear goal with context and format scores 70+, don't inflate. headline: a short honest verdict. summary: 1-2 plain sentences. strengths: only real strengths (empty list if none). interpretation: what ChatGPT would actually understand from it. missing: up to 4 items, each with why it matters. coachingTips: 2-4 short tips. improvedPrompt: a stronger version that keeps their goal and as many of their own words as possible. whyBetter: one sentence. nextChallenge: one small next practice task.\n\nLESSON: ${JSON.stringify(lesson)}\n\nMEMBER ATTEMPT:\n"""${attempt}"""`;
+        const prompt = `You are the Mastery Hub AI Coach for beginners. Grade the member's EXACT attempt for this lesson. Score 0-100 honestly: a vague one-liner scores under 40, a clear goal with context and format scores 70+, don't inflate. Be honest but kind, like a tough-love friend coaching a beginner: never use harsh words like 'ineffective', 'fails' or 'useless'. headline: a short honest verdict that points to the fix. summary: 1-2 plain, encouraging-but-honest sentences. strengths: only real strengths (empty list if none). interpretation: what ChatGPT would actually understand from it. missing: up to 4 items, each with why it matters. coachingTips: 2-4 short tips. improvedPrompt: a stronger version that keeps their goal and as many of their own words as possible. whyBetter: one sentence. nextChallenge: one small next practice task.\n\nLESSON: ${JSON.stringify(lesson)}\n\nMEMBER ATTEMPT:\n"""${attempt}"""`;
         return await hubBrainCall(prompt, HUB_COACH_SCHEMA);
       }
       async function runHubBrain(mode, question) {
@@ -10788,7 +10788,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           if (!res.ok) throw new Error(data?.error || `AI request failed (${res.status})`);
           const r = data?.result || data; const parsed = typeof r === "string" ? JSON.parse(r) : r;
           out.innerHTML = `
-            <div class="sh-why"><b>Straight answer:</b> ${escapeAttr(parsed.why || "")}</div>
+            <div class="sh-why"><b>Straight answer:</b> ${escapeAttr(String(parsed.why || "").replace(/^\s*straight answer:\s*/i, ""))}</div>
             <div class="label">Do this</div><ol class="sh-steps">${(parsed.steps || []).map(s => `<li>${escapeAttr(s)}</li>`).join("")}</ol>
             ${parsed.fixedPrompt ? `<div class="label" style="margin-top:12px">Send this instead</div><div class="formula-output"><button class="copy" type="button" onclick="copyText(document.getElementById('shFixed').innerText)">Copy</button><pre id="shFixed">${escapeAttr(parsed.fixedPrompt)}</pre></div>` : ""}`;
         } catch (e) {
