@@ -11359,5 +11359,184 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
 
   document.querySelectorAll("#hubSidebar .side-link").forEach((l) => l.addEventListener("click", () => closeHubSidebar()));
   </script>
-  </body>
+  <!-- ===== REDESIGN LAYER (test page hub-next.html) ===== -->
+<style id="rd-theme">
+  :root{--sapphire:#e8601c;--deep:#211d1a;--black:#211d1a;--soft:#fbf5ec;--soft-blue:#fdeadb;--silver:#e6d9c8;--silver-light:#f6efe4;--rd-tang:#e8601c;--rd-char:#211d1a;--rd-cream:#fbf5ec}
+  body{background:var(--rd-cream)!important}
+  html.rd-big{font-size:118%}
+  html.rd-big body{font-size:18px}
+  .rd-hide,#announceSlim{display:none!important}
+  .rd-head{background:var(--rd-char);color:#fff;border-radius:22px;padding:18px 18px 16px;margin:0 0 14px}
+  .rd-head h2{font:700 22px/1.2 Georgia,serif;margin:0 0 4px;color:#fff}
+  .rd-head .rd-hi{opacity:.85;margin:0 0 12px;font-size:15px}
+  .rd-bar{height:9px;background:#3a3430;border-radius:99px;overflow:hidden}
+  .rd-bar i{display:block;height:100%;background:var(--rd-tang);border-radius:99px;width:0}
+  .rd-meta{display:flex;justify-content:space-between;font-size:12.5px;opacity:.75;margin:6px 0 12px}
+  .rd-row{display:flex;gap:8px}
+  .rd-row input{flex:1;min-width:0;background:#2e2925;border:1px solid #3d3631;color:#fff;border-radius:14px;padding:12px 14px;font-size:15px}
+  .rd-row input::placeholder{color:#b9aea4}
+  .rd-aa{background:#2e2925;color:#fff;border:1px solid #3d3631;border-radius:14px;padding:0 16px;font-weight:800;font-size:16px;cursor:pointer}
+  .rd-aa[aria-pressed="true"]{background:var(--rd-tang);border-color:var(--rd-tang)}
+  .rd-next{background:var(--rd-tang);color:#fff;border-radius:22px;padding:18px;margin:0 0 14px}
+  .rd-next .k{font-size:11.5px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;opacity:.9}
+  .rd-next h3{font:700 23px/1.2 Georgia,serif;margin:6px 0 4px;color:#fff}
+  .rd-next p{margin:0 0 14px;opacity:.95}
+  .rd-btn{display:block;width:100%;border:0;border-radius:16px;padding:15px;font-weight:900;font-size:16px;cursor:pointer;background:#fff;color:var(--rd-char)}
+  .rd-btn.dark{background:var(--rd-char);color:#fff}
+  .rd-btn.line{background:#fff;border:1.5px solid var(--silver);color:var(--rd-char)}
+  .rd-link{background:none;border:0;color:#fff;text-decoration:underline;font-weight:700;margin-top:10px;cursor:pointer;font-size:14px}
+  .rd-news{background:#fff;border:1.5px solid var(--silver);border-radius:22px;padding:16px 16px 6px;margin:0 0 14px}
+  .rd-news-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .rd-news-h b{font:700 17px Georgia,serif}
+  .rd-pill{background:var(--rd-char);color:#fff;border-radius:99px;font-size:11px;font-weight:900;padding:4px 10px}
+  .rd-item{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:none;border:0;border-top:1px dashed var(--silver);padding:12px 0;cursor:pointer}
+  .rd-item:first-of-type{border-top:0}
+  .rd-item .ico{font-size:22px;line-height:1}
+  .rd-item b{display:block;font-size:15.5px;color:var(--rd-char)}
+  .rd-item span{font-size:13.5px;color:#6f655c}
+  .rd-stuck{position:fixed;right:14px;bottom:86px;z-index:60;background:var(--rd-char);color:#fff;border:0;border-radius:99px;padding:11px 16px;font-weight:900;font-size:14px;box-shadow:0 6px 18px rgba(0,0,0,.25);cursor:pointer}
+  .rd-sheet-bg{position:fixed;inset:0;background:rgba(20,16,14,.55);z-index:9999;display:none;align-items:flex-end;justify-content:center}
+  .rd-sheet-bg.on{display:flex}
+  .rd-sheet{background:var(--rd-cream);width:100%;max-width:560px;border-radius:26px 26px 0 0;padding:22px 18px 26px;max-height:88vh;overflow:auto}
+  .rd-dots{display:flex;gap:6px;justify-content:center;margin-bottom:14px}.rd-dots i{width:8px;height:8px;border-radius:99px;background:#d9cbbb}.rd-dots i.on{width:22px;background:var(--rd-tang)}
+  .rd-sheet h3{font:700 25px/1.2 Georgia,serif;margin:0 0 6px;color:var(--rd-char)}
+  .rd-sheet p{color:#6f655c;margin:0 0 14px}
+  .rd-opt{display:block;width:100%;text-align:left;background:#fff;border:1.5px solid var(--silver);border-radius:16px;padding:15px 16px;font-weight:800;font-size:16px;margin:0 0 10px;cursor:pointer;color:var(--rd-char)}
+  .rd-opt:hover{border-color:var(--rd-tang)}
+  .mobile-bottom-nav button[data-hub-path].rd-on{color:var(--rd-tang)}
+  /* ---- part 2: inner pages ---- */
+  .panel h2,.panel h3,.section-head h2,#lessonModal h2,#lessonModal h3,.modal h2{font-family:Georgia,"Times New Roman",serif!important;color:var(--rd-char)!important;letter-spacing:0!important}
+  .btn.primary{background:var(--rd-tang)!important;background-image:none!important;color:#fff!important;border-color:var(--rd-tang)!important;box-shadow:0 6px 16px rgba(232,96,28,.22)!important}
+  .btn.secondary{background:#fff!important;color:var(--rd-char)!important;border:1.5px solid var(--silver)!important;box-shadow:none!important}
+  .gentle-start{border-color:var(--silver)!important;background:#fff!important;background-image:none!important}
+  .panel h3,.panel strong,.panel summary{color:var(--rd-char)}
+  .panel button:not(.btn):not(.copy):not(.tiny-btn):not(.mode-btn):not(.rd-btn):not(.rd-opt){color:var(--rd-char)}
+  .panel .box,.panel details.box,.panel section.box,aside.dashboard,.curriculum-banner,.biz-coach{background-image:none!important;background-color:#fff!important;border-color:var(--silver)!important}
+  .roadmap-num{background:var(--rd-tang)!important;color:#fff!important}
+  .roadmap-action{color:var(--rd-tang)!important;border-color:var(--rd-tang)!important}
+  .roadmap-tool{color:var(--rd-char)!important}
+  .tiny-btn{background:#fff!important;color:var(--rd-char)!important;border:1.5px solid var(--silver)!important;border-radius:99px!important}
+  .copy{background:#fff!important;color:var(--rd-char)!important}
+  .hub-location{background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important;margin:0 0 8px!important}
+  .hub-location>span:first-child,#hubBreadcrumb{display:none!important}
+  .loc-link{background:#fff!important;border:1.5px solid var(--silver)!important;border-radius:99px!important;padding:8px 14px!important;color:var(--rd-char)!important;font-weight:800!important;text-decoration:none!important}
+  .loc-link::before{content:"← "}
+  .toolbox-details{background:#fff!important;border-color:var(--silver)!important}
+  #lessonModal .modal{background:var(--rd-cream)!important;border-radius:26px!important}
+  #lessonModal .mode-btn{background:#fff!important;color:var(--rd-char)!important;border:1.5px solid var(--silver)!important;border-radius:99px!important;font-weight:800!important;box-shadow:none!important}
+  #lessonModal .mode-btn.active{background:var(--rd-char)!important;color:#fff!important;border-color:var(--rd-char)!important}
+  .panel a{color:var(--rd-tang)}
+  body:has(#panel-stuck.active) .rd-stuck,body:has(#lessonModal.open) .rd-stuck,body:has(.rd-sheet-bg.on) .rd-stuck{display:none!important}
+</style>
+<div class="rd-sheet-bg" id="rdSheet" onclick="if(event.target===this)rdCloseSheet()"><div class="rd-sheet" id="rdSheetBody"></div></div>
+<button class="rd-stuck" type="button" onclick="goTab('stuck')" aria-label="I'm stuck, get help">🆘 I'm stuck</button>
+<script>
+(function(){
+  let NEWS = [
+    { ico:"🎙️", t:"Voice is changing Dec 11", s:"Advanced and Standard Voice retire. Your Voice lesson is updated.", plain:"If you talk to ChatGPT out loud, it will sound and work a little differently after December 11. Nothing to do yet.", detail:"OpenAI is retiring Advanced and Standard Voice on December 11, 2026 and moving everyone to GPT-Live.", lesson:"voice" },
+    { ico:"🖼️", t:"Images 2.6", s:"Better edits that keep details, plus saved reference images.", plain:"Changing one thing in a picture should mess up the rest less often. You can also save reference images to reuse.", detail:"ChatGPT Images 2.6 rolled out in early November 2026.", lesson:"imageedit" },
+    { ico:"🔒", t:"Locked chats", s:"Hide private chats behind a PIN.", plain:"You can now lock a private chat so it needs a PIN to open. Handy for business or money stuff.", detail:"Added to ChatGPT in October 2026.", lesson:"safepaste" }
+  ];
+  let NEWS_MONTH = "NOV 2026", DRAFTS = [];
+  const APP = "6a9aedd33cd938f0f47b9ff7";
+  const monthLabel = m => { const [y,mo]=String(m||"").split("-"); const n=["JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"][+mo-1]; return n? n+" "+y : m; };
+  async function loadNews(){
+    try{
+      const r = await fetch(`/api/apps/${APP}/entities/HubMonthlyNews?limit=200`, { headers: hubProtectedHeaders(), credentials:"include" });
+      if(!r.ok) return;
+      const rows = await r.json(); const list = Array.isArray(rows) ? rows : (rows.items||rows.data||[]);
+      const ok = list.filter(x=>x.status==="approved");
+      DRAFTS = list.filter(x=>x.status==="draft").sort((a,b)=>(a.sort_order||0)-(b.sort_order||0));
+      if(ok.length){ const latest = ok.map(x=>x.month).sort().pop(); NEWS_MONTH = monthLabel(latest);
+        NEWS = ok.filter(x=>x.month===latest).sort((a,b)=>(a.sort_order||0)-(b.sort_order||0)).map(x=>({ico:x.ico||"🆕", t:x.title, s:x.summary||"", plain:x.plain||"", detail:x.detail||"", lesson:x.lesson_id||"", src:x.source_url||""})); }
+      renderHome();
+    }catch(e){}
+  }
+  window.rdLoadNews = loadNews;
+  window.rdReview = async function(id, status){
+    try{ const r = await fetch(`/api/apps/${APP}/entities/HubMonthlyNews/${id}`, { method:"PUT", headers: Object.assign({"Content-Type":"application/json"}, hubProtectedHeaders()), credentials:"include", body: JSON.stringify({status}) });
+      if(!r.ok) throw new Error("save failed"); toast(status==="approved" ? "Approved. It's live for buyers." : "Skipped."); await loadNews(); }
+    catch(e){ toast("Couldn't save that. Try again."); }
+  };
+  const ORDER = { business:["basics","prompting","custominstructions","checkit","safepaste","projects"], pictures:["basics","prompting","images","imageedit","checkit"], learning:["basics","prompting","checkit","safepaste"], unsure:["basics","safepaste","prompting","checkit"] };
+  const $ = s => document.querySelector(s);
+  function done(){ try { return JSON.parse(HubStorage.getItem("glamHubCompleted")||"[]"); } catch(e){ return []; } }
+  function prefs(){ try { return JSON.parse(HubStorage.getItem("glamOnboardV2")||"null"); } catch(e){ return null; } }
+  function nextLesson(){
+    const d = done(), p = prefs(), ids = lessons.map(l=>l.id);
+    const pri = (ORDER[p?.goal]||ORDER.unsure).filter(id=>ids.includes(id));
+    const id = pri.find(i=>!d.includes(i)) || ids.find(i=>!d.includes(i));
+    return lessons.find(l=>l.id===id);
+  }
+  function renderHome(){
+    const host = $("#rdHome"); if(!host) return;
+    const d = done(), total = lessons.length, pct = Math.round(d.length/total*100);
+    const nl = nextLesson();
+    host.innerHTML = `
+      <div class="rd-head">
+        <h2>ChatGPT Mastery Hub</h2>
+        <p class="rd-hi" id="rdHi">${window.__rdName ? "Hey "+escapeAttr(window.__rdName)+" 👋 " : "Hey there 👋 "}${d.length ? "You're on a roll." : "Let's start small."}</p>
+        <div class="rd-bar"><i style="width:${pct}%"></i></div>
+        <div class="rd-meta"><span>${d.length} of ${total} lessons done</span><span>Certificate at 80%</span></div>
+        <form class="rd-row" onsubmit="event.preventDefault();rdSearch()"><input id="rdQ" placeholder="🔎 Search lessons, tools, words…" aria-label="Search the Hub"><button class="rd-aa" type="button" id="rdAa" aria-pressed="${document.documentElement.classList.contains('rd-big')}" onclick="rdBig()" aria-label="Bigger text">Aa</button></form>
+      </div>
+      ${nl ? `<div class="rd-next"><div class="k">Your next step</div><h3>${escapeAttr(nl.title)}</h3><p>${escapeAttr(nl.desc||"")} · ${escapeAttr(nl.time||"5 min")}</p><button class="rd-btn" type="button" onclick="openLesson('${nl.id}')">Start lesson →</button><button class="rd-link" type="button" onclick="goTab('learn')">See all lessons</button></div>` :
+        `<div class="rd-next"><div class="k">You did it</div><h3>Every lesson is done 🎉</h3><p>Grab your certificate.</p><button class="rd-btn" type="button" onclick="goTab('certificate')">Get my certificate →</button></div>`}
+      ${DRAFTS.length ? `<div class="rd-news" style="border-color:var(--rd-tang)"><div class="rd-news-h"><b>🛠️ Monthly update review</b><span class="rd-pill" style="background:var(--rd-tang)">OWNER ONLY</span></div><p style="margin:0 0 6px;font-size:13.5px;color:#6f655c">${DRAFTS.length} new item${DRAFTS.length>1?"s":""} waiting. Buyers only see what you approve.</p>
+        ${DRAFTS.map(d=>`<div style="border-top:1px dashed var(--silver);padding:12px 0"><b style="display:block;font-size:15.5px">${escapeAttr(d.ico||"🆕")} ${escapeAttr(d.title)}</b><span style="display:block;font-size:13.5px;color:#6f655c;margin:2px 0 6px">${escapeAttr(d.summary||"")}</span>${d.plain?`<span style="display:block;font-size:13.5px;margin-bottom:6px"><b>Plain English:</b> ${escapeAttr(d.plain)}</span>`:""}${d.lesson_change?`<span style="display:block;font-size:13px;background:#fff6e5;border-radius:10px;padding:8px 10px;margin-bottom:8px"><b>Suggested lesson change:</b> ${escapeAttr(d.lesson_change)}</span>`:""}${d.source_url?`<a href="${escapeAttr(d.source_url)}" target="_blank" rel="noopener" style="font-size:12.5px">Source</a>`:""}<div style="display:flex;gap:8px;margin-top:8px"><button class="rd-btn" type="button" style="background:var(--rd-tang);color:#fff;padding:11px" onclick="rdReview('${d.id}','approved')">Approve</button><button class="rd-btn line" type="button" style="padding:11px" onclick="rdReview('${d.id}','skipped')">Skip</button></div></div>`).join("")}
+      </div>` : ""}
+      <div class="rd-news"><div class="rd-news-h"><b>🆕 New in ChatGPT this month</b><span class="rd-pill">${NEWS_MONTH}</span></div>
+        ${NEWS.map((n,i)=>`<button class="rd-item" type="button" onclick="rdNews(${i})"><span class="ico">${n.ico}</span><span><b>${n.t}</b><span>${n.s}</span></span></button>`).join("")}
+      </div>`;
+  }
+  window.rdRender = renderHome;
+  window.rdBig = function(){ const on = document.documentElement.classList.toggle("rd-big"); try{HubStorage.setItem("glamBigText", on?"1":"0")}catch(e){} const b=$("#rdAa"); if(b) b.setAttribute("aria-pressed", on); };
+  window.rdSearch = function(){ const q=($("#rdQ")?.value||"").trim(); if(!q) return; const inp=$("#plainHelpInput"); const f=$("#plainHelpForm"); if(inp&&f){ inp.value=q; f.requestSubmit ? f.requestSubmit() : f.dispatchEvent(new Event("submit",{cancelable:true})); setTimeout(()=>$("#plainHelpResult")?.scrollIntoView({behavior:"smooth",block:"center"}),150);} };
+  window.rdCloseSheet = function(){ $("#rdSheet").classList.remove("on"); };
+  function sheet(html){ $("#rdSheetBody").innerHTML = html; $("#rdSheet").classList.add("on"); }
+  window.rdNews = function(i){ const n=NEWS[i]; const has = lessons.some(l=>l.id===n.lesson);
+    sheet(`<div style="font-size:34px">${n.ico}</div><h3>${n.t}</h3><p style="color:var(--rd-char);font-size:17px"><b>In plain English:</b> ${n.plain}</p><p>${n.detail}</p>${has?`<button class="rd-btn dark" type="button" onclick="rdCloseSheet();openLesson('${n.lesson}')">Open the lesson →</button>`:""}<p style="text-align:center;font-size:12.5px;margin:10px 0">Source: ${n.src?`<a href="${n.src}" target="_blank" rel="noopener">OpenAI release notes</a>`:"OpenAI release notes"}</p><button class="rd-btn line" type="button" onclick="rdCloseSheet()">Close</button>`); };
+  const STEPS = [
+    { q:"What do you want ChatGPT to help you with most?", sub:"Tap one. You can change it later.", key:"goal", opts:[["business","💼 My business (posts, emails, selling)"],["pictures","🎨 Making pictures and designs"],["learning","📚 Learning and research"],["unsure","🤷🏾‍♀️ I honestly don't know yet"]] },
+    { q:"How much have you used ChatGPT?", sub:"No wrong answer. This just sets your pace.", key:"level", opts:[["never","🌱 Never or barely"],["some","🙂 A little"],["lots","🔥 I use it a lot"]] }
+  ];
+  window.rdPick = function(step, key, val){ window.__rdAns = window.__rdAns || {}; window.__rdAns[key] = val; rdOnboard(step+1); };
+  window.rdOnboard = function(step=0){
+    if(step===0) window.__rdAns = {};
+    const ans = window.__rdAns || {};
+    if(step>=STEPS.length){ try{HubStorage.setItem("glamOnboardV2", JSON.stringify(Object.assign({goal:"unsure"}, ans))); HubStorage.setItem("glamHubTutorialSeen","1");}catch(e){}
+      renderHome(); const nl=nextLesson();
+      sheet(`<div class="rd-dots"><i></i><i></i><i class="on"></i></div><div style="text-align:center;font-size:40px">🎉</div><h3 style="text-align:center">Your path is ready</h3><p style="text-align:center">We'll start with <b>${escapeAttr(nl?.title||"the basics")}</b>. About 10 minutes a day is plenty.</p><button class="rd-btn dark" type="button" onclick="rdCloseSheet()">Let's go →</button>`); return; }
+    const s=STEPS[step];
+    sheet(`<div class="rd-dots">${STEPS.concat([0]).map((_,i)=>`<i class="${i===step?'on':''}"></i>`).join("")}</div><h3>${s.q}</h3><p>${s.sub}</p>${s.opts.map(([v,l])=>`<button class="rd-opt" type="button" onclick="rdPick(${step},'${s.key}','${v}')">${l}</button>`).join("")}<button class="rd-btn line" type="button" onclick="rdOnboard(${STEPS.length})">Skip for now</button>`);
+  };
+  function wireNav(){
+    const nav = document.querySelector(".mobile-bottom-nav"); if(!nav) return;
+    const set = (path, label, fn) => { const b = nav.querySelector(`[data-hub-path="${path}"]`); if(!b) return; b.lastChild.nodeValue = label; b.setAttribute("aria-label", label); b.onclick = fn; };
+    set("home","Learn", () => { scrollHubHome(); setTimeout(renderHome,50); });
+    set("learn","Make", () => goTab("create"));
+    set("create","Ask Glam", () => scrollToAskHub());
+    set("mystuff","My Stuff", () => goTab("mystuff"));
+  }
+  function boot(){
+    if(typeof lessons==="undefined" || typeof HubStorage==="undefined"){ return setTimeout(boot,200); }
+    const start = document.getElementById("startHere");
+    if(start && !document.getElementById("rdHome")){
+      const host = document.createElement("div"); host.id="rdHome"; start.prepend(host);
+      start.querySelector(".welcome-hero")?.classList.add("rd-hide");
+      start.querySelector(".start-grid")?.classList.add("rd-hide");
+    }
+    try{ if(HubStorage.getItem("glamBigText")==="1") document.documentElement.classList.add("rd-big"); }catch(e){}
+    try{ HubStorage.setItem("glamHubTutorialSeen","1"); }catch(e){}
+    setTimeout(()=>{ try{ closeHubTutorial(); }catch(e){} },900);
+    wireNav(); renderHome(); loadNews();
+    if(!prefs()) setTimeout(()=>rdOnboard(0),1000);
+    try{ fetch("/api/apps/6a9aedd33cd938f0f47b9ff7/entities/User/me",{headers:hubProtectedHeaders(),credentials:"include"}).then(r=>r.json()).then(u=>{ const n=(u?.full_name||"").trim().split(/\s+/)[0]; if(n){ window.__rdName=n; renderHome(); } }).catch(()=>{}); }catch(e){}
+    const oldToggle = window.toggleComplete; if(typeof oldToggle==="function" && !oldToggle.__rd){ window.toggleComplete = function(){ const r = oldToggle.apply(this, arguments); setTimeout(renderHome,100); return r; }; window.toggleComplete.__rd = true; }
+  }
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",()=>setTimeout(boot,300)); else setTimeout(boot,300);
+})();
+</script>
+<!-- ===== END REDESIGN LAYER ===== -->
+</body>
 </html>
