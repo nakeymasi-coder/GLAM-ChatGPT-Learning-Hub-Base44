@@ -8354,18 +8354,47 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         downloadPromptHistoryFile(`glam-prompt-history-${day}.csv`, [headers, ...rows].map(row => row.map(csvCell).join(",")).join("\r\n"), "text/csv;charset=utf-8");
       }
 
+      // ===== Honest brain for the older Hub tools (Prompt Coach, Feature Finder, lesson coaching) =====
+      async function hubBrainCall(prompt, schema) {
+        const res = await fetch("/api/apps/6a9aedd33cd938f0f47b9ff7/functions/hubAi", { method: "POST", headers: hubProtectedHeaders(), credentials: "include", body: JSON.stringify({ prompt, response_json_schema: schema }) });
+        if (typeof hubHandleAuthFailure === "function" && hubHandleAuthFailure(res)) throw new Error("Please sign in again.");
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data?.error || "The Mastery Hub AI could not answer right now.");
+        const r = data?.result ?? data;
+        return typeof r === "string" ? JSON.parse(r) : r;
+      }
+      const HUB_BRAIN_SCHEMA = { type: "object", properties: {
+        answer: { type: "string" }, whatYouNeed: { type: "string" }, bestFeature: { type: "string" },
+        nextSteps: { type: "array", items: { type: "string" } }, copyPrompt: { type: "string" },
+        followUp: { type: "string" }, lessonId: { type: "string" } },
+        required: ["answer", "whatYouNeed", "bestFeature", "nextSteps", "copyPrompt", "followUp", "lessonId"] };
+      function buildBrainPrompt(mode, question) {
+        const roles = {
+          prompt_coach: "You are the Mastery Hub Prompt Coach for beginners. Turn the member's rough request into a stronger, complete, copy-ready prompt in copyPrompt. Keep their goal and meaning. In answer, say in 1-2 plain sentences what you improved. If their request has a real problem, say so first in answer. Put one useful question in followUp. Fill whatYouNeed with one line restating their goal, bestFeature with the best ChatGPT feature to paste it into, nextSteps with 2-4 short steps, and lessonId with a matching catalog id or an empty string.",
+          prompt_builder: "You are the Mastery Hub Prompt Builder. Rebuild the member's rough idea into a strong, complete, copy-ready prompt in copyPrompt for the tool they named. Keep their idea; add only the structure it needs. In answer, say in 1-2 plain sentences what you added and why. Fill whatYouNeed, bestFeature, nextSteps (2-4), followUp (one question) and lessonId (catalog id or empty string).",
+          feature_finder: "You are the Mastery Hub Feature Finder. Understand what the member is really trying to do, then pick the ONE best ChatGPT feature or workflow in bestFeature. whatYouNeed restates their goal in one line. answer explains the pick in 1-2 plain sentences. nextSteps gives 3-5 short steps. copyPrompt is a starter prompt they can paste. followUp is one question. lessonId is the best matching catalog lesson id or an empty string. If a simpler tool fits better than what they asked about, say so."
+        };
+        let catalog = [];
+        try { catalog = askHubCatalog(true); } catch (e) {}
+        return `${roles[mode] || roles.prompt_coach}\n\nLESSON CATALOG (JSON): ${JSON.stringify(catalog)}\n\nMEMBER REQUEST:\n${question}`;
+      }
+      const HUB_COACH_SCHEMA = { type: "object", properties: {
+        score: { type: "number" }, headline: { type: "string" }, summary: { type: "string" },
+        strengths: { type: "array", items: { type: "string" } }, interpretation: { type: "string" },
+        missing: { type: "array", items: { type: "object", properties: { item: { type: "string" }, why: { type: "string" } }, required: ["item", "why"] } },
+        coachingTips: { type: "array", items: { type: "string" } }, improvedPrompt: { type: "string" },
+        whyBetter: { type: "string" }, nextChallenge: { type: "string" } },
+        required: ["score", "headline", "summary", "strengths", "interpretation", "missing", "coachingTips", "improvedPrompt", "whyBetter", "nextChallenge"] };
+      async function hubCoachAttempt(attempt, l) {
+        const lesson = l ? { id: l.id, title: l.title, description: l.desc, use: l.use, commonMistake: l.mistake, lessonSteps: l.steps, examplePrompt: l.prompt } : {};
+        const prompt = `You are the Mastery Hub AI Coach for beginners. Grade the member's EXACT attempt for this lesson. Score 0-100 honestly: a vague one-liner scores under 40, a clear goal with context and format scores 70+, don't inflate. headline: a short honest verdict. summary: 1-2 plain sentences. strengths: only real strengths (empty list if none). interpretation: what ChatGPT would actually understand from it. missing: up to 4 items, each with why it matters. coachingTips: 2-4 short tips. improvedPrompt: a stronger version that keeps their goal and as many of their own words as possible. whyBetter: one sentence. nextChallenge: one small next practice task.\n\nLESSON: ${JSON.stringify(lesson)}\n\nMEMBER ATTEMPT:\n"""${attempt}"""`;
+        return await hubBrainCall(prompt, HUB_COACH_SCHEMA);
+      }
       async function runHubBrain(mode, question) {
         const tool = mode === "prompt_builder" ? "Prompt Library AI Builder" : "Mastery Hub AI";
         let data;
         try {
-          const res = await fetch("https://chatgpt-learning-hub.netlify.app/.netlify/functions/ask", {
-            method: "POST",
-            headers: hubProtectedHeaders(),
-            body: JSON.stringify({ mode, question, history: [], catalog: askHubCatalog() })
-          });
-          try { data = await res.json(); }
-          catch { throw new Error("The Mastery Hub AI returned an unreadable response."); }
-          if (!res.ok) throw new Error(data.error || "The Mastery Hub AI could not answer right now.");
+          data = await hubBrainCall(buildBrainPrompt(mode, question), HUB_BRAIN_SCHEMA);
           await savePromptHistory({
             prompt: question,
             tool,
@@ -9075,24 +9104,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         box.innerHTML = `<div class="ai-coach-loading"><span class="ai-spinner"></span>Reading what you actually wrote and coaching this attempt…</div>`;
 
         try {
-          const res = await fetch("https://chatgpt-learning-hub.netlify.app/.netlify/functions/coach", {
-            method: "POST",
-            headers: hubProtectedHeaders(),
-            body: JSON.stringify({
-              attempt: input,
-              lesson: {
-                id: l.id,
-                title: l.title,
-                description: l.desc,
-                use: l.use,
-                commonMistake: l.mistake,
-                lessonSteps: l.steps,
-                examplePrompt: l.prompt,
-              },
-            }),
-          });
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error || "AI coach unavailable.");
+          const data = await hubCoachAttempt(input, l);
 
           usage.date = today;
           usage.count = used + 1;
@@ -9107,7 +9119,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         } catch (err) {
           await savePromptHistory({ prompt: input, tool: `Prompt Coach — ${l?.title || "Lesson"}`, response: `Request failed: ${err.message}` });
           box.innerHTML = `<strong>I couldn't reach the AI Coach.</strong><br>
-   <span style="color:var(--muted)">Your lesson is still working. Once the Netlify Function and API key are connected, this button will give personalized coaching. Error: ${escapeAttr(err.message)}</span>`;
+   <span style="color:var(--muted)">Your lesson still works. The AI coach couldn't answer just now, so try again in a minute. Details: ${escapeAttr(err.message)}</span>`;
         }
       }
       function renderAICoaching(box, data, remaining, id, originalAttempt) {
@@ -10417,25 +10429,7 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         fb.innerHTML = `<div class="ai-coach-loading"><span class="ai-spinner"></span>AI Coach is reviewing this exact prompt…</div>`;
 
         try {
-          const res = await fetch("https://chatgpt-learning-hub.netlify.app/.netlify/functions/coach", {
-            method: "POST",
-            headers: hubProtectedHeaders(),
-            body: JSON.stringify({
-              attempt,
-              lesson: {
-                id: l.id,
-                title: l.title,
-                description: l.desc,
-                use: l.use,
-                commonMistake: l.mistake,
-                lessonSteps: l.steps,
-                examplePrompt: l.prompt,
-              },
-            }),
-          });
-
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error || "AI Coach unavailable.");
+          const data = await hubCoachAttempt(attempt, l);
 
           const score = Math.max(0, Math.min(100, Number(data.score) || 0));
           fb.innerHTML = `<div class="coach-report">
