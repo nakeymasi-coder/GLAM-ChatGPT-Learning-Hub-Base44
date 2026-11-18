@@ -3119,6 +3119,8 @@
             <button class="tab" data-tab="history">Prompt History</button>
             <span class="tab-group-label">Help</span>
             <button class="tab" data-tab="stuck">I'm Stuck</button>
+            <button class="tab" data-tab="checkit">Check It</button>
+            <button class="tab" data-tab="safepaste">Safe to Paste</button>
             <button class="tab" data-tab="finder">Which Tool Do I Use?</button>
             <button class="tab" data-tab="glossary">Glossary</button>
             <button class="tab" data-tab="concierge">Prompt Concierge</button>
@@ -3350,6 +3352,8 @@
               <h4>Prompt Tools</h4>
               <div class="tool-links">
                 <button type="button" onclick="goTab('asklibrary')"><strong>Prompt Library</strong><small>Ready-made prompts plus a guided builder — start when you know the result you want, not the exact words.</small></button>
+                <button type="button" onclick="goTab('checkit')"><strong>Check It Before You Use It</strong><small>Paste an answer and see which numbers, names and links to double-check.</small></button>
+                <button type="button" onclick="goTab('safepaste')"><strong>Safe to Paste Checker</strong><small>Clean out emails, phone numbers and card numbers before you paste.</small></button>
                 <button type="button" onclick="goTab('stuck')"><strong>Why Isn't This Working?</strong><small>Stuck sending the same thing over and over? Find out why and what to send instead.</small></button>
                 <button type="button" onclick="goTab('coach')"><strong>Prompt Coach</strong><small>Paste a prompt and get coached on how to make it stronger.</small></button>
                 <button type="button" onclick="goTab('clinic')"><strong>Prompt Clinic</strong><small>A deeper fix-it session for prompts that keep disappointing you.</small></button>
@@ -3515,6 +3519,10 @@
                   id="tone"
                   placeholder="Tone/style? (optional)"
                 />
+                <select id="coachMode">
+                  <option value="rebuild">Rebuild it into a stronger prompt</option>
+                  <option value="keep">Keep my words, just make it make sense</option>
+                </select>
                 <textarea
                   id="promptNeed"
                   placeholder="What do you actually need ChatGPT to do?"
@@ -4180,6 +4188,60 @@
               </div>
             </div>
             <div class="box"><div class="kicker">Step 2</div><h3>Here's the fix</h3><div id="shResult"><div class="output">Your fix will show up here.</div></div></div>
+          </div>
+        </div>
+
+        <div class="panel" id="panel-safepaste">
+          <style>
+            #panel-safepaste .sp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0}
+            #panel-safepaste .sp-card{border-radius:14px;padding:14px 16px;border:1px solid}
+            #panel-safepaste .sp-card h4{margin:0 0 6px;font-size:17px}
+            #panel-safepaste .sp-card ul{margin:0;padding-left:18px}
+            #panel-safepaste .sp-card li{margin:4px 0}
+            #panel-safepaste .sp-g{background:#ecf8f1;border-color:#9fd8b8}
+            #panel-safepaste .sp-y{background:#fff6e5;border-color:#f1d39a}
+            #panel-safepaste .sp-r{background:#fdecea;border-color:#f2b3ab}
+            #panel-safepaste textarea{width:100%;min-height:120px}
+            #panel-safepaste .sp-hint{font-size:13px;opacity:.75;margin:6px 0}
+            #panel-safepaste .sp-found{background:#fff6e5;border:1px solid #f1d39a;border-radius:12px;padding:10px 12px;margin:10px 0;font-size:14px}
+          </style>
+          <div class="section-head" style="margin-top:0">
+            <div class="kicker">What's safe to paste</div>
+            <h2 style="font-size:36px">Use ChatGPT without worrying about your info.</h2>
+            <p>Most of what you'll paste is fine. A few things should be cleaned out first, and a few should never go in at all.</p>
+          </div>
+          <div class="sp-grid">
+            <div class="sp-card sp-g"><h4>✅ Fine to paste</h4><ul><li>Your product descriptions and captions</li><li>Your public website or listing text</li><li>Your own ideas and rough notes</li><li>General business questions</li></ul></div>
+            <div class="sp-card sp-y"><h4>⚠️ Clean it first</h4><ul><li>Customer names</li><li>Emails and phone numbers</li><li>Home addresses</li><li>Order numbers and details</li></ul><p class="sp-hint">Swap them for “Customer A.” The checker below does this for you.</p></div>
+            <div class="sp-card sp-r"><h4>🚫 Never paste</h4><ul><li>Passwords and logins</li><li>Bank or card numbers</li><li>Social Security numbers</li><li>API keys or secret codes</li></ul><p class="sp-hint">ChatGPT never needs these. Ever.</p></div>
+          </div>
+          <div class="coach-grid">
+            <div class="box"><div class="kicker">Safe to paste checker</div><h3>Clean it before you paste</h3>
+              <p class="help">Paste your text here. It gets cleaned right here on your screen. Nothing is sent anywhere.</p>
+              <textarea class="field" id="spInput" placeholder="Example: Hi Tasha, your order #48213 ships tomorrow. Call me at 574-555-0199 or email tasha.j@gmail.com"></textarea>
+              <div class="card-actions" style="margin-top:12px"><button class="btn primary" type="button" onclick="scrubForPaste()">Clean It for Me</button></div>
+            </div>
+            <div class="box"><div class="kicker">Ready to paste</div><h3>Your cleaned text</h3><div id="spResult"><div class="output">Your cleaned text will show up here.</div></div></div>
+          </div>
+          <div class="box" style="margin-top:14px"><div class="kicker">Two settings worth knowing</div>
+            <ol style="margin:6px 0 0;padding-left:20px"><li style="margin:6px 0"><b>Temporary Chat</b> isn't saved to your chat history. Start a new chat and look for it at the top.</li><li style="margin:6px 0"><b>Settings → Data controls → “Improve the model for everyone.”</b> Turn it off if you don't want your chats used for training.</li></ol>
+            <p class="sp-hint">Menu names can vary by device and plan. Can't find one? Search Settings for it.</p>
+            <div class="card-actions" style="margin-top:8px"><button class="tiny-btn" type="button" onclick="openLesson('safepaste')">Take the 3-minute lesson →</button></div>
+          </div>
+        </div>
+
+        <div class="panel" id="panel-checkit">
+          <div class="section-head" style="margin-top:0">
+            <div class="kicker">Check it before you use it</div>
+            <h2 style="font-size:36px">It sounded sure. Was it right?</h2>
+            <p>ChatGPT can be confidently wrong. Run this 1-minute check on anything you'll post, sell, or send.</p>
+          </div>
+          <div class="coach-grid">
+            <div class="box"><div class="kicker">Step 1</div><h3>Paste what ChatGPT told you</h3>
+              <textarea class="field" id="ciInput" style="width:100%;min-height:120px" placeholder="Paste the answer you want to double-check."></textarea>
+              <div class="card-actions" style="margin-top:12px"><button class="btn primary" type="button" onclick="buildCheckIt()">Show Me What to Check</button></div>
+            </div>
+            <div class="box"><div class="kicker">Step 2</div><h3>Your check list</h3><div id="ciResult"><div class="output">I'll point out the numbers, names, dates and links worth checking, plus a prompt that makes ChatGPT grade itself.</div></div></div>
           </div>
         </div>
 
@@ -5863,6 +5925,46 @@ steps: [
 use: "Cleaning up a Site address after launch, giving a client or reviewer private view access, or managing who can see a published Site.",
 mistake: "Assuming external viewer sharing makes someone a workspace member or editor — it is view-only access to that Site.",
 prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist for URL, mobile readability, links, privacy, audience, and the exact viewer access I intend to grant.",
+        },
+        {
+          id: "checkit",
+          path: "Understand ChatGPT",
+          level: "Beginner",
+          time: "4 min",
+          title: "Check It Before You Use It",
+          desc: "ChatGPT can sound sure and still be wrong. Learn the quick checks to do before you post, send, or sell anything.",
+          tags: ["accuracy", "wrong answers", "made up", "fact check", "sources", "trust"],
+          note: "ChatGPT itself says it can make mistakes. These checks take a minute and save you from embarrassing posts.",
+          steps: [
+            ["Know what to check", "Always check names, numbers, prices, dates, laws, health or money advice, quotes, and links. That's where made-up answers hide."],
+            ["Ask for sources", "Add: “Show me where you got this, with links.” Then open the links. If a link is broken or doesn't say what ChatGPT said, don't use it."],
+            ["Make it grade itself", "Ask: “Which parts of your answer are you least sure about?” It will often point right at the weak spots."],
+            ["Check the big one yourself", "Look up the most important fact on Google or the official website before you use it."],
+            ["Watch the too-perfect answer", "A super confident answer with exact numbers and no source is the one to double-check."],
+          ],
+          use: "Anything you'll post, sell, send to a customer, or make a decision with.",
+          mistake: "Copying an answer straight into a post or product because it sounded confident.",
+          prompt: "Answer this: [YOUR QUESTION]. Then list every fact, number, or name you used. Mark each one SURE or NOT SURE, and give me a link I can check for each SURE one. If you don't know something, say so instead of guessing.",
+        },
+        {
+          id: "safepaste",
+          path: "Start Here",
+          level: "Beginner",
+          time: "3 min",
+          title: "What's Safe to Paste",
+          desc: "Know what you can share with ChatGPT and what stays out, so you can use it for your business without worrying.",
+          tags: ["privacy", "safe", "data", "customer info", "passwords", "temporary chat"],
+          note: "Menu names can vary by device and plan. If you can't find a setting, search Settings for it.",
+          steps: [
+            ["Fine to paste", "Your product descriptions, captions, public website text, your own ideas, and general business questions."],
+            ["Clean it first", "Customer names, emails, phone numbers, addresses, and order details. Swap them for “Customer A” before you paste. The Hub's Safe to Paste checker can do this for you."],
+            ["Never paste", "Passwords, bank or card numbers, Social Security numbers, logins, and API keys. ChatGPT never needs them."],
+            ["Use Temporary Chat for private stuff", "Temporary Chat isn't saved to your chat history. Start a new chat and look for Temporary Chat at the top."],
+            ["Check your data setting", "In Settings, then Data controls, you can turn off “Improve the model for everyone” so your chats aren't used to train it."],
+          ],
+          use: "Before you paste anything from your business, your customers, or your bank into ChatGPT.",
+          mistake: "Pasting a whole customer list or an email thread with people's info still in it.",
+          prompt: "I'm about to paste [TYPE OF TEXT, for example customer reviews or an email]. Before I do, tell me which kinds of private details I should remove first, and give me a simple checklist.",
         },
       ];
 
@@ -8386,6 +8488,8 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         history: ["My Stuff", "Prompt History"],
         playbook: ["My Stuff", "My Playbook"],
         stuck: ["Help", "Why Isn't This Working?"],
+        checkit: ["Help", "Check It Before You Use It"],
+        safepaste: ["Help", "What's Safe to Paste"],
         finder: ["Help", "Which Tool Do I Use?"],
       };
 
@@ -9139,6 +9243,7 @@ prompt: "Help me review my ChatGPT Site before I share it. Give me a checklist f
         const tone = document.getElementById("tone").value.trim();
         const output = document.getElementById("coachOutput");
         const button = document.getElementById("buildPrompt");
+        if (document.getElementById("coachMode")?.value === "keep") { await keepMyWords(need, audience, tone); return; }
         const typeLabels = {create:"create something",learn:"teach or explain something",research:"research something",analyze:"analyze something",plan:"build a plan",improve:"improve existing material"};
         const request = `Transform my rough request into a genuinely stronger, complete, copy-ready prompt. Do not simply repeat, summarize, or lightly reword my input. Diagnose what is missing and add useful structure only where it improves the result. Preserve every important fact and constraint I gave you.\n\nTASK TYPE: ${typeLabels[type]}\nROUGH REQUEST:\n${need}${audience ? `\n\nAUDIENCE:\n${audience}` : ""}${tone ? `\n\nTONE / STYLE:\n${tone}` : ""}\n\nIf this depends on current facts, current platform behavior, policies, capabilities, pricing, or other changing information, verify it before writing the final prompt.`;
 
@@ -9564,6 +9669,8 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
           "panel-researchlab": "Business Research Lab",
           "panel-bizprofile": "My Business Profile",
           "panel-stuck": "Why Isn't This Working?",
+          "panel-checkit": "Check It Before You Use It",
+          "panel-safepaste": "What's Safe to Paste",
           "panel-practice": "Practice Lab",
           "panel-simulator": "Prompt Simulator"
         };
@@ -10510,6 +10617,93 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
       function buildEnvironment(){const v=id=>document.getElementById(id).value.trim();const subject=v("envSubject")||environmentPresets[document.getElementById("envType").value].subject;const parts=[subject,v("envTime"),v("envWeather"),v("envStyle"),v("envCamera"),v("envLighting"),v("envDepth"),v("envMaterials"),v("envActivity")].filter(Boolean);const guard=mergeAvoid("no unrelated clutter, no warped architecture",v("envAvoid"));const prompt=lockImagePrompt(parts.join(", ")+`, realistic scale, believable contact shadows, accurate reflections, environmental depth, ${guard}.`);const quick=lockImagePrompt([subject,v("envStyle"),v("envLighting"),v("envCamera")].filter(Boolean).join(", ")+".");const stack=[v("envStyle"),v("envCamera"),v("envLighting"),v("envDepth"),v("envMaterials")].filter(Boolean);lastEnvironmentBuild={prompt,quick,stack};document.getElementById("envResult").innerHTML=`<div class="label">Main environment prompt</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('envFull').innerText)">Copy</button><pre id="envFull">${escapeAttr(prompt)}</pre></div><div class="label" style="margin-top:12px">Quick version</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('envQuick').innerText)">Copy</button><pre id="envQuick">${escapeAttr(quick)}</pre></div><div class="label" style="margin-top:12px">Environment stack</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('envStack').innerText)">Copy</button><pre id="envStack">${escapeAttr(stack.join(", "))}</pre></div>`;}
       function chooseTypography(){document.getElementById("typeFamily").value="bold condensed display lettering";document.getElementById("typeCase").value="all caps";document.getElementById("typeShape").value="thick sculpted letterforms";document.getElementById("typeMaterial").value="glossy resin lettering";document.getElementById("typeDepth").value="deep 3D extrusion";document.getElementById("typeEffect").value="clean reflective highlights";document.getElementById("typeLayout").value="centered hero headline";document.getElementById("typeSpacing").value="tight controlled kerning";document.getElementById("typeColor").value="Caribbean sapphire blue, metallic silver, white";document.getElementById("typeAvoid").value="no misspelled text, no warped letters, no hidden wording, no random extra words";toast("Typography options chosen for you.");}
       function buildTypography(){const v=id=>document.getElementById(id).value.trim();const exact=v("typeText")||"YOUR TEXT";const prompt=`Typography reading exactly “${exact}”, ${v("typeCase")}, ${v("typeFamily")}, ${v("typeShape")}, ${v("typeMaterial")}, ${v("typeDepth")}, ${v("typeEffect")}, ${v("typeLayout")}, ${v("typeSpacing")}, ${v("typeColor")||"clean high-contrast color treatment"}, crisp edges, professional legibility, all visible wording fully unobstructed and correctly spelled, ${mergeAvoid("no warped letters or extra text",v("typeAvoid"))}.`;const stack=[v("typeFamily"),v("typeShape"),v("typeMaterial"),v("typeDepth"),v("typeEffect"),v("typeLayout"),v("typeSpacing")].filter(Boolean);const promptLocked=lockImagePrompt(prompt);lastTypographyBuild={prompt:promptLocked,stack};document.getElementById("typeResult").innerHTML=`<div class="label">Typography prompt</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('typeFull').innerText)">Copy</button><pre id="typeFull">${escapeAttr(promptLocked)}</pre></div><div class="label" style="margin-top:12px">Typography stack</div><div class="formula-output"><button class="copy" onclick="copyText(document.getElementById('typeStack').innerText)">Copy</button><pre id="typeStack">${escapeAttr(stack.join(", "))}</pre></div>`;}
+      // ===== Safe to paste checker (runs only in the browser) =====
+      function scrubForPaste() {
+        const raw = document.getElementById("spInput").value || "";
+        const out = document.getElementById("spResult");
+        if (!raw.trim()) { toast("Paste your text first."); return; }
+        const found = { email: 0, phone: 0, card: 0, ssn: 0, key: 0, order: 0, address: 0 };
+        let t = raw;
+        t = t.replace(/\b(?:sk|pk|rk|api|key|token)[-_][A-Za-z0-9_-]{12,}\b/gi, () => { found.key++; return "[SECRET KEY REMOVED]"; });
+        t = t.replace(/\b[\w.+-]+@[\w-]+\.[\w.-]+\b/g, () => { found.email++; return "[EMAIL]"; });
+        t = t.replace(/\b\d{3}-\d{2}-\d{4}\b/g, () => { found.ssn++; return "[SSN REMOVED]"; });
+        t = t.replace(/\b(?:\d[ -]?){13,19}\b/g, () => { found.card++; return "[CARD NUMBER REMOVED]"; });
+        t = t.replace(/(?:\+?1[\s.-]?)?\(?\b\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/g, () => { found.phone++; return "[PHONE]"; });
+        t = t.replace(/\b\d{1,6}\s+(?:[A-Z][a-z]+\s){1,3}(?:St|Street|Ave|Avenue|Rd|Road|Blvd|Dr|Drive|Ln|Lane|Ct|Court|Way|Pl|Place)\b/g, () => { found.address++; return "[ADDRESS]"; });
+        t = t.replace(/(order\s*(?:#|no\.?|number)?\s*)#?\d{4,}/gi, (m, p) => { found.order++; return p.replace(/#\s*$/, "") + "[ORDER #]"; });
+        const labels = { email: "email", phone: "phone number", card: "card number", ssn: "Social Security number", key: "secret key", order: "order number", address: "street address" };
+        const list = Object.entries(found).filter(([, n]) => n).map(([k, n]) => `${n} ${labels[k]}${n > 1 ? "s" : ""}`);
+        const danger = found.card || found.ssn || found.key;
+        out.innerHTML = `
+          ${list.length ? `<div class="sp-found"><b>Cleaned out:</b> ${list.join(", ")}.${danger ? " <b>Heads up:</b> you had a card number, SSN or secret key in there. Never paste those into ChatGPT." : ""}</div>` : `<div class="sp-found">I didn't find emails, phone numbers, card numbers or addresses.</div>`}
+          <div class="formula-output"><button class="copy" type="button" onclick="copyText(document.getElementById('spClean').innerText)">Copy</button><pre id="spClean">${escapeAttr(t)}</pre></div>
+          <p class="sp-hint" style="margin-top:8px"><b>Still check for names yourself.</b> I can't always tell a customer's name from a regular word, so swap them for “Customer A.”</p>`;
+        toast(list.length ? "Cleaned. Check names, then paste." : "Looks clean. Check names, then paste.");
+      }
+      // ===== Check it before you use it =====
+      function buildCheckIt() {
+        const raw = (document.getElementById("ciInput").value || "").trim();
+        const out = document.getElementById("ciResult");
+        if (!raw) { toast("Paste the answer first."); return; }
+        const pick = (re) => [...new Set((raw.match(re) || []).map(s => s.trim()))].slice(0, 8);
+        const money = pick(/\$\s?\d[\d,]*(?:\.\d+)?(?:\s?(?:k|m|million|billion))?/gi);
+        const pct = pick(/\b\d+(?:\.\d+)?\s?%/g);
+        const dates = pick(/\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\.?\s+\d{1,2}(?:,\s*\d{4})?|\b(?:19|20)\d{2}\b/g);
+        const links = pick(/https?:\/\/[^\s)]+/g);
+        const nums = pick(/\b\d{2,}(?:,\d{3})*(?:\.\d+)?\b/g).filter(n => !pct.some(p => p.includes(n)) && !money.some(m => m.includes(n)) && !dates.some(d => d.includes(n)));
+        const names = pick(/\b(?:[A-Z][a-z]+\s){1,2}[A-Z][a-z]+\b/g).filter(n => !/^(The|This|That|These|Here|What|When|Your|You|If|It|In|On|For|And|But)\b/.test(n));
+        const risky = /\b(law|legal|tax|IRS|FDA|doctor|medical|health|diagnos|cure|guarantee|income|earn|profit|refund policy|copyright|trademark)\w*/i.test(raw);
+        const row = (icon, title, items, tip) => items.length ? `<div style="margin:10px 0"><b>${icon} ${title}</b><div style="margin:4px 0 2px">${items.map(i => `<span style="display:inline-block;background:#fff6e5;border:1px solid #f1d39a;border-radius:999px;padding:3px 10px;margin:3px 4px 0 0;font-size:13px">${escapeAttr(i)}</span>`).join("")}</div><div style="font-size:13px;opacity:.8">${tip}</div></div>` : "";
+        const body = [
+          row("💲", "Prices and money", money, "Check against the real website or your own numbers."),
+          row("📊", "Percentages", pct, "Ask where it came from. Made-up stats are super common."),
+          row("📅", "Dates and years", dates, "Make sure they're real and still current."),
+          row("🔢", "Other numbers", nums, "Any number you'll repeat in public needs a source."),
+          row("👤", "Names (people, brands, places)", names, "Make sure they're real and spelled right."),
+          row("🔗", "Links", links, "Open every one. Fake or dead links are a classic giveaway."),
+        ].join("");
+        const prompt = `Look back at your last answer. List every fact, number, name, date and link you used. Mark each one SURE or NOT SURE, and give me a source link for each SURE one. If you made anything up or guessed, tell me now.`;
+        out.innerHTML = `
+          ${body || `<div class="sh-why" style="background:#ecf8f1;border:1px solid #9fd8b8;border-radius:12px;padding:10px 12px">No numbers, names, dates or links jumped out. Still ask the question below if you'll post or sell it.</div>`}
+          ${risky ? `<div style="background:#fdecea;border:1px solid #f2b3ab;border-radius:12px;padding:10px 12px;margin:10px 0;font-size:14px"><b>Extra careful:</b> this touches money, health, legal or tax stuff. Check it with an official source or a pro before you use it.</div>` : ""}
+          <div class="label" style="margin-top:12px">Then send ChatGPT this</div>
+          <div class="formula-output"><button class="copy" type="button" onclick="copyText(document.getElementById('ciPrompt').innerText)">Copy</button><pre id="ciPrompt">${escapeAttr(prompt)}</pre></div>`;
+        toast("Here's what to check.");
+      }
+      // ===== Prompt Coach: keep my words =====
+      function keepWordsLocalCleanup(text) {
+        let t = String(text).replace(/[ \t]+/g, " ").replace(/\s+([,.!?])/g, "$1").trim();
+        t = t.replace(/(^|[.!?]\s+)([a-z])/g, (m, a, b) => a + b.toUpperCase()).replace(/\bi\b/g, "I").replace(/\bim\b/gi, "I'm").replace(/\bdont\b/gi, "don't").replace(/\bcant\b/gi, "can't").replace(/\bwont\b/gi, "won't");
+        if (!/[.!?]$/.test(t)) t += ".";
+        return t;
+      }
+      async function keepMyWords(need, audience, tone) {
+        const output = document.getElementById("coachOutput");
+        const button = document.getElementById("buildPrompt");
+        button.disabled = true; button.textContent = "Cleaning up…";
+        output.innerHTML = `<div class="ask-loading"><span class="ask-spinner"></span>Keeping your words, just making it make sense…</div>`;
+        const extras = [audience ? `This is for: ${audience}.` : "", tone ? `Tone: ${tone}.` : ""].filter(Boolean).join(" ");
+        let cleaned = "", missing = [], usedAi = true;
+        try {
+          const schema = { type: "object", properties: { cleaned: { type: "string" }, missing: { type: "array", items: { type: "string" } } }, required: ["cleaned", "missing"] };
+          const prompt = `KEEP-MY-WORDS MODE. The member wants their own request cleaned up, NOT rewritten. Rules: fix spelling, grammar, punctuation and run-on sentences only. Keep their words, their order, their slang and their meaning. Do not add new ideas, details, sections, roles, headings or instructions. Do not make it longer except for fixed punctuation. Return it as "cleaned". Then, separately in "missing", list up to 3 short plain questions about important details they left out (who it's for, length, format, deadline). Never put those into "cleaned".\nTheir request: """${need}"""`;
+          const res = await fetch(ASK_HUB_ENDPOINT, { method: "POST", headers: hubProtectedHeaders(), credentials: "include", body: JSON.stringify({ prompt, response_json_schema: schema }) });
+          if (hubHandleAuthFailure(res)) return;
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data?.error || "AI unavailable");
+          const r = data?.result || data; const parsed = typeof r === "string" ? JSON.parse(r) : r;
+          cleaned = String(parsed.cleaned || "").trim(); missing = parsed.missing || [];
+          if (!cleaned) throw new Error("empty");
+        } catch (e) { usedAi = false; cleaned = keepWordsLocalCleanup(need); }
+        const finalPrompt = extras ? `${cleaned}\n\n${extras}` : cleaned;
+        output.innerHTML = `
+          <div class="label">Your words</div><div class="demo-before" style="white-space:pre-wrap">${escapeAttr(need)}</div>
+          <div class="label" style="margin-top:12px">Cleaned up, same words</div>
+          <div class="prompt"><button class="copy" onclick="copyText(document.getElementById('coachPrompt').innerText)">Copy</button><pre id="coachPrompt">${escapeAttr(finalPrompt)}</pre></div>
+          ${missing.length ? `<div style="margin-top:14px"><strong>Want better answers? Think about these</strong><p class="help">I didn't add them. Add them yourself if they matter.</p><ul>${missing.map(m => `<li>${askHubEscape(m)}</li>`).join("")}</ul></div>` : ""}
+          ${usedAi ? "" : `<p class="help" style="margin-top:10px">The AI was busy, so I did a light cleanup right here. Your words are untouched.</p>`}`;
+        button.disabled = false; button.textContent = "Build My Prompt";
+      }
       // ===== "Why isn't this working?" stuck helper =====
       const STUCK_PROBLEMS = {
         ignored: { label: "It ignored what I said",
@@ -10519,7 +10713,8 @@ Help me complete this step. Ask only for information necessary to finish it. Giv
         madeup: { label: "It made stuff up",
           why: "When ChatGPT doesn't know something, it fills the gap with something that sounds right. It's not lying on purpose; it's guessing confidently.",
           steps: ["Give it the facts yourself (prices, dates, names, links).", "Tell it to say NOT SURE instead of guessing.", "Check every name, number and link yourself before you post or send it."],
-          fix: "Only use facts I give you, or facts you can link a real source for. If you're not sure about something, write NOT SURE instead of guessing. Never make up prices, numbers, names, reviews or links." },
+          fix: "Only use facts I give you, or facts you can link a real source for. If you're not sure about something, write NOT SURE instead of guessing. Never make up prices, numbers, names, reviews or links.",
+          link: ["checkit", "Check the answer it gave you"] },
         generic: { label: "Too generic / sounds like a robot",
           why: "It doesn't know your business, your customer or how you talk, so it writes for everybody, which means nobody.",
           steps: ["Set up My Business Profile once so every chat knows you.", "Say exactly who it's for and how you talk.", "Ban the robot words."],
